@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <circle cx="200" cy="200" r="180" fill="url(#grad1)" opacity="0.3"/>
+  <circle cx="200" cy="200" r="120" fill="url(#grad2)" opacity="0.5"/>
+  <circle cx="200" cy="200" r="60" fill="url(#grad3)"/>
+  <!-- Orbit rings -->
+  <ellipse cx="200" cy="200" rx="180" ry="60" stroke="rgba(255,255,255,0.15)" stroke-width="1" transform="rotate(-15 200 200)"/>
+  <ellipse cx="200" cy="200" rx="140" ry="45" stroke="rgba(255,255,255,0.1)" stroke-width="1" transform="rotate(25 200 200)"/>
+  <!-- Planet dots -->
+  <circle cx="340" cy="165" r="8" fill="#F1024C"/>
+  <circle cx="85" cy="230" r="6" fill="#514A89"/>
+  <circle cx="250" cy="110" r="5" fill="#8b5cf6"/>
+  <defs>
+    <radialGradient id="grad1">
+      <stop offset="0%" stop-color="#514A89"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <radialGradient id="grad2">
+      <stop offset="0%" stop-color="#F1024C" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <radialGradient id="grad3">
+      <stop offset="0%" stop-color="#F1024C"/>
+      <stop offset="100%" stop-color="#514A89"/>
+    </radialGradient>
+  </defs>
+</svg>
