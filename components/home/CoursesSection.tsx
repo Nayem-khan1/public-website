@@ -5,11 +5,13 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CourseCard } from "@/components/CourseCard";
-import { courses } from "@/data/dummy";
+import type { Course } from "@/data/types";
 
-export function CoursesSection() {
-    const featuredCourses = courses.slice(0, 3);
+interface CoursesSectionProps {
+    featuredCourses: Course[];
+}
 
+export function CoursesSection({ featuredCourses }: CoursesSectionProps) {
     return (
         <section className="py-24 bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-50 relative overflow-hidden">
             <div className="absolute top-20 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />

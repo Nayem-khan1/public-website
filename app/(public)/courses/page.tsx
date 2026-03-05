@@ -1,31 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CourseCard } from "@/components/CourseCard";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-import { courses } from "@/data/dummy";
+import type { Course } from "@/data/types";
+import { getCourseCards } from "@/lib/public-api";
 
-const grades = ["All", "Class 6-10", "Class 8-12", "University"];
+const grades = ["All", "Class 6-10", "Class 8-12", "Class 11-12", "University"];
 const prices = ["All", "Free", "Paid"];
 
 export default function CoursesPage() {
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [gradeFilter, setGradeFilter] = useState("All");
     const [priceFilter, setPriceFilter] = useState("All");
     const [searchQuery, setSearchQuery] = useState("");
 
-    const filteredCourses = courses.filter((course) => {
-        const matchesGrade =
-            gradeFilter === "All" || course.grade === gradeFilter;
-        const matchesPrice =
-            priceFilter === "All" ||
-            (priceFilter === "Free" ? course.price === 0 : course.price > 0);
-        const matchesSearch =
-            course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            course.description.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesGrade && matchesPrice && matchesSearch;
-    });
+    useEffect(() => {
+        void (async () => {
+            setIsLoading(true);
+            const data = await getCourseCards();
+            setCourses(data);
+            setIsLoading(false);
+        })();
+    }, []);
+
+    const filteredCourses = useMemo(
+        () =>
+            courses.filter((course) => {
+                const matchesGrade =
+                    gradeFilter === "All" || course.grade === gradeFilter;
+                const matchesPrice =
+                    priceFilter === "All" ||
+                    (priceFilter === "Free" ? course.price === 0 : course.price > 0);
+                const matchesSearch =
+                    course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    course.description.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesGrade && matchesPrice && matchesSearch;
+            }),
+        [courses, gradeFilter, priceFilter, searchQuery],
+    );
 
     return (
         <div className="min-h-screen bg-slate-50">
@@ -97,7 +113,11 @@ export default function CoursesPage() {
 
                 {/* Course Grid */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredCourses.length > 0 ? (
+                    {isLoading ? (
+                        <div className="col-span-full text-center py-16">
+                            <p className="text-slate-500 text-lg">Loading courses...</p>
+                        </div>
+                    ) : filteredCourses.length > 0 ? (
                         filteredCourses.map((course) => (
                             <CourseCard key={course.id} course={course} />
                         ))

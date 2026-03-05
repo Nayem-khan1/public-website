@@ -2,7 +2,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { ArrowRight } from "lucide-react";
 import { format } from "date-fns";
-import { blogPosts } from "@/data/dummy";
+import { getBlogCards } from "@/lib/public-api";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,7 +11,9 @@ export const metadata: Metadata = {
         "Explore the latest insights on astrophysics, space missions, and astronomy education from Astronomy Pathshala.",
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
+    const blogPosts = await getBlogCards();
+
     return (
         <div className="min-h-screen bg-slate-50 pb-20">
             <PageHeader

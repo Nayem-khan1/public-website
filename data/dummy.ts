@@ -302,6 +302,7 @@ export const events: Event[] = [
   {
     id: 1,
     title: "National Astronomy Olympiad 2026",
+    slug: "national-astronomy-olympiad-2026",
     date: "2026-06-15T09:00:00",
     location: "Dhaka, Bangladesh",
     description:
@@ -314,6 +315,7 @@ export const events: Event[] = [
   {
     id: 2,
     title: "Live Telescope Observation Night",
+    slug: "live-telescope-observation-night",
     date: "2026-04-12T20:00:00",
     location: "Online (Zoom)",
     description:
@@ -326,6 +328,7 @@ export const events: Event[] = [
   {
     id: 3,
     title: "Astrophotography Workshop",
+    slug: "astrophotography-workshop",
     date: "2026-05-20T18:00:00",
     location: "Dhaka Planetarium",
     description:
@@ -338,6 +341,7 @@ export const events: Event[] = [
   {
     id: 4,
     title: "Astronomy Career Day 2025",
+    slug: "astronomy-career-day-2025",
     date: "2025-09-10T10:00:00",
     location: "Rajshahi University",
     description:

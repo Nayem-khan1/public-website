@@ -2,9 +2,12 @@ import { PageHeader } from "@/components/PageHeader";
 import { Calendar, MapPin, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { events } from "@/data/dummy";
+import Link from "next/link";
+import { getEventCards } from "@/lib/public-api";
+import type { Event } from "@/data/types";
 
-export default function EventsPage() {
+export default async function EventsPage() {
+    const events = await getEventCards();
     const now = new Date();
     const upcomingEvents = events.filter((e) => new Date(e.date) >= now);
     const pastEvents = events.filter((e) => new Date(e.date) < now);
@@ -62,7 +65,7 @@ function EventCard({
     event,
     isPast,
 }: {
-    event: (typeof events)[0];
+    event: Event;
     isPast?: boolean;
 }) {
     return (
@@ -111,8 +114,8 @@ function EventCard({
                             <Button className="bg-primary hover:bg-primary/90 text-white rounded-full px-8">
                                 Register Now
                             </Button>
-                            <Button variant="outline" className="rounded-full px-8">
-                                View Details
+                            <Button asChild variant="outline" className="rounded-full px-8">
+                                <Link href={`/events/${event.slug}`}>View Details</Link>
                             </Button>
                         </>
                     ) : (

@@ -6,28 +6,28 @@ export type CourseSyllabusItem = {
 };
 
 export interface Course {
-  id: number;
+  id: string | number;
   title: string;
   slug: string;
   shortDescription: string;
   description: string;
   thumbnailUrl: string;
-  instructorId: number;
+  instructorId: string | number;
   price: number;
   isFree: boolean;
   originalPrice: number | null;
   category: string;
-  grade: "Class 6-10" | "Class 8-12" | "Class 11-12" | "University" | "All";
-  mode: "Live" | "Recorded";
-  level: "Beginner" | "Intermediate" | "Advanced";
-  language: "Bangla" | "English";
+  grade: string;
+  mode: string;
+  level: string;
+  language: string;
   totalLessons: number;
   duration: string;
   syllabus: CourseSyllabusItem[];
 }
 
 export type TeamMember = {
-  id: number;
+  id: string | number;
   name: string;
   role: string;
   bio: string;
@@ -41,8 +41,9 @@ export type TeamMember = {
 };
 
 export type Event = {
-  id: number;
+  id: string | number;
   title: string;
+  slug: string;
   date: string;
   location: string;
   description: string;
@@ -52,7 +53,7 @@ export type Event = {
 };
 
 export type Testimonial = {
-  id: number;
+  id: string | number;
   name: string;
   role: string;
   content: string;
@@ -60,7 +61,7 @@ export type Testimonial = {
 };
 
 export type BlogPost = {
-  id: number;
+  id: string | number;
   title: string;
   slug: string;
   excerpt: string;
