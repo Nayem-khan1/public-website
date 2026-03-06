@@ -1,6 +1,7 @@
 import { PageHeader } from "@/components/PageHeader";
 import { Linkedin, Twitter } from "lucide-react";
-import { teamMembers } from "@/data/dummy";
+import { getTeamMembers } from "@/lib/public-api";
+import type { TeamMember } from "@/data/types";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,13 +10,8 @@ export const metadata: Metadata = {
         "Meet the astronomers, educators, and visionaries behind Astronomy Pathshala.",
 };
 
-export default function TeamPage() {
-    const leadership =
-        teamMembers.filter((m) => m.category === "Leadership") || [];
-    const instructors =
-        teamMembers.filter((m) => m.category === "Instructor") || [];
-    const advisors =
-        teamMembers.filter((m) => m.category === "Advisor") || [];
+export default async function TeamPage() {
+    const teamMembers = await getTeamMembers();
 
     return (
         <div className="min-h-screen bg-slate-50 pb-20">
@@ -26,57 +22,26 @@ export default function TeamPage() {
             />
 
             <div className="container mx-auto px-4 md:px-6 py-16">
-                {/* Leadership */}
-                {leadership.length > 0 && (
-                    <div className="mb-20">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl font-display font-bold text-slate-900">
-                                Leadership
-                            </h2>
-                            <div className="w-16 h-1 bg-primary mx-auto mt-4 rounded-full" />
-                        </div>
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl font-display font-bold text-slate-900">
+                        Expert Instructors
+                    </h2>
+                    <div className="w-16 h-1 bg-primary mx-auto mt-4 rounded-full" />
+                </div>
 
-                        <div className="grid md:grid-cols-3 gap-8 justify-center max-w-4xl mx-auto">
-                            {leadership.map((member) => (
-                                <TeamCard key={member.id} member={member} variant="primary" />
-                            ))}
-                        </div>
+                {teamMembers.length > 0 ? (
+                    <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-8">
+                        {teamMembers.map((member, index) => (
+                            <TeamCard
+                                key={member.id}
+                                member={member}
+                                variant={index % 2 === 0 ? "primary" : "secondary"}
+                            />
+                        ))}
                     </div>
-                )}
-
-                {/* Instructors */}
-                {instructors.length > 0 && (
-                    <div className="mb-20">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl font-display font-bold text-slate-900">
-                                Expert Instructors
-                            </h2>
-                            <div className="w-16 h-1 bg-secondary mx-auto mt-4 rounded-full" />
-                        </div>
-
-                        <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-8">
-                            {instructors.map((member) => (
-                                <TeamCard key={member.id} member={member} variant="secondary" />
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Advisors */}
-                {advisors.length > 0 && (
-                    <div>
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl font-display font-bold text-slate-900">
-                                Advisory Board
-                            </h2>
-                            <div className="w-16 h-1 bg-slate-400 mx-auto mt-4 rounded-full" />
-                        </div>
-
-                        <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-8">
-                            {advisors.map((member) => (
-                                <TeamCard key={member.id} member={member} variant="slate" />
-                            ))}
-                        </div>
+                ) : (
+                    <div className="text-center text-slate-500 py-16">
+                        No instructors are available right now.
                     </div>
                 )}
             </div>
@@ -88,7 +53,7 @@ function TeamCard({
     member,
     variant = "primary",
 }: {
-    member: (typeof teamMembers)[0];
+    member: TeamMember;
     variant?: "primary" | "secondary" | "slate";
 }) {
     const borderHoverColor = {

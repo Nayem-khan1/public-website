@@ -1,4 +1,10 @@
-import type { BlogPost, Course, Event } from "@/data/types";
+import type {
+  BlogPost,
+  Course,
+  Event,
+  TeamMember,
+  Testimonial,
+} from "@/data/types";
 
 interface ApiEnvelope<T> {
   success: boolean;
@@ -77,6 +83,24 @@ export interface PublicEventRecord {
   registration_fee?: number;
   max_participants?: number;
   registered_count?: number;
+}
+
+export interface PublicInstructorRecord {
+  id: string;
+  name: string;
+  email?: string;
+  bio?: string;
+  avatar?: string;
+  specialization?: string;
+}
+
+export interface PublicTestimonialRecord {
+  id: string;
+  student_name?: string;
+  role?: string;
+  content?: string;
+  issued_at?: string;
+  certificate_no?: string;
 }
 
 const DEFAULT_API_BASE_URL = "http://localhost:5000/api/v1";
@@ -294,5 +318,69 @@ export async function getEventCards(): Promise<Event[]> {
       "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200",
     type: "Event",
     registrationLink: `/events/${event.slug}`,
+  }));
+}
+
+export async function listPublicInstructors(options?: {
+  page?: number;
+  pageSize?: number;
+}): Promise<PublicInstructorRecord[]> {
+  const data = await fetchPublicApi<PaginatedResponse<PublicInstructorRecord>>(
+    "/instructors",
+    {
+      page: options?.page ?? 1,
+      page_size: options?.pageSize ?? 100,
+    },
+  );
+  return data?.items ?? [];
+}
+
+export async function listPublicTestimonials(options?: {
+  page?: number;
+  pageSize?: number;
+}): Promise<PublicTestimonialRecord[]> {
+  const data = await fetchPublicApi<PaginatedResponse<PublicTestimonialRecord>>(
+    "/testimonials",
+    {
+      page: options?.page ?? 1,
+      page_size: options?.pageSize ?? 100,
+    },
+  );
+  return data?.items ?? [];
+}
+
+export async function getTeamMembers(limit?: number): Promise<TeamMember[]> {
+  const instructors = await listPublicInstructors({
+    pageSize: limit ?? 100,
+  });
+
+  return instructors.map((item, index) => ({
+    id: item.id,
+    name: item.name,
+    role: item.specialization || "Instructor",
+    bio:
+      item.bio ||
+      "Astronomy instructor dedicated to helping students build real understanding.",
+    photoUrl:
+      item.avatar ||
+      `https://i.pravatar.cc/400?img=${(index % 60) + 1}`,
+    category: "Instructor",
+    socialLinks: {},
+  }));
+}
+
+export async function getTestimonials(limit?: number): Promise<Testimonial[]> {
+  const testimonials = await listPublicTestimonials({
+    pageSize: limit ?? 100,
+  });
+
+  return testimonials.map((item, index) => ({
+    id: item.id,
+    name: item.student_name || "Student",
+    role: item.role || "Learner",
+    content:
+      item.content ||
+      "Astronomy Pathshala helped me stay consistent and complete my course.",
+    photoUrl: `https://i.pravatar.cc/200?img=${(index % 60) + 1}`,
   }));
 }

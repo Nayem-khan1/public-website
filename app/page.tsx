@@ -9,10 +9,21 @@ import { InstructorsSection } from "@/components/home/InstructorsSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { CTASection } from "@/components/home/CTASection";
-import { getCourseCards } from "@/lib/public-api";
+import { getCourseCards, getTeamMembers, getTestimonials } from "@/lib/public-api";
 
 export default async function HomePage() {
-  const featuredCourses = await getCourseCards(3);
+  const [featuredCourses, teamMembers, testimonials] = await Promise.all([
+    getCourseCards(3),
+    getTeamMembers(6),
+    getTestimonials(6),
+  ]);
+
+  const instructors = teamMembers.map((member) => ({
+    id: member.id,
+    name: member.name,
+    role: member.role,
+    credential: member.category || "Instructor",
+  }));
 
   return (
     <>
@@ -23,8 +34,8 @@ export default async function HomePage() {
         <CoursesSection featuredCourses={featuredCourses} />
         <LiveClassesSection />
         <ImpactSection />
-        <InstructorsSection />
-        <TestimonialsSection />
+        <InstructorsSection instructors={instructors} />
+        <TestimonialsSection testimonials={testimonials} />
         <NewsletterSection />
         <CTASection />
       </main>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
     LayoutDashboard,
     BookOpen,
@@ -13,8 +13,14 @@ import {
     X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+    clearStudentSession,
+    getStudentAccessToken,
+    getStudentProfile,
+    type StudentProfile,
+} from "@/lib/student-api";
 
 const sidebarLinks = [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -24,7 +30,35 @@ const sidebarLinks = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
+    const router = useRouter();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [profile, setProfile] = useState<StudentProfile | null>(null);
+    const [loadingProfile, setLoadingProfile] = useState(true);
+
+    useEffect(() => {
+        const token = getStudentAccessToken();
+        if (!token) {
+            router.replace(`/login?next=${encodeURIComponent(pathname || "/dashboard")}`);
+            return;
+        }
+
+        void (async () => {
+            try {
+                const data = await getStudentProfile(token);
+                setProfile(data);
+            } catch {
+                clearStudentSession();
+                router.replace(`/login?next=${encodeURIComponent(pathname || "/dashboard")}`);
+            } finally {
+                setLoadingProfile(false);
+            }
+        })();
+    }, [pathname, router]);
+
+    function handleLogout() {
+        clearStudentSession();
+        router.replace("/login");
+    }
 
     return (
         <div className="min-h-screen bg-slate-50 flex">
@@ -52,8 +86,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     ))}
                 </nav>
                 <div className="p-4 border-t border-slate-100">
-                    <Link href="/" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 hover:bg-slate-50 transition-colors">
-                        <LogOut className="w-5 h-5" /> Back to Website
+                    <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 hover:bg-slate-50 transition-colors"
+                    >
+                        <LogOut className="w-5 h-5" /> Log Out
+                    </button>
+                    <Link
+                        href="/"
+                        className="mt-1 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 hover:bg-slate-50 transition-colors"
+                    >
+                        Back to Website
                     </Link>
                 </div>
             </aside>
@@ -100,10 +144,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
                         </button>
                         <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-sm font-bold text-primary">S</div>
+                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-sm font-bold text-primary">
+                                {profile?.name?.charAt(0).toUpperCase() || "S"}
+                            </div>
                             <div className="hidden md:block">
-                                <p className="text-sm font-semibold text-slate-900">Student</p>
-                                <p className="text-xs text-slate-500">student@example.com</p>
+                                <p className="text-sm font-semibold text-slate-900">
+                                    {loadingProfile ? "Loading..." : profile?.name || "Student"}
+                                </p>
+                                <p className="text-xs text-slate-500">
+                                    {loadingProfile ? "Fetching profile..." : profile?.email || "student@example.com"}
+                                </p>
                             </div>
                         </div>
                     </div>

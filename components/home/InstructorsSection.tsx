@@ -4,25 +4,20 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-const instructors = [
-    {
-        name: "Dr. Rahman Ahmed",
-        role: "Astrophysicist",
-        credential: "PhD, Cambridge",
-    },
-    {
-        name: "Fatima Khan",
-        role: "Olympiad Coach",
-        credential: "Gold Medalist",
-    },
-    {
-        name: "Prof. Karim Hassan",
-        role: "Observatory Director",
-        credential: "30+ Years Experience",
-    },
-];
+interface HomeInstructor {
+  id: string | number;
+  name: string;
+  role: string;
+  credential: string;
+}
 
-export function InstructorsSection() {
+interface InstructorsSectionProps {
+  instructors: HomeInstructor[];
+}
+
+export function InstructorsSection({ instructors }: InstructorsSectionProps) {
+    const visibleInstructors = instructors.slice(0, 3);
+
     return (
         <section className="py-24 bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-50">
             <div className="container mx-auto px-4 md:px-6">
@@ -58,9 +53,9 @@ export function InstructorsSection() {
                 </motion.div>
 
                 <div className="grid md:grid-cols-3 gap-8 mt-12 max-w-4xl mx-auto">
-                    {instructors.map((instructor, i) => (
+                    {visibleInstructors.map((instructor, i) => (
                         <motion.div
-                            key={i}
+                            key={instructor.id}
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}

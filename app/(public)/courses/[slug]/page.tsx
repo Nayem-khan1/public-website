@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, BookOpen, Clock, Globe, PlayCircle, CheckCircle, Lock } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { getPublicCourseBySlug } from "@/lib/public-api";
+import { CourseEnrollButton } from "@/components/course-enroll-button";
 
 export default async function CourseDetailsPage({
   params,
@@ -179,9 +179,7 @@ export default async function CourseDetailsPage({
                 ) : null}
               </div>
 
-              <Button className="w-full bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 h-12 text-lg font-bold rounded-xl">
-                Enroll Now
-              </Button>
+              <CourseEnrollButton courseId={course.id} courseSlug={course.slug} />
 
               <div className="space-y-4 pt-6 border-t border-slate-100 mt-6">
                 <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wide">

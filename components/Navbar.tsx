@@ -105,6 +105,7 @@ export function Navbar() {
             </button>
 
             <Button
+              asChild
               variant="ghost"
               className={cn(
                 "font-semibold transition-colors",
@@ -113,10 +114,10 @@ export function Navbar() {
                   : "text-white hover:bg-white/10 hover:text-white"
               )}
             >
-              Log In
+              <Link href="/login">Log In</Link>
             </Button>
-            <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 rounded-full px-6">
-              Get Started
+            <Button asChild className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 rounded-full px-6">
+              <Link href="/dashboard">Get Started</Link>
             </Button>
           </div>
 
@@ -192,11 +193,11 @@ export function Navbar() {
                   <Globe className="w-4 h-4" />
                   {language === "EN" ? "Switch to Bangla" : "Switch to English"}
                 </button>
-                <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-full">
-                  Get Started
+                <Button asChild className="w-full bg-primary hover:bg-primary/90 text-white rounded-full">
+                  <Link href="/dashboard">Get Started</Link>
                 </Button>
-                <Button variant="outline" className="w-full rounded-full">
-                  Log In
+                <Button asChild variant="outline" className="w-full rounded-full">
+                  <Link href="/login">Log In</Link>
                 </Button>
               </div>
             </div>

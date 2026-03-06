@@ -2,9 +2,15 @@
 
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
-import { testimonials } from "@/data/dummy";
+import type { Testimonial } from "@/data/types";
 
-export function TestimonialsSection() {
+interface TestimonialsSectionProps {
+  testimonials: Testimonial[];
+}
+
+export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
+    const visibleTestimonials = testimonials.slice(0, 4);
+
     return (
         <section className="py-24 bg-white relative overflow-hidden">
             <div className="container mx-auto px-4 md:px-6">
@@ -23,7 +29,7 @@ export function TestimonialsSection() {
                 </motion.div>
 
                 <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-                    {testimonials.map((t, i) => (
+                    {visibleTestimonials.map((t, i) => (
                         <motion.div
                             key={t.id}
                             initial={{ opacity: 0, scale: 0.9 }}
