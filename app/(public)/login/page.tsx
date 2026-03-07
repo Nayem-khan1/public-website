@@ -7,18 +7,22 @@ import {
   clearStudentSession,
   forgotStudentPassword,
   loginStudent,
+  registerStudent,
   resetStudentPassword,
   setStudentSession,
   verifyStudentOtp,
 } from "@/lib/student-api";
 
-type AuthStep = "login" | "forgot" | "verify-otp" | "reset-password";
+type AuthStep = "login" | "register" | "forgot" | "verify-otp" | "reset-password";
 
 export default function LoginPage() {
   const router = useRouter();
   const [redirectTo, setRedirectTo] = useState("/dashboard");
 
   const [step, setStep] = useState<AuthStep>("login");
+  const [registerName, setRegisterName] = useState("");
+  const [registerPhone, setRegisterPhone] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
@@ -68,6 +72,29 @@ export default function LoginPage() {
       setNotice("OTP sent. Check your email and verify to continue.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to request OTP");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleRegister(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
+    setNotice(null);
+
+    try {
+      clearStudentSession();
+      const data = await registerStudent({
+        name: registerName,
+        email,
+        password: registerPassword,
+        phone: registerPhone.trim() || undefined,
+      });
+      setStudentSession(data.token);
+      router.replace(redirectTo);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -124,7 +151,9 @@ export default function LoginPage() {
             Student Access
           </h1>
           <p className="text-sm text-slate-500 mb-6">
-            Sign in or recover your account.
+            {step === "register"
+              ? "Create your account to start learning."
+              : "Sign in or recover your account."}
           </p>
 
           {notice ? (
@@ -183,6 +212,89 @@ export default function LoginPage() {
                 className="w-full text-sm text-primary font-medium hover:underline"
               >
                 Forgot password?
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setStep("register");
+                  setError(null);
+                  setNotice(null);
+                }}
+                className="w-full text-sm text-slate-500 hover:text-slate-700"
+              >
+                Create a new account
+              </button>
+            </form>
+          ) : null}
+
+          {step === "register" ? (
+            <form className="space-y-4" onSubmit={handleRegister}>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  minLength={2}
+                  value={registerName}
+                  onChange={(event) => setRegisterName(event.target.value)}
+                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Phone (optional)
+                </label>
+                <input
+                  type="tel"
+                  value={registerPhone}
+                  onChange={(event) => setRegisterPhone(event.target.value)}
+                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  value={registerPassword}
+                  onChange={(event) => setRegisterPassword(event.target.value)}
+                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl"
+              >
+                {loading ? "Creating account..." : "Create Account"}
+              </Button>
+              <button
+                type="button"
+                onClick={() => {
+                  setStep("login");
+                  setError(null);
+                  setNotice(null);
+                }}
+                className="w-full text-sm text-slate-500 hover:text-slate-700"
+              >
+                Back to login
               </button>
             </form>
           ) : null}

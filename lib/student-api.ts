@@ -22,6 +22,8 @@ export interface StudentLoginResponse {
   user: StudentSessionUser;
 }
 
+export type StudentRegisterResponse = StudentLoginResponse;
+
 export interface StudentProfile {
   id: string;
   name: string;
@@ -196,6 +198,18 @@ export async function loginStudent(input: {
   password: string;
 }): Promise<StudentLoginResponse> {
   return requestApi<StudentLoginResponse>("/auth/login", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export async function registerStudent(input: {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+}): Promise<StudentRegisterResponse> {
+  return requestApi<StudentRegisterResponse>("/auth/register", {
     method: "POST",
     body: JSON.stringify(input),
   });

@@ -35,6 +35,8 @@ export interface PublicCourseRecord {
   description_en?: string;
   thumbnail?: string;
   category_id?: string;
+  category_title?: string;
+  category_slug?: string;
   grade?: string;
   level?: string;
   language?: string;
@@ -55,6 +57,17 @@ export interface PublicCourseRecord {
     question_bn?: string;
     answer_bn?: string;
   }>;
+}
+
+export interface PublicCourseCategoryRecord {
+  id: string;
+  slug?: string;
+  title?: string;
+  title_en?: string;
+  title_bn?: string;
+  description?: string;
+  description_en?: string;
+  description_bn?: string;
 }
 
 export interface PublicBlogRecord {
@@ -200,13 +213,27 @@ export async function listPublicCourses(options?: {
   page?: number;
   pageSize?: number;
   lang?: "en" | "bn";
+  categoryId?: string;
+  priceType?: "free" | "paid";
 }): Promise<PublicCourseRecord[]> {
   const data = await fetchPublicApi<PaginatedResponse<PublicCourseRecord>>("/courses", {
     page: options?.page ?? 1,
     page_size: options?.pageSize ?? 100,
     lang: options?.lang ?? "en",
+    category_id: options?.categoryId,
+    price_type: options?.priceType,
   });
   return data?.items ?? [];
+}
+
+export async function listPublicCourseCategories(
+  lang: "en" | "bn" = "en",
+): Promise<PublicCourseCategoryRecord[]> {
+  const data = await fetchPublicApi<PublicCourseCategoryRecord[]>(
+    "/course-categories",
+    { lang },
+  );
+  return data ?? [];
 }
 
 export async function getPublicCourseBySlug(
@@ -216,8 +243,19 @@ export async function getPublicCourseBySlug(
   return fetchPublicApi<PublicCourseRecord>(`/courses/${slug}`, { lang });
 }
 
-export async function getCourseCards(limit?: number): Promise<Course[]> {
-  const courses = await listPublicCourses({ pageSize: limit ?? 100, lang: "en" });
+export async function getCourseCards(
+  limit?: number,
+  options?: {
+    categoryId?: string;
+    priceType?: "free" | "paid";
+  },
+): Promise<Course[]> {
+  const courses = await listPublicCourses({
+    pageSize: limit ?? 100,
+    lang: "en",
+    categoryId: options?.categoryId,
+    priceType: options?.priceType,
+  });
   return courses.map((course) => ({
     id: course.id,
     title: toHeadline(course.title ?? course.title_en, "Untitled Course"),
@@ -236,7 +274,7 @@ export async function getCourseCards(limit?: number): Promise<Course[]> {
       course.discount_price < course.price
         ? course.price
         : null,
-    category: course.category_id || "Astronomy",
+    category: course.category_title || course.category_id || "Astronomy",
     grade: course.grade || "All",
     mode: "Recorded",
     level: normalizeLevel(course.level),
