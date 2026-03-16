@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import type { Testimonial } from "@/data/types";
+import { useTranslations } from "next-intl";
 
 interface TestimonialsSectionProps {
   testimonials: Testimonial[];
@@ -10,6 +11,7 @@ interface TestimonialsSectionProps {
 
 export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
     const visibleTestimonials = testimonials.slice(0, 4);
+    const t = useTranslations("common");
 
     return (
         <section className="py-24 bg-white relative overflow-hidden">
@@ -21,10 +23,10 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                     className="text-center mb-16"
                 >
                     <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-4">
-                        What Students Say
+                        {t("home.testimonials_title")}
                     </h2>
                     <p className="text-lg text-slate-600">
-                        Stories of success from our amazing community
+                        {t("home.testimonials_subtitle")}
                     </p>
                 </motion.div>
 

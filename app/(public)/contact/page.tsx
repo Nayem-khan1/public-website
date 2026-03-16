@@ -4,10 +4,12 @@ import { useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Mail, MapPin, Phone, Send } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function ContactPage() {
     const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
     const [submitted, setSubmitted] = useState(false);
+    const t = useTranslations("common");
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -19,8 +21,8 @@ export default function ContactPage() {
     return (
         <div className="min-h-screen bg-slate-50 pb-20">
             <PageHeader
-                title="Get in Touch"
-                subtitle="Have questions? We'd love to hear from you."
+                title={t("contact.page_title")}
+                subtitle={t("contact.page_subtitle")}
                 bgImage="https://images.unsplash.com/photo-1423666639041-f142fcb93461?auto=format&fit=crop&q=80&w=2000"
             />
 
@@ -29,14 +31,14 @@ export default function ContactPage() {
                     {/* Contact Info */}
                     <div className="bg-slate-900 text-white p-8 rounded-2xl shadow-xl flex flex-col justify-between h-full">
                         <div>
-                            <h3 className="text-2xl font-bold font-display mb-8">Contact Information</h3>
+                            <h3 className="text-2xl font-bold font-display mb-8">{t("contact.info_title")}</h3>
                             <ul className="space-y-8">
                                 <li className="flex items-start gap-4">
                                     <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
                                         <MapPin className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h5 className="font-bold mb-1">Our Location</h5>
+                                        <h5 className="font-bold mb-1">{t("contact.location_title")}</h5>
                                         <p className="text-slate-300 text-sm leading-relaxed">
                                             123 Science Lab Road, Dhanmondi,<br />Dhaka 1205, Bangladesh
                                         </p>
@@ -47,7 +49,7 @@ export default function ContactPage() {
                                         <Phone className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h5 className="font-bold mb-1">Phone Number</h5>
+                                        <h5 className="font-bold mb-1">{t("contact.phone_title")}</h5>
                                         <p className="text-slate-300 text-sm">+880 1712 345678</p>
                                     </div>
                                 </li>
@@ -56,7 +58,7 @@ export default function ContactPage() {
                                         <Mail className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h5 className="font-bold mb-1">Email Address</h5>
+                                        <h5 className="font-bold mb-1">{t("contact.email_title")}</h5>
                                         <p className="text-slate-300 text-sm">info@astronomypathshala.com</p>
                                     </div>
                                 </li>
@@ -76,61 +78,61 @@ export default function ContactPage() {
 
                     {/* Contact Form */}
                     <div className="lg:col-span-2 bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-slate-100">
-                        <h3 className="text-2xl font-bold font-display text-slate-900 mb-6">Send us a Message</h3>
+                        <h3 className="text-2xl font-bold font-display text-slate-900 mb-6">{t("contact.form_title")}</h3>
 
                         {submitted && (
                             <div className="mb-6 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700 font-medium">
-                                ✓ Message sent successfully! We&apos;ll get back to you soon.
+                                {t("contact.success")}
                             </div>
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-2">Your Name</label>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">{t("contact.name_label")}</label>
                                     <input
                                         required
                                         value={form.name}
                                         onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                        placeholder="John Doe"
+                                        placeholder={t("contact.name_placeholder")}
                                         className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">{t("contact.email_label")}</label>
                                     <input
                                         required
                                         type="email"
                                         value={form.email}
                                         onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                        placeholder="john@example.com"
+                                        placeholder={t("contact.email_placeholder")}
                                         className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm"
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Subject</label>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">{t("contact.subject_label")}</label>
                                 <input
                                     required
                                     value={form.subject}
                                     onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                                    placeholder="How can we help?"
+                                    placeholder={t("contact.subject_placeholder")}
                                     className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Message</label>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">{t("contact.message_label")}</label>
                                 <textarea
                                     required
                                     value={form.message}
                                     onChange={(e) => setForm({ ...form, message: e.target.value })}
-                                    placeholder="Write your message here..."
+                                    placeholder={t("contact.message_placeholder")}
                                     rows={5}
                                     className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm resize-none"
                                 />
                             </div>
                             <Button type="submit" className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-primary/25">
-                                <Send className="w-4 h-4 mr-2" /> Send Message
+                                <Send className="w-4 h-4 mr-2" /> {t("actions.send_message")}
                             </Button>
                         </form>
                     </div>

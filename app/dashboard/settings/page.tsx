@@ -8,8 +8,10 @@ import {
   getStudentProfile,
   updateStudentProfile,
 } from "@/lib/student-api";
+import { useTranslations } from "next-intl";
 
 export default function SettingsPage() {
+  const t = useTranslations("common");
   const [profile, setProfile] = useState({
     name: "",
     email: "",
@@ -24,7 +26,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const token = getStudentAccessToken();
     if (!token) {
-      setError("Please log in to edit your settings.");
+      setError(t("settings.error_login"));
       setLoading(false);
       return;
     }
@@ -37,11 +39,11 @@ export default function SettingsPage() {
           email: data.email,
           phone: data.phone || "",
         });
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load profile");
-      } finally {
-        setLoading(false);
-      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("settings.error_load_profile"));
+    } finally {
+      setLoading(false);
+    }
     })();
   }, []);
 
@@ -50,7 +52,7 @@ export default function SettingsPage() {
 
     const token = getStudentAccessToken();
     if (!token) {
-      setError("Please log in to save profile changes.");
+      setError(t("settings.error_save_login"));
       return;
     }
 
@@ -75,7 +77,7 @@ export default function SettingsPage() {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save profile");
+      setError(err instanceof Error ? err.message : t("settings.error_save_profile"));
     } finally {
       setSaving(false);
     }
@@ -83,7 +85,7 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl space-y-8">
-      <h2 className="text-2xl font-display font-bold text-slate-900">Profile Settings</h2>
+      <h2 className="text-2xl font-display font-bold text-slate-900">{t("settings.title")}</h2>
 
       {error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
@@ -104,14 +106,14 @@ export default function SettingsPage() {
 
         {saved ? (
           <div className="mb-6 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700 font-medium">
-            Profile updated successfully.
+            {t("settings.profile_updated")}
           </div>
         ) : null}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">{t("settings.full_name")}</label>
               <input
                 required
                 disabled={loading}
@@ -123,7 +125,7 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">{t("settings.email")}</label>
               <input
                 type="email"
                 disabled
@@ -133,7 +135,7 @@ export default function SettingsPage() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Phone</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">{t("settings.phone")}</label>
             <input
               disabled={loading}
               value={profile.phone}
@@ -144,12 +146,12 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Bio</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">{t("settings.bio")}</label>
             <textarea
               value={bio}
               onChange={(event) => setBio(event.target.value)}
               rows={3}
-              placeholder="Optional personal note (saved locally in this browser)."
+              placeholder={t("settings.bio_placeholder")}
               className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm resize-none"
             />
           </div>
@@ -159,18 +161,18 @@ export default function SettingsPage() {
             className="bg-primary hover:bg-primary/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-primary/25"
           >
             <Save className="w-4 h-4 mr-2" />
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? t("actions.saving") : t("actions.save_changes")}
           </Button>
         </form>
       </div>
 
       <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
-        <h3 className="font-bold text-slate-900 text-lg mb-6">Notification Preferences</h3>
+        <h3 className="font-bold text-slate-900 text-lg mb-6">{t("settings.notifications")}</h3>
         <div className="space-y-4">
           {[
-            { label: "Email notifications for new courses", checked: true },
-            { label: "SMS reminders for live classes", checked: false },
-            { label: "Weekly newsletter", checked: true },
+            { label: t("settings.pref_email"), checked: true },
+            { label: t("settings.pref_sms"), checked: false },
+            { label: t("settings.pref_newsletter"), checked: true },
           ].map((pref) => (
             <label key={pref.label} className="flex items-center gap-3 cursor-pointer">
               <input

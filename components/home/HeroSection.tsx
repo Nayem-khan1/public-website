@@ -11,8 +11,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StarBackground } from "@/components/StarBackground";
+import { useTranslations } from "next-intl";
 
 export function HeroSection() {
+    const t = useTranslations("common");
+
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950 bg-gradient-to-b from-slate-900 via-[#0B0F19] to-black">
             <StarBackground />
@@ -32,19 +35,18 @@ export function HeroSection() {
                             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 backdrop-blur-sm border border-primary/30 text-white font-semibold text-sm mb-6"
                         >
                             <Sparkles className="w-4 h-4 text-primary" />
-                            Bangladesh&apos;s #1 Astronomy Platform
+                            {t("home.badge")}
                         </motion.div>
 
                         <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold text-white leading-[1.1] mb-6">
-                            Explore the Universe.{" "}
+                            {t("home.headline")}{" "}
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-pink-400 to-secondary">
-                                Learn Beyond Earth.
+                                {t("home.headline_emphasis")}
                             </span>
                         </h1>
 
                         <p className="text-lg md:text-xl text-slate-300 mb-8 max-w-xl leading-relaxed">
-                            Online astronomy &amp; astrophysics courses for students, Olympiad
-                            learners, and space enthusiasts.
+                            {t("home.subheadline")}
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 mb-12">
@@ -55,7 +57,7 @@ export function HeroSection() {
                             >
                                 <Link href="/courses">
                                     <Rocket className="w-5 h-5 mr-2" />
-                                    Explore Courses
+                                    {t("actions.explore_courses")}
                                 </Link>
                             </Button>
                             <Button
@@ -66,7 +68,7 @@ export function HeroSection() {
                             >
                                 <Link href="/events">
                                     <Play className="w-5 h-5 mr-2" />
-                                    Join Live Classes
+                                    {t("actions.join_live_classes")}
                                 </Link>
                             </Button>
                         </div>
@@ -79,7 +81,7 @@ export function HeroSection() {
                                 </div>
                                 <div>
                                     <h4 className="text-2xl font-bold text-white">5000+</h4>
-                                    <p className="text-sm text-slate-400">Students Taught</p>
+                                    <p className="text-sm text-slate-400">{t("home.students_taught")}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
@@ -88,7 +90,7 @@ export function HeroSection() {
                                 </div>
                                 <div>
                                     <h4 className="text-2xl font-bold text-white">50+</h4>
-                                    <p className="text-sm text-slate-400">Olympiad Winners</p>
+                                    <p className="text-sm text-slate-400">{t("home.olympiad_winners")}</p>
                                 </div>
                             </div>
                         </div>

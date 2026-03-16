@@ -21,12 +21,7 @@ import {
     getStudentProfile,
     type StudentProfile,
 } from "@/lib/student-api";
-
-const sidebarLinks = [
-    { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/courses", label: "My Courses", icon: BookOpen },
-    { href: "/dashboard/settings", label: "Settings", icon: Settings },
-];
+import { useTranslations } from "next-intl";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -34,6 +29,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [profile, setProfile] = useState<StudentProfile | null>(null);
     const [loadingProfile, setLoadingProfile] = useState(true);
+    const t = useTranslations("common");
+
+    const sidebarLinks = [
+        { href: "/dashboard", label: t("labels.overview"), icon: LayoutDashboard },
+        { href: "/dashboard/courses", label: t("labels.my_courses"), icon: BookOpen },
+        { href: "/dashboard/settings", label: t("labels.settings"), icon: Settings },
+    ];
 
     useEffect(() => {
         const token = getStudentAccessToken();
@@ -91,13 +93,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 hover:bg-slate-50 transition-colors"
                     >
-                        <LogOut className="w-5 h-5" /> Log Out
+                        <LogOut className="w-5 h-5" /> {t("labels.log_out")}
                     </button>
                     <Link
                         href="/"
                         className="mt-1 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 hover:bg-slate-50 transition-colors"
                     >
-                        Back to Website
+                        {t("labels.back_to_website")}
                     </Link>
                 </div>
             </aside>
@@ -110,7 +112,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
                             <Link href="/" className="flex items-center gap-2">
                                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-sm">AP</div>
-                                <span className="font-display font-bold text-sm">AP Dashboard</span>
+                                <span className="font-display font-bold text-sm">{t("labels.student_dashboard")}</span>
                             </Link>
                             <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)}><X className="w-5 h-5" /></Button>
                         </div>
@@ -136,7 +138,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSidebarOpen(true)}>
                             <Menu className="w-5 h-5" />
                         </Button>
-                        <h1 className="text-lg font-display font-bold text-slate-900">Student Dashboard</h1>
+                        <h1 className="text-lg font-display font-bold text-slate-900">{t("labels.student_dashboard")}</h1>
                     </div>
                     <div className="flex items-center gap-4">
                         <button className="relative p-2 rounded-full hover:bg-slate-100 transition-colors">
@@ -149,10 +151,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             </div>
                             <div className="hidden md:block">
                                 <p className="text-sm font-semibold text-slate-900">
-                                    {loadingProfile ? "Loading..." : profile?.name || "Student"}
+                                    {loadingProfile ? t("labels.loading") : profile?.name || "Student"}
                                 </p>
                                 <p className="text-xs text-slate-500">
-                                    {loadingProfile ? "Fetching profile..." : profile?.email || "student@example.com"}
+                                    {loadingProfile ? t("labels.fetching_profile") : profile?.email || "student@example.com"}
                                 </p>
                             </div>
                         </div>

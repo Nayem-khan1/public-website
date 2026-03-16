@@ -10,8 +10,12 @@ import {
   getStudentCourses,
   type StudentCourse,
 } from "@/lib/student-api";
+import { useLocale, useTranslations } from "next-intl";
+import { formatNumber, normalizeLocale } from "@/lib/i18n";
 
 export default function MyCoursesPage() {
+  const t = useTranslations("common");
+  const locale = normalizeLocale(useLocale());
   const [courses, setCourses] = useState<StudentCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +24,7 @@ export default function MyCoursesPage() {
   async function loadCourses() {
     const token = getStudentAccessToken();
     if (!token) {
-      setError("Please log in to view your courses.");
+      setError(t("dashboard.error_login"));
       setLoading(false);
       return;
     }
@@ -32,7 +36,7 @@ export default function MyCoursesPage() {
       const data = await getStudentCourses(token);
       setCourses(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load courses");
+      setError(err instanceof Error ? err.message : t("dashboard.error_login"));
     } finally {
       setLoading(false);
     }
@@ -45,7 +49,7 @@ export default function MyCoursesPage() {
   async function handleCompleteNextLesson(courseId: string) {
     const token = getStudentAccessToken();
     if (!token) {
-      setError("Please log in to continue.");
+      setError(t("dashboard.error_continue"));
       return;
     }
 
@@ -56,7 +60,7 @@ export default function MyCoursesPage() {
       await completeNextLesson(courseId, token);
       await loadCourses();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update course progress");
+      setError(err instanceof Error ? err.message : t("dashboard.error_continue"));
     } finally {
       setActionLoadingCourseId(null);
     }
@@ -65,9 +69,9 @@ export default function MyCoursesPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-display font-bold text-slate-900">My Courses</h2>
+        <h2 className="text-2xl font-display font-bold text-slate-900">{t("my_courses.title")}</h2>
         <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-full">
-          <Link href="/courses">Browse More Courses</Link>
+          <Link href="/courses">{t("actions.browse_more_courses")}</Link>
         </Button>
       </div>
 
@@ -79,13 +83,13 @@ export default function MyCoursesPage() {
 
       {loading ? (
         <div className="rounded-xl border border-slate-200 bg-white p-8 text-slate-500">
-          Loading enrolled courses...
+          {t("my_courses.loading")}
         </div>
       ) : null}
 
       {!loading && courses.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-8 text-slate-500">
-          You have no enrolled courses yet.
+          {t("my_courses.empty")}
         </div>
       ) : null}
 
@@ -110,16 +114,16 @@ export default function MyCoursesPage() {
               <div className="flex items-center justify-between text-sm text-slate-500">
                 <span className="flex items-center gap-1">
                   <BookOpen className="w-4 h-4" />
-                  {course.total_lessons} lessons
+                  {t("courses.lessons", { count: formatNumber(course.total_lessons, locale) })}
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  {course.duration || "Self-paced"}
+                  {course.duration || t("courses.self_paced")}
                 </span>
               </div>
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-slate-700">Progress</span>
+                  <span className="text-sm font-medium text-slate-700">{t("my_courses.progress")}</span>
                   <span className="text-sm font-bold text-primary">
                     {course.progress_percent}%
                   </span>
@@ -133,7 +137,7 @@ export default function MyCoursesPage() {
               </div>
               <div className="flex items-center justify-between pt-2">
                 <span className="text-xs text-slate-400">
-                  {course.remaining_lessons} lessons remaining
+                  {t("courses.lessons_remaining", { count: formatNumber(course.remaining_lessons, locale) })}
                 </span>
                 <Button
                   size="sm"
@@ -146,10 +150,10 @@ export default function MyCoursesPage() {
                 >
                   <CheckCircle className="w-4 h-4 mr-1" />
                   {actionLoadingCourseId === course.course_id
-                    ? "Updating..."
+                    ? t("actions.updating")
                     : course.remaining_lessons === 0
-                      ? "Completed"
-                      : "Complete Next"}
+                      ? t("actions.completed")
+                      : t("actions.complete_next")}
                 </Button>
               </div>
             </div>

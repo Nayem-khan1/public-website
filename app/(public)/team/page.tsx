@@ -3,6 +3,7 @@ import { Linkedin, Twitter } from "lucide-react";
 import { getTeamMembers } from "@/lib/public-api";
 import type { TeamMember } from "@/data/types";
 import type { Metadata } from "next";
+import { getServerLocale, getServerTranslator } from "@/lib/i18n-server";
 
 export const metadata: Metadata = {
     title: "Our Team",
@@ -11,20 +12,22 @@ export const metadata: Metadata = {
 };
 
 export default async function TeamPage() {
-    const teamMembers = await getTeamMembers();
+    const locale = getServerLocale();
+    const t = getServerTranslator(locale);
+    const teamMembers = await getTeamMembers(undefined, { lang: locale });
 
     return (
         <div className="min-h-screen bg-slate-50 pb-20">
             <PageHeader
-                title="Meet Our Crew"
-                subtitle="The astronomers, educators, and visionaries guiding your journey to the stars."
+                title={t("common.team.page_title")}
+                subtitle={t("common.team.page_subtitle")}
                 bgImage="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=2000"
             />
 
             <div className="container mx-auto px-4 md:px-6 py-16">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl font-display font-bold text-slate-900">
-                        Expert Instructors
+                        {t("common.team.section_title")}
                     </h2>
                     <div className="w-16 h-1 bg-primary mx-auto mt-4 rounded-full" />
                 </div>
@@ -41,7 +44,7 @@ export default async function TeamPage() {
                     </div>
                 ) : (
                     <div className="text-center text-slate-500 py-16">
-                        No instructors are available right now.
+                        {t("common.team.empty")}
                     </div>
                 )}
             </div>

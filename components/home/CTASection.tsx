@@ -4,8 +4,11 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export function CTASection() {
+    const t = useTranslations("common");
+
     return (
         <section className="py-32 bg-gradient-to-br from-slate-900 via-purple-900/30 to-slate-900 relative overflow-hidden">
             <div className="absolute inset-0">
@@ -36,15 +39,14 @@ export function CTASection() {
                     </motion.div>
 
                     <h2 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold text-white mb-6 leading-tight">
-                        Start Your Journey <br />
+                        {t("home.cta_title")} <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-pink-400 to-secondary">
-                            Into Space
+                            {t("home.cta_title_emphasis")}
                         </span>
                     </h2>
 
                     <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
-                        Join thousands of students exploring the cosmos. Your adventure
-                        begins today.
+                        {t("home.cta_subtitle")}
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -55,7 +57,7 @@ export function CTASection() {
                         >
                             <Link href="/courses">
                                 <Rocket className="w-6 h-6 mr-2" />
-                                Explore All Courses
+                                {t("actions.explore_all_courses")}
                             </Link>
                         </Button>
                         <Button
@@ -64,7 +66,7 @@ export function CTASection() {
                             variant="outline"
                             className="rounded-full text-lg px-12 h-16 border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm hover:border-white/50 transition-all duration-300"
                         >
-                            <Link href="/contact">Contact Us</Link>
+                            <Link href="/contact">{t("actions.contact_us")}</Link>
                         </Button>
                     </div>
                 </motion.div>

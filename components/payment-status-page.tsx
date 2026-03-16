@@ -1,38 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import { AlertCircle, CheckCircle2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 type PaymentStatusVariant = "success" | "failed" | "cancelled";
 type PaymentSearchParams = Record<string, string | string[] | undefined>;
-
-const variantContent: Record<
-  PaymentStatusVariant,
-  {
-    title: string;
-    subtitle: string;
-    iconClassName: string;
-    icon: typeof CheckCircle2;
-  }
-> = {
-  success: {
-    title: "Payment Completed",
-    subtitle: "Your course enrollment is now active.",
-    iconClassName: "text-emerald-600",
-    icon: CheckCircle2,
-  },
-  failed: {
-    title: "Payment Failed",
-    subtitle: "We could not confirm this payment.",
-    iconClassName: "text-rose-600",
-    icon: AlertCircle,
-  },
-  cancelled: {
-    title: "Payment Cancelled",
-    subtitle: "Your payment process was cancelled.",
-    iconClassName: "text-amber-600",
-    icon: RotateCcw,
-  },
-};
 
 function pickQueryValue(
   searchParams: PaymentSearchParams,
@@ -56,6 +30,37 @@ export function PaymentStatusPage({
   variant: PaymentStatusVariant;
   searchParams: PaymentSearchParams;
 }) {
+  const t = useTranslations("common");
+
+  const variantContent: Record<
+    PaymentStatusVariant,
+    {
+      title: string;
+      subtitle: string;
+      iconClassName: string;
+      icon: typeof CheckCircle2;
+    }
+  > = {
+    success: {
+      title: t("payment.success_title"),
+      subtitle: t("payment.success_subtitle"),
+      iconClassName: "text-emerald-600",
+      icon: CheckCircle2,
+    },
+    failed: {
+      title: t("payment.failed_title"),
+      subtitle: t("payment.failed_subtitle"),
+      iconClassName: "text-rose-600",
+      icon: AlertCircle,
+    },
+    cancelled: {
+      title: t("payment.cancelled_title"),
+      subtitle: t("payment.cancelled_subtitle"),
+      iconClassName: "text-amber-600",
+      icon: RotateCcw,
+    },
+  };
+
   const content = variantContent[variant];
   const Icon = content.icon;
 
@@ -80,22 +85,22 @@ export function PaymentStatusPage({
           </div>
 
           <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <h2 className="text-sm font-semibold text-slate-700">Payment Details</h2>
+            <h2 className="text-sm font-semibold text-slate-700">{t("labels.payment_details")}</h2>
             <dl className="mt-3 space-y-2 text-sm text-slate-600">
               <div className="flex justify-between gap-3">
-                <dt className="text-slate-500">Invoice</dt>
+                <dt className="text-slate-500">{t("labels.invoice")}</dt>
                 <dd className="text-right break-all">{invoice || "-"}</dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-slate-500">Payment ID</dt>
+                <dt className="text-slate-500">{t("labels.payment_id")}</dt>
                 <dd className="text-right break-all">{paymentId || "-"}</dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-slate-500">Gateway Ref</dt>
+                <dt className="text-slate-500">{t("labels.gateway_ref")}</dt>
                 <dd className="text-right break-all">{gatewayPaymentId || "-"}</dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-slate-500">Transaction ID</dt>
+                <dt className="text-slate-500">{t("labels.transaction_id")}</dt>
                 <dd className="text-right break-all">{transactionId || "-"}</dd>
               </div>
             </dl>
@@ -103,10 +108,10 @@ export function PaymentStatusPage({
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl">
-              <Link href="/dashboard">Go to Dashboard</Link>
+              <Link href="/dashboard">{t("actions.go_to_dashboard")}</Link>
             </Button>
             <Button asChild variant="outline" className="w-full rounded-xl">
-              <Link href="/courses">Browse Courses</Link>
+              <Link href="/courses">{t("actions.browse_courses")}</Link>
             </Button>
           </div>
         </div>

@@ -1,9 +1,46 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Clock, Users, Ticket } from "lucide-react";
-import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { getPublicEventBySlug } from "@/lib/public-api";
+import { formatCurrency, formatDate, pickLocalizedText } from "@/lib/i18n";
+import { getServerLocale, getServerTranslator } from "@/lib/i18n-server";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const locale = getServerLocale();
+  const event = await getPublicEventBySlug(slug, locale);
+  if (!event) return {};
+
+  const title = pickLocalizedText({
+    locale,
+    primary: event.title,
+    en: event.title_en,
+    bn: event.title_bn,
+    fallback: "Untitled Event",
+  });
+  const description = pickLocalizedText({
+    locale,
+    primary: event.description,
+    en: event.description_en,
+    bn: event.description_bn,
+    fallback: "",
+  });
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+    },
+  };
+}
 
 export default async function EventDetailPage({
   params,
@@ -11,14 +48,28 @@ export default async function EventDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const event = await getPublicEventBySlug(slug, "en");
+  const locale = getServerLocale();
+  const t = getServerTranslator(locale);
+  const event = await getPublicEventBySlug(slug, locale);
 
   if (!event) {
     notFound();
   }
 
-  const title = event.title ?? event.title_en ?? "Untitled Event";
-  const description = event.description ?? event.description_en ?? "";
+  const title = pickLocalizedText({
+    locale,
+    primary: event.title,
+    en: event.title_en,
+    bn: event.title_bn,
+    fallback: "Untitled Event",
+  });
+  const description = pickLocalizedText({
+    locale,
+    primary: event.description,
+    en: event.description_en,
+    bn: event.description_bn,
+    fallback: "",
+  });
   const eventDate = event.event_date ? new Date(event.event_date) : new Date();
 
   return (
@@ -39,7 +90,7 @@ export default async function EventDetailPage({
             className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors mb-8"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Events
+            {t("common.labels.back_to_events")}
           </Link>
           <h1 className="text-3xl md:text-5xl font-display font-bold text-white mb-4">
             {title}
@@ -47,11 +98,11 @@ export default async function EventDetailPage({
           <div className="flex flex-wrap items-center gap-6 text-slate-200">
             <span className="inline-flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              {format(eventDate, "MMMM dd, yyyy")}
+              {formatDate(eventDate, locale, { year: "numeric", month: "long", day: "2-digit" })}
             </span>
             <span className="inline-flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              {format(eventDate, "h:mm a")}
+              {formatDate(eventDate, locale, { hour: "numeric", minute: "2-digit" })}
             </span>
           </div>
         </div>
@@ -61,7 +112,7 @@ export default async function EventDetailPage({
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
             <h2 className="text-2xl font-display font-bold text-slate-900 mb-4">
-              About This Event
+              {t("common.events.about")}
             </h2>
             <p className="text-slate-600 leading-relaxed whitespace-pre-line">
               {description}
@@ -69,26 +120,26 @@ export default async function EventDetailPage({
           </div>
 
           <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm h-fit">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">Event Details</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-4">{t("common.events.details")}</h3>
             <div className="space-y-3 text-sm text-slate-600">
               <p className="inline-flex items-center gap-2">
                 <Ticket className="w-4 h-4 text-primary" />
-                Registration Fee:{" "}
+                {t("common.events.registration_fee")}:{" "}
                 {event.registration_fee && event.registration_fee > 0
-                  ? `BDT ${event.registration_fee.toLocaleString("en-US")}`
-                  : "Free"}
+                  ? formatCurrency(event.registration_fee, locale)
+                  : t("common.labels.free")}
               </p>
               <p className="inline-flex items-center gap-2">
                 <Users className="w-4 h-4 text-secondary" />
-                Max Participants: {event.max_participants ?? "N/A"}
+                {t("common.events.max_participants")}: {event.max_participants ?? "N/A"}
               </p>
               <p className="inline-flex items-center gap-2">
                 <Users className="w-4 h-4 text-emerald-600" />
-                Registered: {event.registered_count ?? 0}
+                {t("common.events.registered")}: {event.registered_count ?? 0}
               </p>
             </div>
             <Button className="w-full mt-6 bg-primary hover:bg-primary/90 text-white rounded-full">
-              Register Now
+              {t("common.actions.register_now")}
             </Button>
           </div>
         </div>

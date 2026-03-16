@@ -1,7 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import { Facebook, Twitter, Linkedin, Instagram, Mail, MapPin, Phone } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function Footer() {
+  const t = useTranslations("common");
+
   return (
     <footer className="bg-slate-900 text-slate-200 pt-16 pb-8">
       <div className="container mx-auto px-4 md:px-6">
@@ -17,8 +22,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed">
-              Empowering the next generation of astronomers with world-class
-              education and accessible technology.
+              {t("footer.mission")}
             </p>
             <div className="flex gap-4 pt-2">
               {[
@@ -41,15 +45,15 @@ export function Footer() {
           {/* Links */}
           <div>
             <h3 className="font-display font-bold text-white text-lg mb-6">
-              Quick Links
+              {t("footer.quick_links")}
             </h3>
             <ul className="space-y-3">
               {[
-                { label: "All Courses", href: "/courses" },
-                { label: "Upcoming Events", href: "/events" },
-                { label: "Our Instructors", href: "/team" },
-                { label: "Blog & News", href: "/blog" },
-                { label: "About Us", href: "/about" },
+                { label: t("footer.all_courses"), href: "/courses" },
+                { label: t("footer.upcoming_events"), href: "/events" },
+                { label: t("footer.our_instructors"), href: "/team" },
+                { label: t("footer.blog_news"), href: "/blog" },
+                { label: t("footer.about_us"), href: "/about" },
               ].map((link) => (
                 <li key={link.label}>
                   <Link
@@ -66,15 +70,15 @@ export function Footer() {
           {/* Categories */}
           <div>
             <h3 className="font-display font-bold text-white text-lg mb-6">
-              Categories
+              {t("footer.categories")}
             </h3>
             <ul className="space-y-3">
               {[
-                "Astronomy",
-                "Astrophysics",
-                "Olympiad Prep",
-                "Observation",
-                "Cosmology",
+                t("footer.category_astronomy"),
+                t("footer.category_astrophysics"),
+                t("footer.category_olympiad"),
+                t("footer.category_observation"),
+                t("footer.category_cosmology"),
               ].map((cat) => (
                 <li key={cat}>
                   <Link
@@ -91,7 +95,7 @@ export function Footer() {
           {/* Contact */}
           <div>
             <h3 className="font-display font-bold text-white text-lg mb-6">
-              Get in Touch
+              {t("footer.contact")}
             </h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-slate-400 text-sm">
@@ -115,16 +119,16 @@ export function Footer() {
         </div>
 
         <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-          <p>&copy; 2026 Astronomy Pathshala. All rights reserved.</p>
+          <p>&copy; 2026 Astronomy Pathshala. {t("footer.rights")}</p>
           <div className="flex gap-6">
             <a href="#" className="hover:text-white transition-colors">
-              Privacy Policy
+              {t("footer.privacy")}
             </a>
             <a href="#" className="hover:text-white transition-colors">
-              Terms of Service
+              {t("footer.terms")}
             </a>
             <a href="#" className="hover:text-white transition-colors">
-              Cookie Policy
+              {t("footer.cookies")}
             </a>
           </div>
         </div>

@@ -12,11 +12,13 @@ import {
   setStudentSession,
   verifyStudentOtp,
 } from "@/lib/student-api";
+import { useTranslations } from "next-intl";
 
 type AuthStep = "login" | "register" | "forgot" | "verify-otp" | "reset-password";
 
 export default function LoginPage() {
   const router = useRouter();
+  const t = useTranslations("common");
   const [redirectTo, setRedirectTo] = useState("/dashboard");
 
   const [step, setStep] = useState<AuthStep>("login");
@@ -54,7 +56,7 @@ export default function LoginPage() {
       setStudentSession(data.token);
       router.replace(redirectTo);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : t("auth.login_failed"));
     } finally {
       setLoading(false);
     }
@@ -69,9 +71,9 @@ export default function LoginPage() {
     try {
       await forgotStudentPassword(email);
       setStep("verify-otp");
-      setNotice("OTP sent. Check your email and verify to continue.");
+      setNotice(t("auth.otp_sent"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to request OTP");
+      setError(err instanceof Error ? err.message : t("auth.otp_request_failed"));
     } finally {
       setLoading(false);
     }
@@ -94,7 +96,7 @@ export default function LoginPage() {
       setStudentSession(data.token);
       router.replace(redirectTo);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(err instanceof Error ? err.message : t("auth.register_failed"));
     } finally {
       setLoading(false);
     }
@@ -110,9 +112,9 @@ export default function LoginPage() {
       const data = await verifyStudentOtp({ email, otp });
       setResetToken(data.reset_token);
       setStep("reset-password");
-      setNotice(`OTP verified. Token valid for ${data.expires_in_minutes} minutes.`);
+      setNotice(t("auth.otp_verified", { minutes: data.expires_in_minutes }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "OTP verification failed");
+      setError(err instanceof Error ? err.message : t("auth.otp_failed"));
     } finally {
       setLoading(false);
     }
@@ -135,9 +137,9 @@ export default function LoginPage() {
       setNewPassword("");
       setResetToken("");
       setStep("login");
-      setNotice("Password reset successful. Please log in with your new password.");
+      setNotice(t("auth.password_reset_success"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to reset password");
+      setError(err instanceof Error ? err.message : t("auth.reset_failed"));
     } finally {
       setLoading(false);
     }
@@ -148,12 +150,12 @@ export default function LoginPage() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="max-w-md mx-auto bg-white rounded-2xl border border-slate-100 shadow-sm p-8">
           <h1 className="text-2xl font-display font-bold text-slate-900 mb-2">
-            Student Access
+            {t("auth.student_access")}
           </h1>
           <p className="text-sm text-slate-500 mb-6">
             {step === "register"
-              ? "Create your account to start learning."
-              : "Sign in or recover your account."}
+              ? t("auth.register_subtitle")
+              : t("auth.login_subtitle")}
           </p>
 
           {notice ? (
@@ -172,7 +174,7 @@ export default function LoginPage() {
             <form className="space-y-4" onSubmit={handleLogin}>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Email
+                  {t("auth.email")}
                 </label>
                 <input
                   type="email"
@@ -184,7 +186,7 @@ export default function LoginPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Password
+                  {t("auth.password")}
                 </label>
                 <input
                   type="password"
@@ -200,7 +202,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl"
               >
-                {loading ? "Signing in..." : "Sign In"}
+                {loading ? t("actions.signing_in") : t("actions.sign_in")}
               </Button>
               <button
                 type="button"
@@ -211,7 +213,7 @@ export default function LoginPage() {
                 }}
                 className="w-full text-sm text-primary font-medium hover:underline"
               >
-                Forgot password?
+                {t("auth.forgot_password")}
               </button>
               <button
                 type="button"
@@ -222,7 +224,7 @@ export default function LoginPage() {
                 }}
                 className="w-full text-sm text-slate-500 hover:text-slate-700"
               >
-                Create a new account
+                {t("auth.create_new_account")}
               </button>
             </form>
           ) : null}
@@ -231,7 +233,7 @@ export default function LoginPage() {
             <form className="space-y-4" onSubmit={handleRegister}>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Full Name
+                  {t("auth.full_name")}
                 </label>
                 <input
                   type="text"
@@ -244,7 +246,7 @@ export default function LoginPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Email
+                  {t("auth.email")}
                 </label>
                 <input
                   type="email"
@@ -256,7 +258,7 @@ export default function LoginPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Phone (optional)
+                  {t("auth.phone_optional")}
                 </label>
                 <input
                   type="tel"
@@ -267,7 +269,7 @@ export default function LoginPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Password
+                  {t("auth.password")}
                 </label>
                 <input
                   type="password"
@@ -283,7 +285,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl"
               >
-                {loading ? "Creating account..." : "Create Account"}
+                {loading ? t("actions.creating_account") : t("actions.create_account")}
               </Button>
               <button
                 type="button"
@@ -294,7 +296,7 @@ export default function LoginPage() {
                 }}
                 className="w-full text-sm text-slate-500 hover:text-slate-700"
               >
-                Back to login
+                {t("auth.back_to_login")}
               </button>
             </form>
           ) : null}
@@ -303,7 +305,7 @@ export default function LoginPage() {
             <form className="space-y-4" onSubmit={handleForgotPassword}>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Account Email
+                  {t("auth.account_email")}
                 </label>
                 <input
                   type="email"
@@ -318,7 +320,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl"
               >
-                {loading ? "Sending OTP..." : "Send OTP"}
+                {loading ? t("actions.sending_otp") : t("actions.send_otp")}
               </Button>
               <button
                 type="button"
@@ -329,7 +331,7 @@ export default function LoginPage() {
                 }}
                 className="w-full text-sm text-slate-500 hover:text-slate-700"
               >
-                Back to login
+                {t("auth.back_to_login")}
               </button>
             </form>
           ) : null}
@@ -338,7 +340,7 @@ export default function LoginPage() {
             <form className="space-y-4" onSubmit={handleVerifyOtp}>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Email
+                  {t("auth.email")}
                 </label>
                 <input
                   type="email"
@@ -350,7 +352,7 @@ export default function LoginPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  OTP Code
+                  {t("auth.otp_code")}
                 </label>
                 <input
                   type="text"
@@ -367,7 +369,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl"
               >
-                {loading ? "Verifying..." : "Verify OTP"}
+                {loading ? t("actions.verifying") : t("actions.verify_otp")}
               </Button>
             </form>
           ) : null}
@@ -376,7 +378,7 @@ export default function LoginPage() {
             <form className="space-y-4" onSubmit={handleResetPassword}>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  New Password
+                  {t("auth.new_password")}
                 </label>
                 <input
                   type="password"
@@ -392,7 +394,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl"
               >
-                {loading ? "Resetting..." : "Reset Password"}
+                {loading ? t("actions.resetting") : t("actions.reset_password")}
               </Button>
               <button
                 type="button"
@@ -403,7 +405,7 @@ export default function LoginPage() {
                 }}
                 className="w-full text-sm text-slate-500 hover:text-slate-700"
               >
-                Back to login
+                {t("auth.back_to_login")}
               </button>
             </form>
           ) : null}

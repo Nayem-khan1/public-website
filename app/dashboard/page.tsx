@@ -10,8 +10,12 @@ import {
   getStudentDashboard,
   type StudentDashboardData,
 } from "@/lib/student-api";
+import { useLocale, useTranslations } from "next-intl";
+import { normalizeLocale, formatNumber } from "@/lib/i18n";
 
 export default function DashboardPage() {
+  const t = useTranslations("common");
+  const locale = normalizeLocale(useLocale());
   const [data, setData] = useState<StudentDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +24,7 @@ export default function DashboardPage() {
   async function loadDashboard() {
     const token = getStudentAccessToken();
     if (!token) {
-      setError("Please log in to access your dashboard.");
+      setError(t("dashboard.error_login"));
       setLoading(false);
       return;
     }
@@ -32,7 +36,7 @@ export default function DashboardPage() {
       const dashboard = await getStudentDashboard(token);
       setData(dashboard);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load dashboard");
+      setError(err instanceof Error ? err.message : t("dashboard.error_login"));
     } finally {
       setLoading(false);
     }
@@ -45,7 +49,7 @@ export default function DashboardPage() {
   async function handleCompleteNextLesson(courseId: string) {
     const token = getStudentAccessToken();
     if (!token) {
-      setError("Please log in to continue.");
+      setError(t("dashboard.error_continue"));
       return;
     }
 
@@ -56,7 +60,7 @@ export default function DashboardPage() {
       await completeNextLesson(courseId, token);
       await loadDashboard();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to complete lesson");
+      setError(err instanceof Error ? err.message : t("dashboard.error_continue"));
     } finally {
       setActionLoadingCourseId(null);
     }
@@ -67,10 +71,10 @@ export default function DashboardPage() {
       <div className="bg-gradient-to-r from-primary to-secondary p-8 rounded-2xl text-white">
         <h2 className="text-2xl font-display font-bold mb-2">
           {loading
-            ? "Loading dashboard..."
-            : `Welcome back, ${data?.student.name || "Student"}!`}
+            ? t("dashboard.welcome_loading")
+            : t("dashboard.welcome_back", { name: data?.student.name || "Student" })}
         </h2>
-        <p className="text-white/80">Keep exploring the cosmos. Your progress is tracked live.</p>
+        <p className="text-white/80">{t("dashboard.welcome_subtitle")}</p>
       </div>
 
       {error ? (
@@ -83,25 +87,25 @@ export default function DashboardPage() {
         {[
           {
             icon: BookOpen,
-            label: "Enrolled Courses",
+            label: t("dashboard.stats_enrolled"),
             value: data?.stats.enrolled_courses ?? 0,
             color: "text-primary bg-primary/10",
           },
           {
             icon: Clock,
-            label: "Lessons Completed",
+            label: t("dashboard.stats_completed"),
             value: data?.stats.total_lessons_completed ?? 0,
             color: "text-secondary bg-secondary/10",
           },
           {
             icon: Trophy,
-            label: "Certificates",
+            label: t("dashboard.stats_certificates"),
             value: data?.stats.issued_certificates ?? 0,
             color: "text-amber-500 bg-amber-50",
           },
           {
             icon: TrendingUp,
-            label: "Completion Rate",
+            label: t("dashboard.stats_completion"),
             value: `${Math.round(data?.stats.completion_rate ?? 0)}%`,
             color: "text-emerald-500 bg-emerald-50",
           },
@@ -119,15 +123,15 @@ export default function DashboardPage() {
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-display font-bold text-slate-900">Continue Learning</h3>
+            <h3 className="text-lg font-display font-bold text-slate-900">{t("dashboard.continue_learning")}</h3>
             <Link href="/dashboard/courses" className="text-sm text-primary font-semibold hover:underline">
-              View all
+              {t("dashboard.view_all")}
             </Link>
           </div>
 
           {!loading && (data?.enrolled_courses.length ?? 0) === 0 ? (
             <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-slate-500">
-              You have not enrolled in any course yet.
+              {t("dashboard.no_enrollments")}
             </div>
           ) : null}
 
@@ -144,7 +148,8 @@ export default function DashboardPage() {
               <div className="flex-1">
                 <h4 className="font-bold text-slate-900 mb-1 line-clamp-1">{course.title}</h4>
                 <p className="text-sm text-slate-500 mb-3">
-                  {course.total_lessons} lessons • {course.duration || "Self-paced"}
+                  {t("courses.lessons", { count: formatNumber(course.total_lessons, locale) })} •{" "}
+                  {course.duration || t("courses.self_paced")}
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -166,27 +171,27 @@ export default function DashboardPage() {
               >
                 <Play className="w-4 h-4 mr-1" />
                 {actionLoadingCourseId === course.course_id
-                  ? "Updating..."
+                  ? t("actions.updating")
                   : course.remaining_lessons === 0
-                    ? "Completed"
-                    : "Complete Next"}
+                    ? t("actions.completed")
+                    : t("actions.complete_next")}
               </Button>
             </div>
           ))}
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-lg font-display font-bold text-slate-900">Upcoming Lessons</h3>
+          <h3 className="text-lg font-display font-bold text-slate-900">{t("dashboard.upcoming_lessons")}</h3>
           {(data?.upcoming_lessons ?? []).length === 0 ? (
             <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm text-sm text-slate-500">
-              No upcoming lessons right now.
+              {t("dashboard.no_upcoming")}
             </div>
           ) : null}
           {(data?.upcoming_lessons ?? []).map((lesson) => (
             <div key={lesson.lesson_id} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
               <div className="flex items-center gap-2 text-xs text-primary font-semibold mb-2">
                 <Calendar className="w-3.5 h-3.5" />
-                Lesson {lesson.order_no}
+                {t("labels.lesson_order", { order: lesson.order_no })}
               </div>
               <h4 className="font-bold text-slate-900 text-sm mb-1">{lesson.lesson_title}</h4>
               <p className="text-xs text-slate-500">{lesson.course_title}</p>

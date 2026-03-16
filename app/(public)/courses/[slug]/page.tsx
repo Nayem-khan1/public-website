@@ -5,6 +5,46 @@ import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { getPublicCourseBySlug } from "@/lib/public-api";
 import { CourseEnrollButton } from "@/components/course-enroll-button";
+import { formatCurrency, formatNumber, localizeLanguage, localizeLevel, pickLocalizedText } from "@/lib/i18n";
+import { getServerLocale, getServerTranslator } from "@/lib/i18n-server";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const locale = getServerLocale();
+  const course = await getPublicCourseBySlug(slug, locale);
+  if (!course) {
+    return {};
+  }
+
+  const title = pickLocalizedText({
+    locale,
+    primary: course.title,
+    en: course.title_en,
+    bn: course.title_bn,
+    fallback: "Untitled Course",
+  });
+  const description = pickLocalizedText({
+    locale,
+    primary: course.description,
+    en: course.description_en,
+    bn: course.description_bn,
+    fallback: "",
+  });
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+    },
+  };
+}
 
 export default async function CourseDetailsPage({
   params,
@@ -12,31 +52,70 @@ export default async function CourseDetailsPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const course = await getPublicCourseBySlug(slug, "en");
+  const locale = getServerLocale();
+  const t = getServerTranslator(locale);
+  const course = await getPublicCourseBySlug(slug, locale);
 
   if (!course) {
     notFound();
   }
 
-  const title = course.title ?? course.title_en ?? "Untitled Course";
-  const subtitle = course.subtitle ?? course.subtitle_en ?? "";
-  const description = course.description ?? course.description_en ?? "";
+  const title = pickLocalizedText({
+    locale,
+    primary: course.title,
+    en: course.title_en,
+    bn: course.title_bn,
+    fallback: "Untitled Course",
+  });
+  const subtitle = pickLocalizedText({
+    locale,
+    primary: course.subtitle,
+    en: course.subtitle_en,
+    bn: course.subtitle_bn,
+    fallback: "",
+  });
+  const description = pickLocalizedText({
+    locale,
+    primary: course.description,
+    en: course.description_en,
+    bn: course.description_bn,
+    fallback: "",
+  });
   const thumbnail =
     course.thumbnail ||
     "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&q=80&w=1200";
 
-  const requirements = course.requirements ?? course.requirements_en ?? [];
+  const requirements =
+    (locale === "bn" ? course.requirements_bn : course.requirements_en) ??
+    course.requirements ??
+    [];
   const learningObjectives =
-    course.learning_objectives ?? course.learning_objectives_en ?? [];
+    (locale === "bn" ? course.learning_objectives_bn : course.learning_objectives_en) ??
+    course.learning_objectives ??
+    [];
   const targetedAudience =
-    course.targeted_audience ?? course.targeted_audience_en ?? [];
+    (locale === "bn" ? course.targeted_audience_bn : course.targeted_audience_en) ??
+    course.targeted_audience ??
+    [];
   const faqs = course.faqs ?? [];
+  const categoryLabel =
+    pickLocalizedText({
+      locale,
+      primary: course.category_title,
+      en: course.category_title_en,
+      bn: course.category_title_bn,
+    }) ||
+    course.category_id ||
+    (locale === "bn" ? "জ্যোতির্বিজ্ঞান" : "Astronomy");
+
   const hasDiscount =
     typeof course.discount_price === "number" &&
     typeof course.price === "number" &&
     course.discount_price > 0 &&
     course.discount_price < course.price;
   const displayPrice = hasDiscount ? course.discount_price ?? 0 : course.price ?? 0;
+  const localeNumber = (value: number) => formatNumber(value, locale);
+  const currencyLabel = (value: number) => formatCurrency(value, locale);
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24 md:pb-20">
@@ -48,15 +127,15 @@ export default async function CourseDetailsPage({
             className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors mb-8"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Courses
+            {t("common.labels.back_to_courses")}
           </Link>
 
           <div className="flex flex-wrap items-center gap-3 mb-5">
             <Badge className="bg-white/10 text-white border-white/20">
-              {course.category_id || "Astronomy"}
+              {categoryLabel}
             </Badge>
             <Badge className="bg-primary/20 text-white border-primary/30">
-              {course.level || "beginner"}
+              {localizeLevel(course.level, locale)}
             </Badge>
           </div>
 
@@ -74,7 +153,7 @@ export default async function CourseDetailsPage({
           <div className="lg:col-span-2 space-y-8">
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
               <h2 className="text-2xl font-bold font-display text-slate-900 mb-4">
-                About this Course
+                {t("common.labels.about_course")}
               </h2>
               <p className="text-slate-600 leading-relaxed whitespace-pre-line">
                 {description}
@@ -84,7 +163,7 @@ export default async function CourseDetailsPage({
             {learningObjectives.length > 0 ? (
               <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
                 <h3 className="text-2xl font-bold font-display text-slate-900 mb-6">
-                  What you&apos;ll learn
+                  {t("common.labels.what_you_learn")}
                 </h3>
                 <div className="grid sm:grid-cols-2 gap-4">
                   {learningObjectives.map((item, index) => (
@@ -100,7 +179,7 @@ export default async function CourseDetailsPage({
             {requirements.length > 0 ? (
               <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
                 <h3 className="text-2xl font-bold font-display text-slate-900 mb-6">
-                  Course Requirements
+                  {t("common.labels.course_requirements")}
                 </h3>
                 <ul className="space-y-3">
                   {requirements.map((item, index) => (
@@ -116,7 +195,7 @@ export default async function CourseDetailsPage({
             {targetedAudience.length > 0 ? (
               <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
                 <h3 className="text-2xl font-bold font-display text-slate-900 mb-6">
-                  Who this course is for
+                  {t("common.labels.course_audience")}
                 </h3>
                 <ul className="space-y-3">
                   {targetedAudience.map((item, index) => (
@@ -131,7 +210,7 @@ export default async function CourseDetailsPage({
             {faqs.length > 0 ? (
               <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
                 <h3 className="text-xl font-bold font-display text-slate-900 mb-6">
-                  Frequently Asked Questions
+                  {t("common.labels.faq")}
                 </h3>
                 <Accordion type="single" collapsible className="w-full">
                   {faqs.map((faq, index) => (
@@ -141,10 +220,10 @@ export default async function CourseDetailsPage({
                       className="border-slate-100 last:border-0"
                     >
                       <AccordionTrigger className="text-left font-semibold text-slate-900 hover:text-primary hover:no-underline py-4">
-                        {faq.question_en}
+                        {locale === "bn" ? faq.question_bn || faq.question_en : faq.question_en}
                       </AccordionTrigger>
                       <AccordionContent className="text-slate-600 leading-relaxed pb-4">
-                        {faq.answer_en}
+                        {locale === "bn" ? faq.answer_bn || faq.answer_en : faq.answer_en}
                       </AccordionContent>
                     </AccordionItem>
                   ))}
@@ -170,11 +249,11 @@ export default async function CourseDetailsPage({
 
               <div className="flex items-end gap-3 mb-6">
                 <span className="text-4xl font-bold text-slate-900 tracking-tight">
-                  {course.is_free ? "Free" : `BDT ${displayPrice.toLocaleString("en-US")}`}
+                  {course.is_free ? t("common.labels.free") : currencyLabel(displayPrice)}
                 </span>
                 {!course.is_free && hasDiscount ? (
                   <span className="text-lg text-slate-400 line-through mb-1">
-                    BDT {(course.price ?? 0).toLocaleString("en-US")}
+                    {currencyLabel(course.price ?? 0)}
                   </span>
                 ) : null}
               </div>
@@ -183,20 +262,24 @@ export default async function CourseDetailsPage({
 
               <div className="space-y-4 pt-6 border-t border-slate-100 mt-6">
                 <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wide">
-                  This course includes:
+                  {t("common.labels.course_includes")}
                 </h4>
                 <ul className="space-y-3 text-sm text-slate-600">
                   <li className="flex items-center gap-3">
                     <BookOpen className="w-4 h-4 text-primary shrink-0" />
-                    <span>{course.total_lessons ?? 0} lessons</span>
+                    <span>
+                      {t("common.courses.lessons", {
+                        count: localeNumber(course.total_lessons ?? 0),
+                      })}
+                    </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Clock className="w-4 h-4 text-primary shrink-0" />
-                    <span>{course.duration || "Self-paced"}</span>
+                    <span>{course.duration || t("common.courses.self_paced")}</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Globe className="w-4 h-4 text-primary shrink-0" />
-                    <span>{course.language === "bn" ? "Bangla" : "English"}</span>
+                    <span>{localizeLanguage(course.language, locale)}</span>
                   </li>
                 </ul>
               </div>

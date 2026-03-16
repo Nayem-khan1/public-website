@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 interface HomeInstructor {
   id: string | number;
@@ -17,6 +18,7 @@ interface InstructorsSectionProps {
 
 export function InstructorsSection({ instructors }: InstructorsSectionProps) {
     const visibleInstructors = instructors.slice(0, 3);
+    const t = useTranslations("common");
 
     return (
         <section className="py-24 bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-50">
@@ -28,14 +30,13 @@ export function InstructorsSection({ instructors }: InstructorsSectionProps) {
                     className="text-center mb-16"
                 >
                     <span className="text-primary font-semibold tracking-wider text-sm uppercase mb-3 block">
-                        Our Team
+                        {t("home.team_label")}
                     </span>
                     <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-4">
-                        Meet Our Expert Instructors
+                        {t("home.team_title")}
                     </h2>
                     <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-                        Learn from experienced astronomers, astrophysicists, and Olympiad
-                        champions
+                        {t("home.team_subtitle")}
                     </p>
                 </motion.div>
 
@@ -80,7 +81,7 @@ export function InstructorsSection({ instructors }: InstructorsSectionProps) {
                         size="lg"
                         className="rounded-full border-2"
                     >
-                        <Link href="/team">View Full Team</Link>
+                        <Link href="/team">{t("actions.view_full_team")}</Link>
                     </Button>
                 </div>
             </div>

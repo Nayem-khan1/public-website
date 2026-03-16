@@ -4,8 +4,11 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { CheckCircle2, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export function LiveClassesSection() {
+    const t = useTranslations("common");
+
     return (
         <section className="py-24 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden">
             <div className="absolute inset-0 opacity-10">
@@ -26,22 +29,21 @@ export function LiveClassesSection() {
                         viewport={{ once: true }}
                     >
                         <span className="text-primary font-semibold tracking-wider text-sm uppercase mb-3 block">
-                            Live Learning
+                            {t("home.live_label")}
                         </span>
                         <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
-                            Live Classes &amp; Olympiad Preparation
+                            {t("home.live_title")}
                         </h2>
                         <p className="text-lg text-slate-300 mb-8">
-                            Join interactive live astronomy classes and specialized Olympiad
-                            training programs led by expert instructors
+                            {t("home.live_subtitle")}
                         </p>
 
                         <div className="space-y-4 mb-8">
                             {[
-                                "Interactive live sessions with Q&A",
-                                "Olympiad-focused problem solving",
-                                "Hands-on telescope observations",
-                                "Research project guidance",
+                                t("home.live_points.p1"),
+                                t("home.live_points.p2"),
+                                t("home.live_points.p3"),
+                                t("home.live_points.p4"),
                             ].map((item, i) => (
                                 <motion.div
                                     key={i}
@@ -66,7 +68,7 @@ export function LiveClassesSection() {
                         >
                             <Link href="/events">
                                 <Calendar className="w-5 h-5 mr-2" />
-                                View Schedule
+                                {t("actions.view_schedule")}
                             </Link>
                         </Button>
                     </motion.div>
@@ -91,7 +93,7 @@ export function LiveClassesSection() {
                             >
                                 <div className="flex items-center gap-2">
                                     <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                                    <span className="font-bold text-slate-900">Live Now</span>
+                                    <span className="font-bold text-slate-900">{t("home.live_now")}</span>
                                 </div>
                             </motion.div>
                         </div>

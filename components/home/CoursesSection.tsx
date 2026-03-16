@@ -6,12 +6,15 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CourseCard } from "@/components/CourseCard";
 import type { Course } from "@/data/types";
+import { useTranslations } from "next-intl";
 
 interface CoursesSectionProps {
     featuredCourses: Course[];
 }
 
 export function CoursesSection({ featuredCourses }: CoursesSectionProps) {
+    const t = useTranslations("common");
+
     return (
         <section className="py-24 bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-50 relative overflow-hidden">
             <div className="absolute top-20 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
@@ -26,14 +29,13 @@ export function CoursesSection({ featuredCourses }: CoursesSectionProps) {
                         className="max-w-2xl"
                     >
                         <span className="text-primary font-semibold tracking-wider text-sm uppercase mb-3 block">
-                            Our Courses
+                            {t("home.courses_label")}
                         </span>
                         <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-4">
-                            Explore Astronomy Courses
+                            {t("home.courses_title")}
                         </h2>
                         <p className="text-lg text-slate-600">
-                            From beginner stargazing to advanced astrophysics — find the
-                            perfect course for your journey
+                            {t("home.courses_subtitle")}
                         </p>
                     </motion.div>
                     <Button
@@ -42,7 +44,7 @@ export function CoursesSection({ featuredCourses }: CoursesSectionProps) {
                         className="gap-2 bg-primary hover:bg-primary/90 text-white rounded-full px-8 shadow-lg shadow-primary/25"
                     >
                         <Link href="/courses">
-                            View All Courses <ArrowRight className="w-4 h-4" />
+                            {t("actions.view_all_courses")} <ArrowRight className="w-4 h-4" />
                         </Link>
                     </Button>
                 </div>

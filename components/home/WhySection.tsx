@@ -2,39 +2,41 @@
 
 import { motion } from "framer-motion";
 import { Globe2, Award, Trophy, Rocket } from "lucide-react";
-
-const features = [
-    {
-        icon: Globe2,
-        title: "First in Bangladesh",
-        desc: "Bangladesh's pioneering dedicated astronomy education platform",
-        gradient: "from-primary/10 to-pink-50",
-        iconColor: "text-primary",
-    },
-    {
-        icon: Award,
-        title: "Trusted Authority",
-        desc: "Trusted by students, parents & educational institutions nationwide",
-        gradient: "from-secondary/10 to-purple-50",
-        iconColor: "text-secondary",
-    },
-    {
-        icon: Trophy,
-        title: "Olympiad Focused",
-        desc: "Specialized training for astronomy Olympiads & research programs",
-        gradient: "from-primary/10 to-pink-50",
-        iconColor: "text-primary",
-    },
-    {
-        icon: Rocket,
-        title: "Expert Instructors",
-        desc: "Learn from experienced astronomers and astrophysics researchers",
-        gradient: "from-secondary/10 to-purple-50",
-        iconColor: "text-secondary",
-    },
-];
+import { useTranslations } from "next-intl";
 
 export function WhySection() {
+    const t = useTranslations("common");
+    const features = [
+        {
+            icon: Globe2,
+            title: t("home.features.first_bd_title"),
+            desc: t("home.features.first_bd_desc"),
+            gradient: "from-primary/10 to-pink-50",
+            iconColor: "text-primary",
+        },
+        {
+            icon: Award,
+            title: t("home.features.trusted_title"),
+            desc: t("home.features.trusted_desc"),
+            gradient: "from-secondary/10 to-purple-50",
+            iconColor: "text-secondary",
+        },
+        {
+            icon: Trophy,
+            title: t("home.features.olympiad_title"),
+            desc: t("home.features.olympiad_desc"),
+            gradient: "from-primary/10 to-pink-50",
+            iconColor: "text-primary",
+        },
+        {
+            icon: Rocket,
+            title: t("home.features.experts_title"),
+            desc: t("home.features.experts_desc"),
+            gradient: "from-secondary/10 to-purple-50",
+            iconColor: "text-secondary",
+        },
+    ];
+
     return (
         <section className="py-24 bg-white relative overflow-hidden">
             <div className="container mx-auto px-4 md:px-6">
@@ -45,14 +47,13 @@ export function WhySection() {
                     className="text-center max-w-3xl mx-auto mb-16"
                 >
                     <span className="text-primary font-semibold tracking-wider text-sm uppercase mb-3 block">
-                        Why Choose Us
+                        {t("home.why_choose_us")}
                     </span>
                     <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-4">
-                        Why Astronomy Pathshala?
+                        {t("home.why_title")}
                     </h2>
                     <p className="text-lg text-slate-600">
-                        Bangladesh&apos;s first dedicated astronomy education platform, trusted
-                        by students, parents &amp; institutions
+                        {t("home.why_subtitle")}
                     </p>
                 </motion.div>
 

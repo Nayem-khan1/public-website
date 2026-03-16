@@ -3,26 +3,27 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Menu, Globe, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/courses", label: "Courses" },
-  { href: "/events", label: "Events" },
-  { href: "/blog", label: "Blog" },
-  { href: "/team", label: "Team" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-];
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  const { language, toggleLanguage } = useLanguage();
+  const t = useTranslations("common");
+
+  const navLinks = [
+    { href: "/", label: t("nav.home") },
+    { href: "/courses", label: t("nav.courses") },
+    { href: "/events", label: t("nav.events") },
+    { href: "/blog", label: t("nav.blog") },
+    { href: "/team", label: t("nav.team") },
+    { href: "/about", label: t("nav.about") },
+    { href: "/contact", label: t("nav.contact") },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -93,16 +94,9 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="hidden lg:flex items-center gap-4">
-            <button
-              onClick={toggleLanguage}
-              className={cn(
-                "flex items-center gap-1.5 text-sm font-medium transition-colors cursor-pointer hover:text-primary",
-                isScrolled ? "text-slate-600" : "text-slate-200"
-              )}
-            >
-              <Globe className="w-4 h-4" />
-              {language}
-            </button>
+            <LanguageSwitcher
+              className={cn(isScrolled ? "text-slate-600" : "text-slate-200")}
+            />
 
             <Button
               asChild
@@ -114,10 +108,10 @@ export function Navbar() {
                   : "text-white hover:bg-white/10 hover:text-white"
               )}
             >
-              <Link href="/login">Log In</Link>
+              <Link href="/login">{t("actions.login")}</Link>
             </Button>
             <Button asChild className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 rounded-full px-6">
-              <Link href="/dashboard">Get Started</Link>
+              <Link href="/dashboard">{t("actions.get_started")}</Link>
             </Button>
           </div>
 
@@ -186,18 +180,12 @@ export function Navbar() {
               <div className="h-px bg-slate-100 my-6" />
 
               <div className="flex flex-col gap-3">
-                <button
-                  onClick={toggleLanguage}
-                  className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-primary py-2 px-4"
-                >
-                  <Globe className="w-4 h-4" />
-                  {language === "EN" ? "Switch to Bangla" : "Switch to English"}
-                </button>
+                <LanguageSwitcher variant="full" />
                 <Button asChild className="w-full bg-primary hover:bg-primary/90 text-white rounded-full">
-                  <Link href="/dashboard">Get Started</Link>
+                  <Link href="/dashboard">{t("actions.get_started")}</Link>
                 </Button>
                 <Button asChild variant="outline" className="w-full rounded-full">
-                  <Link href="/login">Log In</Link>
+                  <Link href="/login">{t("actions.login")}</Link>
                 </Button>
               </div>
             </div>

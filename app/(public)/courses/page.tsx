@@ -10,26 +10,21 @@ import {
   listPublicCourseCategories,
   type PublicCourseCategoryRecord,
 } from "@/lib/public-api";
-
-const priceOptions = [
-  { value: "all", label: "All" },
-  { value: "free", label: "Free" },
-  { value: "paid", label: "Paid" },
-] as const;
-
-type PriceFilterValue = (typeof priceOptions)[number]["value"];
-
-function getCategoryLabel(category: PublicCourseCategoryRecord): string {
-  return (
-    category.title ||
-    category.title_en ||
-    category.title_bn ||
-    category.slug ||
-    category.id
-  );
-}
+import { useLocale, useTranslations } from "next-intl";
+import { normalizeLocale, pickLocalizedText } from "@/lib/i18n";
 
 export default function CoursesPage() {
+  const t = useTranslations("common");
+  const locale = normalizeLocale(useLocale());
+
+  const priceOptions = [
+    { value: "all", label: t("labels.all") },
+    { value: "free", label: t("labels.free") },
+    { value: "paid", label: t("labels.paid") },
+  ] as const;
+
+  type PriceFilterValue = (typeof priceOptions)[number]["value"];
+
   const [courses, setCourses] = useState<Course[]>([]);
   const [categories, setCategories] = useState<PublicCourseCategoryRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,20 +32,28 @@ export default function CoursesPage() {
   const [priceFilter, setPriceFilter] = useState<PriceFilterValue>("all");
 
   const categoryOptions = useMemo(() => {
-    const base = [{ id: "all", label: "All" }];
+    const base = [{ id: "all", label: t("labels.all") }];
     const dynamic = categories.map((category) => ({
       id: category.id,
-      label: getCategoryLabel(category),
+      label:
+        pickLocalizedText({
+          locale,
+          primary: category.title,
+          en: category.title_en,
+          bn: category.title_bn,
+        }) ||
+        category.slug ||
+        category.id,
     }));
 
     return [...base, ...dynamic];
-  }, [categories]);
+  }, [categories, locale, t]);
 
   useEffect(() => {
     let cancelled = false;
 
     void (async () => {
-      const data = await listPublicCourseCategories("en");
+      const data = await listPublicCourseCategories(locale);
       if (!cancelled) {
         setCategories(data);
       }
@@ -59,7 +62,7 @@ export default function CoursesPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     let cancelled = false;
@@ -68,6 +71,7 @@ export default function CoursesPage() {
       setIsLoading(true);
 
       const data = await getCourseCards(undefined, {
+        lang: locale,
         categoryId: categoryFilter === "all" ? undefined : categoryFilter,
         priceType: priceFilter === "all" ? undefined : priceFilter,
       });
@@ -81,13 +85,13 @@ export default function CoursesPage() {
     return () => {
       cancelled = true;
     };
-  }, [categoryFilter, priceFilter]);
+  }, [categoryFilter, priceFilter, locale]);
 
   return (
     <div className="min-h-screen bg-slate-50">
       <PageHeader
-        title="Explore Our Courses"
-        subtitle="Advance your knowledge of the universe with our specialized astronomy courses."
+        title={t("courses.page_title")}
+        subtitle={t("courses.page_subtitle")}
         bgImage="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2000"
       />
 
@@ -96,7 +100,7 @@ export default function CoursesPage() {
           <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
             <div className="flex flex-col items-center lg:items-start gap-2 w-full lg:w-auto">
               <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
-                Filter by Category
+                {t("labels.filter_by_category")}
               </span>
               <div className="flex flex-wrap justify-center gap-2">
                 {categoryOptions.map((category) => (
@@ -118,7 +122,7 @@ export default function CoursesPage() {
 
             <div className="flex flex-col items-center lg:items-start gap-2 w-full lg:w-auto">
               <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
-                Filter by Price
+                {t("labels.filter_by_price")}
               </span>
               <div className="flex flex-wrap justify-center gap-2">
                 {priceOptions.map((price) => (
@@ -143,7 +147,7 @@ export default function CoursesPage() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {isLoading ? (
             <div className="col-span-full text-center py-16">
-              <p className="text-slate-500 text-lg">Loading courses...</p>
+              <p className="text-slate-500 text-lg">{t("labels.loading_courses")}</p>
             </div>
           ) : courses.length > 0 ? (
             courses.map((course) => (
@@ -152,7 +156,7 @@ export default function CoursesPage() {
           ) : (
             <div className="col-span-full text-center py-16">
               <p className="text-slate-500 text-lg">
-                No courses found matching your selected filters.
+                {t("labels.no_courses")}
               </p>
             </div>
           )}
@@ -161,4 +165,3 @@ export default function CoursesPage() {
     </div>
   );
 }
-

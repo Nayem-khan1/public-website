@@ -5,6 +5,7 @@ import type {
   TeamMember,
   Testimonial,
 } from "@/data/types";
+import { type AppLocale, pickLocalizedText } from "@/lib/i18n";
 
 interface ApiEnvelope<T> {
   success: boolean;
@@ -29,13 +30,18 @@ export interface PublicCourseRecord {
   slug: string;
   title?: string;
   title_en?: string;
+  title_bn?: string;
   subtitle?: string;
   subtitle_en?: string;
+  subtitle_bn?: string;
   description?: string;
   description_en?: string;
+  description_bn?: string;
   thumbnail?: string;
   category_id?: string;
   category_title?: string;
+  category_title_en?: string;
+  category_title_bn?: string;
   category_slug?: string;
   grade?: string;
   level?: string;
@@ -47,10 +53,13 @@ export interface PublicCourseRecord {
   discount_price?: number;
   requirements?: string[];
   requirements_en?: string[];
+  requirements_bn?: string[];
   learning_objectives?: string[];
   learning_objectives_en?: string[];
+  learning_objectives_bn?: string[];
   targeted_audience?: string[];
   targeted_audience_en?: string[];
+  targeted_audience_bn?: string[];
   faqs?: Array<{
     question_en: string;
     answer_en: string;
@@ -75,10 +84,16 @@ export interface PublicBlogRecord {
   slug: string;
   title?: string;
   title_en?: string;
+  title_bn?: string;
   content?: string;
   content_en?: string;
+  content_bn?: string;
   category?: string;
+  category_en?: string;
+  category_bn?: string;
   author?: string;
+  author_en?: string;
+  author_bn?: string;
   featured_image?: string;
   created_at?: string;
   updated_at?: string;
@@ -89,8 +104,10 @@ export interface PublicEventRecord {
   slug: string;
   title?: string;
   title_en?: string;
+  title_bn?: string;
   description?: string;
   description_en?: string;
+  description_bn?: string;
   banner?: string;
   event_date?: string;
   registration_fee?: number;
@@ -101,17 +118,25 @@ export interface PublicEventRecord {
 export interface PublicInstructorRecord {
   id: string;
   name: string;
+  name_bn?: string;
   email?: string;
   bio?: string;
+  bio_en?: string;
+  bio_bn?: string;
   avatar?: string;
   specialization?: string;
+  specialization_en?: string;
+  specialization_bn?: string;
 }
 
 export interface PublicTestimonialRecord {
   id: string;
   student_name?: string;
+  student_name_bn?: string;
   role?: string;
+  role_bn?: string;
   content?: string;
+  content_bn?: string;
   issued_at?: string;
   certificate_no?: string;
 }
@@ -198,21 +223,20 @@ function excerpt(value: string | undefined, maxLength = 160): string {
 }
 
 function normalizeLanguage(value: string | undefined): string {
-  if (value === "bn") return "Bangla";
-  if (value === "en") return "English";
-  return value || "Bangla";
+  if (!value) return "bn";
+  return value;
 }
 
 function normalizeLevel(value: string | undefined): string {
-  if (!value) return "Beginner";
-  if (value === "all_levels") return "All Levels";
-  return value.charAt(0).toUpperCase() + value.slice(1);
+  if (!value) return "beginner";
+  if (value === "all_levels") return "all_levels";
+  return value.toLowerCase();
 }
 
 export async function listPublicCourses(options?: {
   page?: number;
   pageSize?: number;
-  lang?: "en" | "bn";
+  lang?: AppLocale;
   categoryId?: string;
   priceType?: "free" | "paid";
 }): Promise<PublicCourseRecord[]> {
@@ -227,7 +251,7 @@ export async function listPublicCourses(options?: {
 }
 
 export async function listPublicCourseCategories(
-  lang: "en" | "bn" = "en",
+  lang: AppLocale = "en",
 ): Promise<PublicCourseCategoryRecord[]> {
   const data = await fetchPublicApi<PublicCourseCategoryRecord[]>(
     "/course-categories",
@@ -238,7 +262,7 @@ export async function listPublicCourseCategories(
 
 export async function getPublicCourseBySlug(
   slug: string,
-  lang: "en" | "bn" = "en",
+  lang: AppLocale = "en",
 ): Promise<PublicCourseRecord | null> {
   return fetchPublicApi<PublicCourseRecord>(`/courses/${slug}`, { lang });
 }
@@ -248,20 +272,49 @@ export async function getCourseCards(
   options?: {
     categoryId?: string;
     priceType?: "free" | "paid";
+    lang?: AppLocale;
   },
 ): Promise<Course[]> {
+  const locale = options?.lang ?? "en";
   const courses = await listPublicCourses({
     pageSize: limit ?? 100,
-    lang: "en",
+    lang: locale,
     categoryId: options?.categoryId,
     priceType: options?.priceType,
   });
   return courses.map((course) => ({
     id: course.id,
-    title: toHeadline(course.title ?? course.title_en, "Untitled Course"),
+    title: toHeadline(
+      pickLocalizedText({
+        locale,
+        primary: course.title,
+        en: course.title_en,
+        bn: course.title_bn,
+        fallback: "Untitled Course",
+      }),
+      "Untitled Course",
+    ),
     slug: course.slug,
-    shortDescription: toHeadline(course.subtitle ?? course.subtitle_en, ""),
-    description: toHeadline(course.description ?? course.description_en, ""),
+    shortDescription: toHeadline(
+      pickLocalizedText({
+        locale,
+        primary: course.subtitle,
+        en: course.subtitle_en,
+        bn: course.subtitle_bn,
+        fallback: "",
+      }),
+      "",
+    ),
+    description: toHeadline(
+      pickLocalizedText({
+        locale,
+        primary: course.description,
+        en: course.description_en,
+        bn: course.description_bn,
+        fallback: "",
+      }),
+      "",
+    ),
     thumbnailUrl:
       course.thumbnail ||
       "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&q=80&w=800",
@@ -274,13 +327,21 @@ export async function getCourseCards(
       course.discount_price < course.price
         ? course.price
         : null,
-    category: course.category_title || course.category_id || "Astronomy",
-    grade: course.grade || "All",
+    category:
+      pickLocalizedText({
+        locale,
+        primary: course.category_title,
+        en: course.category_title_en,
+        bn: course.category_title_bn,
+      }) ||
+      course.category_id ||
+      (locale === "bn" ? "জ্যোতির্বিজ্ঞান" : "Astronomy"),
+    grade: course.grade || (locale === "bn" ? "সব" : "All"),
     mode: "Recorded",
     level: normalizeLevel(course.level),
     language: normalizeLanguage(course.language),
     totalLessons: typeof course.total_lessons === "number" ? course.total_lessons : 0,
-    duration: course.duration || "Self-paced",
+    duration: course.duration || (locale === "bn" ? "নিজ গতিতে" : "Self-paced"),
     syllabus: [],
   }));
 }
@@ -288,7 +349,7 @@ export async function getCourseCards(
 export async function listPublicBlogs(options?: {
   page?: number;
   pageSize?: number;
-  lang?: "en" | "bn";
+  lang?: AppLocale;
 }): Promise<PublicBlogRecord[]> {
   const data = await fetchPublicApi<PaginatedResponse<PublicBlogRecord>>("/blogs", {
     page: options?.page ?? 1,
@@ -300,32 +361,69 @@ export async function listPublicBlogs(options?: {
 
 export async function getPublicBlogBySlug(
   slug: string,
-  lang: "en" | "bn" = "en",
+  lang: AppLocale = "en",
 ): Promise<PublicBlogRecord | null> {
   return fetchPublicApi<PublicBlogRecord>(`/blogs/${slug}`, { lang });
 }
 
-export async function getBlogCards(): Promise<BlogPost[]> {
-  const posts = await listPublicBlogs({ lang: "en" });
+export async function getBlogCards(locale: AppLocale = "en"): Promise<BlogPost[]> {
+  const posts = await listPublicBlogs({ lang: locale });
   return posts.map((post) => ({
     id: post.id,
-    title: toHeadline(post.title ?? post.title_en, "Untitled Post"),
+    title: toHeadline(
+      pickLocalizedText({
+        locale,
+        primary: post.title,
+        en: post.title_en,
+        bn: post.title_bn,
+        fallback: "Untitled Post",
+      }),
+      "Untitled Post",
+    ),
     slug: post.slug,
-    excerpt: excerpt(post.content ?? post.content_en),
-    content: plainText(post.content ?? post.content_en),
-    authorName: post.author || "Editorial Team",
+    excerpt: excerpt(
+      pickLocalizedText({
+        locale,
+        primary: post.content,
+        en: post.content_en,
+        bn: post.content_bn,
+        fallback: "",
+      }),
+    ),
+    content: plainText(
+      pickLocalizedText({
+        locale,
+        primary: post.content,
+        en: post.content_en,
+        bn: post.content_bn,
+        fallback: "",
+      }),
+    ),
+    authorName:
+      pickLocalizedText({
+        locale,
+        primary: post.author,
+        en: post.author_en,
+        bn: post.author_bn,
+      }) || "Editorial Team",
     publishedAt: post.updated_at || post.created_at || new Date().toISOString(),
     imageUrl:
       post.featured_image ||
       "https://images.unsplash.com/photo-1499750310159-5b5f09692c6a?auto=format&fit=crop&q=80&w=1200",
-    category: post.category || "Insights",
+    category:
+      pickLocalizedText({
+        locale,
+        primary: post.category,
+        en: post.category_en,
+        bn: post.category_bn,
+      }) || "Insights",
   }));
 }
 
 export async function listPublicEvents(options?: {
   page?: number;
   pageSize?: number;
-  lang?: "en" | "bn";
+  lang?: AppLocale;
 }): Promise<PublicEventRecord[]> {
   const data = await fetchPublicApi<PaginatedResponse<PublicEventRecord>>("/events", {
     page: options?.page ?? 1,
@@ -337,20 +435,38 @@ export async function listPublicEvents(options?: {
 
 export async function getPublicEventBySlug(
   slug: string,
-  lang: "en" | "bn" = "en",
+  lang: AppLocale = "en",
 ): Promise<PublicEventRecord | null> {
   return fetchPublicApi<PublicEventRecord>(`/events/${slug}`, { lang });
 }
 
-export async function getEventCards(): Promise<Event[]> {
-  const events = await listPublicEvents({ lang: "en" });
+export async function getEventCards(locale: AppLocale = "en"): Promise<Event[]> {
+  const events = await listPublicEvents({ lang: locale });
   return events.map((event) => ({
     id: event.id,
     slug: event.slug,
-    title: toHeadline(event.title ?? event.title_en, "Untitled Event"),
+    title: toHeadline(
+      pickLocalizedText({
+        locale,
+        primary: event.title,
+        en: event.title_en,
+        bn: event.title_bn,
+        fallback: "Untitled Event",
+      }),
+      "Untitled Event",
+    ),
     date: event.event_date || new Date().toISOString(),
-    location: "Online / TBA",
-    description: toHeadline(event.description ?? event.description_en, ""),
+    location: locale === "bn" ? "অনলাইন / পরে জানানো হবে" : "Online / TBA",
+    description: toHeadline(
+      pickLocalizedText({
+        locale,
+        primary: event.description,
+        en: event.description_en,
+        bn: event.description_bn,
+        fallback: "",
+      }),
+      "",
+    ),
     imageUrl:
       event.banner ||
       "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200",
@@ -387,38 +503,80 @@ export async function listPublicTestimonials(options?: {
   return data?.items ?? [];
 }
 
-export async function getTeamMembers(limit?: number): Promise<TeamMember[]> {
+export async function getTeamMembers(
+  limit?: number,
+  options?: { lang?: AppLocale },
+): Promise<TeamMember[]> {
+  const locale = options?.lang ?? "en";
   const instructors = await listPublicInstructors({
     pageSize: limit ?? 100,
   });
 
   return instructors.map((item, index) => ({
     id: item.id,
-    name: item.name,
-    role: item.specialization || "Instructor",
+    name:
+      pickLocalizedText({
+        locale,
+        primary: item.name,
+        bn: item.name_bn,
+      }) || item.name,
+    role:
+      pickLocalizedText({
+        locale,
+        primary: item.specialization,
+        en: item.specialization_en,
+        bn: item.specialization_bn,
+      }) || (locale === "bn" ? "প্রশিক্ষক" : "Instructor"),
     bio:
-      item.bio ||
-      "Astronomy instructor dedicated to helping students build real understanding.",
+      pickLocalizedText({
+        locale,
+        primary: item.bio,
+        en: item.bio_en,
+        bn: item.bio_bn,
+      }) ||
+      (locale === "bn"
+        ? "শিক্ষার্থীদের বাস্তব বোঝাপড়া তৈরিতে নিবেদিত এক জ্যোতির্বিজ্ঞান প্রশিক্ষক।"
+        : "Astronomy instructor dedicated to helping students build real understanding."),
     photoUrl:
       item.avatar ||
       `https://i.pravatar.cc/400?img=${(index % 60) + 1}`,
-    category: "Instructor",
+    category: locale === "bn" ? "প্রশিক্ষক" : "Instructor",
     socialLinks: {},
   }));
 }
 
-export async function getTestimonials(limit?: number): Promise<Testimonial[]> {
+export async function getTestimonials(
+  limit?: number,
+  options?: { lang?: AppLocale },
+): Promise<Testimonial[]> {
+  const locale = options?.lang ?? "en";
   const testimonials = await listPublicTestimonials({
     pageSize: limit ?? 100,
   });
 
   return testimonials.map((item, index) => ({
     id: item.id,
-    name: item.student_name || "Student",
-    role: item.role || "Learner",
+    name:
+      pickLocalizedText({
+        locale,
+        primary: item.student_name,
+        bn: item.student_name_bn,
+      }) || (locale === "bn" ? "শিক্ষার্থী" : "Student"),
+    role:
+      pickLocalizedText({
+        locale,
+        primary: item.role,
+        bn: item.role_bn,
+      }) || (locale === "bn" ? "শিক্ষার্থী" : "Learner"),
     content:
-      item.content ||
-      "Astronomy Pathshala helped me stay consistent and complete my course.",
+      pickLocalizedText({
+        locale,
+        primary: item.content,
+        bn: item.content_bn,
+      }) ||
+      (locale === "bn"
+        ? "অ্যাস্ট্রোনমি পাঠশালা আমাকে নিয়মিত থাকতে এবং কোর্স শেষ করতে সাহায্য করেছে।"
+        : "Astronomy Pathshala helped me stay consistent and complete my course."),
     photoUrl: `https://i.pravatar.cc/200?img=${(index % 60) + 1}`,
   }));
 }

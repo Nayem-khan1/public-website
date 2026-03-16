@@ -10,19 +10,21 @@ import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { CTASection } from "@/components/home/CTASection";
 import { getCourseCards, getTeamMembers, getTestimonials } from "@/lib/public-api";
+import { getServerLocale } from "@/lib/i18n-server";
 
 export default async function HomePage() {
+  const locale = getServerLocale();
   const [featuredCourses, teamMembers, testimonials] = await Promise.all([
-    getCourseCards(3),
-    getTeamMembers(6),
-    getTestimonials(6),
+    getCourseCards(3, { lang: locale }),
+    getTeamMembers(6, { lang: locale }),
+    getTestimonials(6, { lang: locale }),
   ]);
 
   const instructors = teamMembers.map((member) => ({
     id: member.id,
     name: member.name,
     role: member.role,
-    credential: member.category || "Instructor",
+    credential: member.category,
   }));
 
   return (

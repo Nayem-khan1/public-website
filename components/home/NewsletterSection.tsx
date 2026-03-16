@@ -4,10 +4,12 @@ import { motion } from "framer-motion";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function NewsletterSection() {
     const [email, setEmail] = useState("");
     const [submitted, setSubmitted] = useState(false);
+    const t = useTranslations("common");
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,11 +30,10 @@ export function NewsletterSection() {
                     className="max-w-2xl mx-auto text-center"
                 >
                     <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 mb-4">
-                        Stay Updated with the Cosmos
+                        {t("home.newsletter_title")}
                     </h2>
                     <p className="text-lg text-slate-600 mb-8">
-                        Get the latest astronomy news, course updates, and event
-                        announcements delivered to your inbox.
+                        {t("home.newsletter_subtitle")}
                     </p>
 
                     <form
@@ -43,7 +44,7 @@ export function NewsletterSection() {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email"
+                            placeholder={t("home.newsletter_placeholder")}
                             required
                             className="flex-1 h-12 px-5 rounded-full border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
                         />
@@ -52,7 +53,7 @@ export function NewsletterSection() {
                             className="h-12 px-8 rounded-full bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25"
                         >
                             <Send className="w-4 h-4 mr-2" />
-                            Subscribe
+                            {t("actions.subscribe")}
                         </Button>
                     </form>
 
@@ -62,12 +63,12 @@ export function NewsletterSection() {
                             animate={{ opacity: 1, y: 0 }}
                             className="text-green-600 font-medium mt-4"
                         >
-                            ✓ Thanks for subscribing!
+                            {t("home.newsletter_success")}
                         </motion.p>
                     )}
 
                     <p className="text-xs text-slate-400 mt-4">
-                        No spam, unsubscribe anytime.
+                        {t("home.newsletter_note")}
                     </p>
                 </motion.div>
             </div>

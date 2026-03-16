@@ -3,6 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { Users, BookOpen, Play, Trophy } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 function AnimatedCounter({ end, suffix = "+" }: { end: number; suffix?: string }) {
     const ref = useRef<HTMLSpanElement>(null);
@@ -40,14 +41,15 @@ function AnimatedCounter({ end, suffix = "+" }: { end: number; suffix?: string }
     );
 }
 
-const stats = [
-    { end: 5000, label: "Students Taught", icon: Users, suffix: "+" },
-    { end: 120, label: "Courses Conducted", icon: BookOpen, suffix: "+" },
-    { end: 500, label: "Live Classes", icon: Play, suffix: "+" },
-    { end: 50, label: "Olympiad Winners", icon: Trophy, suffix: "+" },
-];
-
 export function ImpactSection() {
+    const t = useTranslations("common");
+    const stats = [
+        { end: 5000, label: t("home.impact_stats.students"), icon: Users, suffix: "+" },
+        { end: 120, label: t("home.impact_stats.courses"), icon: BookOpen, suffix: "+" },
+        { end: 500, label: t("home.impact_stats.live_classes"), icon: Play, suffix: "+" },
+        { end: 50, label: t("home.impact_stats.winners"), icon: Trophy, suffix: "+" },
+    ];
+
     return (
         <section className="py-24 bg-white">
             <div className="container mx-auto px-4 md:px-6">
@@ -58,10 +60,10 @@ export function ImpactSection() {
                     className="text-center mb-16"
                 >
                     <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-4">
-                        Our Impact in Numbers
+                        {t("home.impact_title")}
                     </h2>
                     <p className="text-lg text-slate-600">
-                        Building Bangladesh&apos;s largest astronomy education community
+                        {t("home.impact_subtitle")}
                     </p>
                 </motion.div>
 
@@ -94,14 +96,14 @@ export function ImpactSection() {
                     className="mt-20 text-center"
                 >
                     <p className="text-sm text-slate-500 uppercase tracking-wider mb-8">
-                        Recognized By
+                        {t("home.recognized_by")}
                     </p>
                     <div className="flex flex-wrap justify-center items-center gap-12 opacity-60">
                         {[
-                            "Government of Bangladesh",
-                            "STEM Foundation",
-                            "Education Board",
-                            "Science Academy",
+                            t("home.recognized_orgs.gob"),
+                            t("home.recognized_orgs.stem"),
+                            t("home.recognized_orgs.board"),
+                            t("home.recognized_orgs.academy"),
                         ].map((org, i) => (
                             <div key={i} className="text-slate-400 font-semibold text-lg">
                                 {org}
