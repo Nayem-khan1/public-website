@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { enrollInCourse, getStudentAccessToken } from "@/lib/student-api";
+import { useAppTranslation } from "@/contexts/LanguageContext";
 
 interface CourseEnrollButtonProps {
   courseId: string;
@@ -15,6 +16,7 @@ export function CourseEnrollButton({
   courseSlug,
 }: CourseEnrollButtonProps) {
   const router = useRouter();
+  const { t } = useAppTranslation();
   const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -40,12 +42,12 @@ export function CourseEnrollButton({
       }
 
       if (result.already_enrolled) {
-        setNotice("You are already enrolled in this course.");
+        setNotice(t("courseDetails.alreadyEnrolled"));
       } else {
-        setNotice("Enrollment successful. Continue from your dashboard.");
+        setNotice(t("courseDetails.enrollmentSuccessful"));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Enrollment failed");
+      setError(err instanceof Error ? err.message : t("courseDetails.enrollmentFailed"));
     } finally {
       setLoading(false);
     }
@@ -58,16 +60,14 @@ export function CourseEnrollButton({
         disabled={loading}
         className="w-full bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 h-12 text-lg font-bold rounded-xl"
       >
-        {loading ? "Processing..." : "Enroll Now"}
+        {loading ? t("courseDetails.processing") : t("courseDetails.enrollNow")}
       </Button>
 
       {notice ? (
         <p className="mt-3 text-xs text-emerald-600">{notice}</p>
       ) : null}
 
-      {error ? (
-        <p className="mt-3 text-xs text-rose-600">{error}</p>
-      ) : null}
+      {error ? <p className="mt-3 text-xs text-rose-600">{error}</p> : null}
     </div>
   );
 }

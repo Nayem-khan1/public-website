@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useAppTranslation } from "@/contexts/LanguageContext";
 import {
   clearStudentSession,
   forgotStudentPassword,
@@ -15,8 +16,12 @@ import {
 
 type AuthStep = "login" | "register" | "forgot" | "verify-otp" | "reset-password";
 
+const inputClassName =
+  "w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary";
+
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useAppTranslation();
   const [redirectTo, setRedirectTo] = useState("/dashboard");
 
   const [step, setStep] = useState<AuthStep>("login");
@@ -54,7 +59,7 @@ export default function LoginPage() {
       setStudentSession(data.token);
       router.replace(redirectTo);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : t("login.loginFailed"));
     } finally {
       setLoading(false);
     }
@@ -69,9 +74,9 @@ export default function LoginPage() {
     try {
       await forgotStudentPassword(email);
       setStep("verify-otp");
-      setNotice("OTP sent. Check your email and verify to continue.");
+      setNotice(t("login.otpSent"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to request OTP");
+      setError(err instanceof Error ? err.message : t("login.requestOtpFailed"));
     } finally {
       setLoading(false);
     }
@@ -94,7 +99,7 @@ export default function LoginPage() {
       setStudentSession(data.token);
       router.replace(redirectTo);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(err instanceof Error ? err.message : t("login.registrationFailed"));
     } finally {
       setLoading(false);
     }
@@ -110,9 +115,9 @@ export default function LoginPage() {
       const data = await verifyStudentOtp({ email, otp });
       setResetToken(data.reset_token);
       setStep("reset-password");
-      setNotice(`OTP verified. Token valid for ${data.expires_in_minutes} minutes.`);
+      setNotice(t("login.otpVerified", { minutes: data.expires_in_minutes }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "OTP verification failed");
+      setError(err instanceof Error ? err.message : t("login.otpVerificationFailed"));
     } finally {
       setLoading(false);
     }
@@ -135,25 +140,23 @@ export default function LoginPage() {
       setNewPassword("");
       setResetToken("");
       setStep("login");
-      setNotice("Password reset successful. Please log in with your new password.");
+      setNotice(t("login.passwordResetSuccessful"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to reset password");
+      setError(err instanceof Error ? err.message : t("login.resetPasswordFailed"));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-28 pb-20">
+    <div className="min-h-screen bg-slate-50 pb-20 pt-28">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="max-w-md mx-auto bg-white rounded-2xl border border-slate-100 shadow-sm p-8">
-          <h1 className="text-2xl font-display font-bold text-slate-900 mb-2">
-            Student Access
-          </h1>
-          <p className="text-sm text-slate-500 mb-6">
+        <div className="mx-auto max-w-md rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+          <h1 className="mb-2 text-2xl font-bold text-slate-900">{t("login.title")}</h1>
+          <p className="mb-6 text-sm text-slate-500">
             {step === "register"
-              ? "Create your account to start learning."
-              : "Sign in or recover your account."}
+              ? t("login.registerSubtitle")
+              : t("login.loginSubtitle")}
           </p>
 
           {notice ? (
@@ -171,20 +174,20 @@ export default function LoginPage() {
           {step === "login" ? (
             <form className="space-y-4" onSubmit={handleLogin}>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Email
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  {t("login.email")}
                 </label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                  className={inputClassName}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Password
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  {t("login.password")}
                 </label>
                 <input
                   type="password"
@@ -192,15 +195,15 @@ export default function LoginPage() {
                   minLength={6}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                  className={inputClassName}
                 />
               </div>
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl"
+                className="w-full rounded-xl bg-primary text-white hover:bg-primary/90"
               >
-                {loading ? "Signing in..." : "Sign In"}
+                {loading ? t("login.signingIn") : t("login.signIn")}
               </Button>
               <button
                 type="button"
@@ -209,9 +212,9 @@ export default function LoginPage() {
                   setError(null);
                   setNotice(null);
                 }}
-                className="w-full text-sm text-primary font-medium hover:underline"
+                className="w-full text-sm font-medium text-primary hover:underline"
               >
-                Forgot password?
+                {t("login.forgotPassword")}
               </button>
               <button
                 type="button"
@@ -222,7 +225,7 @@ export default function LoginPage() {
                 }}
                 className="w-full text-sm text-slate-500 hover:text-slate-700"
               >
-                Create a new account
+                {t("login.createNewAccount")}
               </button>
             </form>
           ) : null}
@@ -230,8 +233,8 @@ export default function LoginPage() {
           {step === "register" ? (
             <form className="space-y-4" onSubmit={handleRegister}>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Full Name
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  {t("login.fullName")}
                 </label>
                 <input
                   type="text"
@@ -239,35 +242,35 @@ export default function LoginPage() {
                   minLength={2}
                   value={registerName}
                   onChange={(event) => setRegisterName(event.target.value)}
-                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                  className={inputClassName}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Email
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  {t("login.email")}
                 </label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                  className={inputClassName}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Phone (optional)
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  {t("login.phoneOptional")}
                 </label>
                 <input
                   type="tel"
                   value={registerPhone}
                   onChange={(event) => setRegisterPhone(event.target.value)}
-                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                  className={inputClassName}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Password
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  {t("login.password")}
                 </label>
                 <input
                   type="password"
@@ -275,15 +278,15 @@ export default function LoginPage() {
                   minLength={8}
                   value={registerPassword}
                   onChange={(event) => setRegisterPassword(event.target.value)}
-                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                  className={inputClassName}
                 />
               </div>
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl"
+                className="w-full rounded-xl bg-primary text-white hover:bg-primary/90"
               >
-                {loading ? "Creating account..." : "Create Account"}
+                {loading ? t("login.creatingAccount") : t("login.createAccount")}
               </Button>
               <button
                 type="button"
@@ -294,7 +297,7 @@ export default function LoginPage() {
                 }}
                 className="w-full text-sm text-slate-500 hover:text-slate-700"
               >
-                Back to login
+                {t("login.backToLogin")}
               </button>
             </form>
           ) : null}
@@ -302,23 +305,23 @@ export default function LoginPage() {
           {step === "forgot" ? (
             <form className="space-y-4" onSubmit={handleForgotPassword}>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Account Email
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  {t("login.accountEmail")}
                 </label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                  className={inputClassName}
                 />
               </div>
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl"
+                className="w-full rounded-xl bg-primary text-white hover:bg-primary/90"
               >
-                {loading ? "Sending OTP..." : "Send OTP"}
+                {loading ? t("login.sendingOtp") : t("login.sendOtp")}
               </Button>
               <button
                 type="button"
@@ -329,7 +332,7 @@ export default function LoginPage() {
                 }}
                 className="w-full text-sm text-slate-500 hover:text-slate-700"
               >
-                Back to login
+                {t("login.backToLogin")}
               </button>
             </form>
           ) : null}
@@ -337,20 +340,20 @@ export default function LoginPage() {
           {step === "verify-otp" ? (
             <form className="space-y-4" onSubmit={handleVerifyOtp}>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Email
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  {t("login.email")}
                 </label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                  className={inputClassName}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  OTP Code
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  {t("login.otpCode")}
                 </label>
                 <input
                   type="text"
@@ -359,15 +362,15 @@ export default function LoginPage() {
                   maxLength={6}
                   value={otp}
                   onChange={(event) => setOtp(event.target.value)}
-                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                  className={inputClassName}
                 />
               </div>
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl"
+                className="w-full rounded-xl bg-primary text-white hover:bg-primary/90"
               >
-                {loading ? "Verifying..." : "Verify OTP"}
+                {loading ? t("login.verifying") : t("login.verifyOtp")}
               </Button>
             </form>
           ) : null}
@@ -375,8 +378,8 @@ export default function LoginPage() {
           {step === "reset-password" ? (
             <form className="space-y-4" onSubmit={handleResetPassword}>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  New Password
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  {t("login.newPassword")}
                 </label>
                 <input
                   type="password"
@@ -384,15 +387,15 @@ export default function LoginPage() {
                   minLength={8}
                   value={newPassword}
                   onChange={(event) => setNewPassword(event.target.value)}
-                  className="w-full h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-primary"
+                  className={inputClassName}
                 />
               </div>
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl"
+                className="w-full rounded-xl bg-primary text-white hover:bg-primary/90"
               >
-                {loading ? "Resetting..." : "Reset Password"}
+                {loading ? t("login.resettingPassword") : t("login.resetPassword")}
               </Button>
               <button
                 type="button"
@@ -403,7 +406,7 @@ export default function LoginPage() {
                 }}
                 className="w-full text-sm text-slate-500 hover:text-slate-700"
               >
-                Back to login
+                {t("login.backToLogin")}
               </button>
             </form>
           ) : null}

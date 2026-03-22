@@ -1,36 +1,96 @@
-import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Clock, Globe, PlayCircle, CheckCircle, Lock } from "lucide-react";
+import { notFound } from "next/navigation";
+import {
+  ArrowLeft,
+  BookOpen,
+  CheckCircle,
+  Clock,
+  Globe,
+  Lock,
+  PlayCircle,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { getPublicCourseBySlug } from "@/lib/public-api";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { CourseEnrollButton } from "@/components/course-enroll-button";
+import { getCourseLanguageLabel, getCourseLevelLabel } from "@/lib/i18n/course";
+import { formatCurrency } from "@/lib/i18n/format";
+import {
+  getLocalizedCourseText,
+  getPublicCourseBySlug,
+} from "@/lib/public-api";
+import {
+  getLocaleAndTranslations,
+  getLocalizedMetadataLocale,
+  getRequestLocale,
+} from "@/lib/i18n/server";
+import {
+  buildMetadataAlternates,
+  getLocalizedAbsoluteUrl,
+} from "@/lib/i18n/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  const { slug } = await params;
+  const course = await getPublicCourseBySlug(slug, locale);
+  const { t } = await getLocaleAndTranslations(locale);
+
+  if (!course) {
+    return {
+      title: t("courseCard.untitled"),
+      alternates: buildMetadataAlternates(`/courses/${slug}`, locale),
+    };
+  }
+
+  const localized = getLocalizedCourseText(course, locale);
+  const title = localized.title || t("courseCard.untitled");
+  const description = localized.subtitle || localized.description;
+
+  return {
+    title,
+    description,
+    alternates: buildMetadataAlternates(`/courses/${slug}`, locale),
+    openGraph: {
+      title,
+      description,
+      locale: getLocalizedMetadataLocale(locale),
+      url: getLocalizedAbsoluteUrl(`/courses/${slug}`, locale),
+      images: course.thumbnail ? [{ url: course.thumbnail }] : undefined,
+    },
+  };
+}
 
 export default async function CourseDetailsPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const locale = await getRequestLocale();
+  const { t } = await getLocaleAndTranslations(locale);
   const { slug } = await params;
-  const course = await getPublicCourseBySlug(slug, "en");
+  const course = await getPublicCourseBySlug(slug, locale);
 
   if (!course) {
     notFound();
   }
 
-  const title = course.title ?? course.title_en ?? "Untitled Course";
-  const subtitle = course.subtitle ?? course.subtitle_en ?? "";
-  const description = course.description ?? course.description_en ?? "";
+  const localized = getLocalizedCourseText(course, locale);
+  const title = localized.title || t("courseCard.untitled");
+  const subtitle = localized.subtitle;
+  const description = localized.description;
   const thumbnail =
     course.thumbnail ||
     "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&q=80&w=1200";
 
-  const requirements = course.requirements ?? course.requirements_en ?? [];
-  const learningObjectives =
-    course.learning_objectives ?? course.learning_objectives_en ?? [];
-  const targetedAudience =
-    course.targeted_audience ?? course.targeted_audience_en ?? [];
-  const faqs = course.faqs ?? [];
   const hasDiscount =
     typeof course.discount_price === "number" &&
     typeof course.price === "number" &&
@@ -40,72 +100,75 @@ export default async function CourseDetailsPage({
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24 md:pb-20">
-      <div className="bg-slate-900 pt-28 pb-16 md:pt-36 md:pb-24 relative overflow-hidden">
+      <div className="relative overflow-hidden bg-slate-900 pb-16 pt-28 md:pb-24 md:pt-36">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black opacity-90" />
         <div className="container relative mx-auto px-4 md:px-6">
           <Link
             href="/courses"
-            className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors mb-8"
+            className="mb-8 inline-flex items-center gap-2 text-slate-300 transition-colors hover:text-white"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Courses
+            <ArrowLeft className="h-4 w-4" />
+            {t("courseDetails.backToCourses")}
           </Link>
 
-          <div className="flex flex-wrap items-center gap-3 mb-5">
-            <Badge className="bg-white/10 text-white border-white/20">
-              {course.category_id || "Astronomy"}
+          <div className="mb-5 flex flex-wrap items-center gap-3">
+            <Badge className="border-white/20 bg-white/10 text-white">
+              {localized.categoryTitle || t("common.astronomy")}
             </Badge>
-            <Badge className="bg-primary/20 text-white border-primary/30">
-              {course.level || "beginner"}
+            <Badge className="border-primary/30 bg-primary/20 text-white">
+              {getCourseLevelLabel(course.level, t)}
             </Badge>
           </div>
 
-          <h1 className="text-3xl md:text-5xl font-display font-bold text-white leading-tight">
+          <h1 className="text-3xl font-bold leading-tight text-white md:text-5xl">
             {title}
           </h1>
           {subtitle ? (
-            <p className="text-slate-300 text-lg mt-4 max-w-3xl">{subtitle}</p>
+            <p className="mt-4 max-w-3xl text-lg text-slate-300">{subtitle}</p>
           ) : null}
         </div>
       </div>
 
-      <div className="container mx-auto px-4 md:px-6 -mt-8 relative z-10">
-        <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
-          <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-              <h2 className="text-2xl font-bold font-display text-slate-900 mb-4">
-                About this Course
+      <div className="container relative z-10 mx-auto -mt-8 px-4 md:px-6">
+        <div className="grid gap-8 lg:grid-cols-3 lg:gap-12">
+          <div className="space-y-8 lg:col-span-2">
+            <div className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+              <h2 className="mb-4 text-2xl font-bold text-slate-900">
+                {t("courseDetails.aboutCourse")}
               </h2>
-              <p className="text-slate-600 leading-relaxed whitespace-pre-line">
+              <p className="whitespace-pre-line leading-relaxed text-slate-600">
                 {description}
               </p>
             </div>
 
-            {learningObjectives.length > 0 ? (
-              <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-                <h3 className="text-2xl font-bold font-display text-slate-900 mb-6">
-                  What you&apos;ll learn
+            {localized.learningObjectives.length > 0 ? (
+              <div className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+                <h3 className="mb-6 text-2xl font-bold text-slate-900">
+                  {t("courseDetails.whatYouWillLearn")}
                 </h3>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {learningObjectives.map((item, index) => (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {localized.learningObjectives.map((item, index) => (
                     <div key={`${item}-${index}`} className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                      <span className="text-slate-700 text-sm font-medium">{item}</span>
+                      <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
+                      <span className="text-sm font-medium text-slate-700">{item}</span>
                     </div>
                   ))}
                 </div>
               </div>
             ) : null}
 
-            {requirements.length > 0 ? (
-              <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-                <h3 className="text-2xl font-bold font-display text-slate-900 mb-6">
-                  Course Requirements
+            {localized.requirements.length > 0 ? (
+              <div className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+                <h3 className="mb-6 text-2xl font-bold text-slate-900">
+                  {t("courseDetails.courseRequirements")}
                 </h3>
                 <ul className="space-y-3">
-                  {requirements.map((item, index) => (
-                    <li key={`${item}-${index}`} className="flex items-center gap-3 text-slate-700">
-                      <Lock className="w-4 h-4 text-slate-400" />
+                  {localized.requirements.map((item, index) => (
+                    <li
+                      key={`${item}-${index}`}
+                      className="flex items-center gap-3 text-slate-700"
+                    >
+                      <Lock className="h-4 w-4 text-slate-400" />
                       {item}
                     </li>
                   ))}
@@ -113,13 +176,13 @@ export default async function CourseDetailsPage({
               </div>
             ) : null}
 
-            {targetedAudience.length > 0 ? (
-              <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-                <h3 className="text-2xl font-bold font-display text-slate-900 mb-6">
-                  Who this course is for
+            {localized.targetedAudience.length > 0 ? (
+              <div className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+                <h3 className="mb-6 text-2xl font-bold text-slate-900">
+                  {t("courseDetails.whoIsThisFor")}
                 </h3>
                 <ul className="space-y-3">
-                  {targetedAudience.map((item, index) => (
+                  {localized.targetedAudience.map((item, index) => (
                     <li key={`${item}-${index}`} className="text-slate-700">
                       {item}
                     </li>
@@ -128,23 +191,23 @@ export default async function CourseDetailsPage({
               </div>
             ) : null}
 
-            {faqs.length > 0 ? (
-              <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-                <h3 className="text-xl font-bold font-display text-slate-900 mb-6">
-                  Frequently Asked Questions
+            {localized.faqs.length > 0 ? (
+              <div className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+                <h3 className="mb-6 text-xl font-bold text-slate-900">
+                  {t("courseDetails.frequentlyAskedQuestions")}
                 </h3>
                 <Accordion type="single" collapsible className="w-full">
-                  {faqs.map((faq, index) => (
+                  {localized.faqs.map((faq, index) => (
                     <AccordionItem
-                      key={`${faq.question_en}-${index}`}
+                      key={`${faq.question}-${index}`}
                       value={`faq-${index}`}
-                      className="border-slate-100 last:border-0"
+                      className="last:border-0 border-slate-100"
                     >
-                      <AccordionTrigger className="text-left font-semibold text-slate-900 hover:text-primary hover:no-underline py-4">
-                        {faq.question_en}
+                      <AccordionTrigger className="py-4 text-left font-semibold text-slate-900 hover:text-primary hover:no-underline">
+                        {faq.question}
                       </AccordionTrigger>
-                      <AccordionContent className="text-slate-600 leading-relaxed pb-4">
-                        {faq.answer_en}
+                      <AccordionContent className="pb-4 leading-relaxed text-slate-600">
+                        {faq.answer}
                       </AccordionContent>
                     </AccordionItem>
                   ))}
@@ -154,49 +217,51 @@ export default async function CourseDetailsPage({
           </div>
 
           <div className="lg:col-span-1">
-            <div className="bg-white p-6 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 sticky top-24">
-              <div className="aspect-video rounded-xl overflow-hidden mb-6 relative group">
+            <div className="sticky top-24 rounded-2xl border border-slate-100 bg-white p-6 shadow-xl shadow-slate-200/50">
+              <div className="group relative mb-6 aspect-video overflow-hidden rounded-xl">
                 <img
                   src={thumbnail}
                   alt={title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                  <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
-                    <PlayCircle className="w-8 h-8 text-white fill-white/20" />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-md">
+                    <PlayCircle className="h-8 w-8 fill-white/20 text-white" />
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-end gap-3 mb-6">
-                <span className="text-4xl font-bold text-slate-900 tracking-tight">
-                  {course.is_free ? "Free" : `BDT ${displayPrice.toLocaleString("en-US")}`}
+              <div className="mb-6 flex items-end gap-3">
+                <span className="text-4xl font-bold tracking-tight text-slate-900">
+                  {course.is_free ? t("common.free") : formatCurrency(displayPrice, locale)}
                 </span>
                 {!course.is_free && hasDiscount ? (
-                  <span className="text-lg text-slate-400 line-through mb-1">
-                    BDT {(course.price ?? 0).toLocaleString("en-US")}
+                  <span className="mb-1 text-lg text-slate-400 line-through">
+                    {formatCurrency(course.price ?? 0, locale)}
                   </span>
                 ) : null}
               </div>
 
               <CourseEnrollButton courseId={course.id} courseSlug={course.slug} />
 
-              <div className="space-y-4 pt-6 border-t border-slate-100 mt-6">
-                <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wide">
-                  This course includes:
+              <div className="mt-6 space-y-4 border-t border-slate-100 pt-6">
+                <h4 className="text-sm font-bold uppercase tracking-wide text-slate-900">
+                  {t("courseDetails.thisCourseIncludes")}
                 </h4>
                 <ul className="space-y-3 text-sm text-slate-600">
                   <li className="flex items-center gap-3">
-                    <BookOpen className="w-4 h-4 text-primary shrink-0" />
-                    <span>{course.total_lessons ?? 0} lessons</span>
+                    <BookOpen className="h-4 w-4 shrink-0 text-primary" />
+                    <span>
+                      {course.total_lessons ?? 0} {t("common.lessons")}
+                    </span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <Clock className="w-4 h-4 text-primary shrink-0" />
-                    <span>{course.duration || "Self-paced"}</span>
+                    <Clock className="h-4 w-4 shrink-0 text-primary" />
+                    <span>{course.duration || t("common.selfPaced")}</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <Globe className="w-4 h-4 text-primary shrink-0" />
-                    <span>{course.language === "bn" ? "Bangla" : "English"}</span>
+                    <Globe className="h-4 w-4 shrink-0 text-primary" />
+                    <span>{getCourseLanguageLabel(course.language, t)}</span>
                   </li>
                 </ul>
               </div>

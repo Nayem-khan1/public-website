@@ -9,20 +9,51 @@ import { InstructorsSection } from "@/components/home/InstructorsSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { CTASection } from "@/components/home/CTASection";
-import { getCourseCards, getTeamMembers, getTestimonials } from "@/lib/public-api";
+import {
+  getCourseCards,
+  getTeamMembers,
+  getTestimonials,
+} from "@/lib/public-api";
+import type { Metadata } from "next";
+import {
+  getLocaleAndTranslations,
+  getLocalizedMetadataLocale,
+  getRequestLocale,
+} from "@/lib/i18n/server";
+import {
+  buildMetadataAlternates,
+  getLocalizedAbsoluteUrl,
+} from "@/lib/i18n/seo";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale, t } = await getLocaleAndTranslations();
+
+  return {
+    title: t("meta.siteTitle"),
+    description: t("meta.siteDescription"),
+    alternates: buildMetadataAlternates("/", locale),
+    openGraph: {
+      title: t("meta.siteTitle"),
+      description: t("meta.siteDescription"),
+      locale: getLocalizedMetadataLocale(locale),
+      url: getLocalizedAbsoluteUrl("/", locale),
+    },
+  };
+}
 
 export default async function HomePage() {
+  const locale = await getRequestLocale();
   const [featuredCourses, teamMembers, testimonials] = await Promise.all([
-    getCourseCards(3),
-    getTeamMembers(6),
-    getTestimonials(6),
+    getCourseCards(3, { lang: locale }),
+    getTeamMembers(6, locale),
+    getTestimonials(6, locale),
   ]);
 
   const instructors = teamMembers.map((member) => ({
     id: member.id,
     name: member.name,
     role: member.role,
-    credential: member.category || "Instructor",
+    credential: member.category,
   }));
 
   return (

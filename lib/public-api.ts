@@ -5,6 +5,7 @@ import type {
   TeamMember,
   Testimonial,
 } from "@/data/types";
+import type { Locale } from "@/lib/i18n/config";
 
 interface ApiEnvelope<T> {
   success: boolean;
@@ -29,13 +30,18 @@ export interface PublicCourseRecord {
   slug: string;
   title?: string;
   title_en?: string;
+  title_bn?: string;
   subtitle?: string;
   subtitle_en?: string;
+  subtitle_bn?: string;
   description?: string;
   description_en?: string;
+  description_bn?: string;
   thumbnail?: string;
   category_id?: string;
   category_title?: string;
+  category_title_en?: string;
+  category_title_bn?: string;
   category_slug?: string;
   grade?: string;
   level?: string;
@@ -47,10 +53,13 @@ export interface PublicCourseRecord {
   discount_price?: number;
   requirements?: string[];
   requirements_en?: string[];
+  requirements_bn?: string[];
   learning_objectives?: string[];
   learning_objectives_en?: string[];
+  learning_objectives_bn?: string[];
   targeted_audience?: string[];
   targeted_audience_en?: string[];
+  targeted_audience_bn?: string[];
   faqs?: Array<{
     question_en: string;
     answer_en: string;
@@ -75,8 +84,10 @@ export interface PublicBlogRecord {
   slug: string;
   title?: string;
   title_en?: string;
+  title_bn?: string;
   content?: string;
   content_en?: string;
+  content_bn?: string;
   category?: string;
   author?: string;
   featured_image?: string;
@@ -89,8 +100,10 @@ export interface PublicEventRecord {
   slug: string;
   title?: string;
   title_en?: string;
+  title_bn?: string;
   description?: string;
   description_en?: string;
+  description_bn?: string;
   banner?: string;
   event_date?: string;
   registration_fee?: number;
@@ -101,17 +114,27 @@ export interface PublicEventRecord {
 export interface PublicInstructorRecord {
   id: string;
   name: string;
+  name_en?: string;
+  name_bn?: string;
   email?: string;
   bio?: string;
+  bio_en?: string;
+  bio_bn?: string;
   avatar?: string;
   specialization?: string;
+  specialization_en?: string;
+  specialization_bn?: string;
 }
 
 export interface PublicTestimonialRecord {
   id: string;
   student_name?: string;
   role?: string;
+  role_en?: string;
+  role_bn?: string;
   content?: string;
+  content_en?: string;
+  content_bn?: string;
   issued_at?: string;
   certificate_no?: string;
 }
@@ -181,38 +204,165 @@ async function fetchPublicApi<T>(
   }
 }
 
-function toHeadline(value: string | undefined, fallback: string): string {
+function toHeadline(value: string | undefined, fallback = ""): string {
   if (!value || !value.trim()) return fallback;
   return value;
 }
 
-function plainText(value: string | undefined): string {
+export function resolveLocalizedText(
+  value: string | undefined,
+  valueEn: string | undefined,
+  valueBn: string | undefined,
+  locale: Locale,
+  fallback = "",
+): string {
+  const primary = toHeadline(value, "");
+  if (primary) return primary;
+
+  const preferred = locale === "bn" ? valueBn : valueEn;
+  if (preferred && preferred.trim()) return preferred;
+
+  const secondary = locale === "bn" ? valueEn : valueBn;
+  if (secondary && secondary.trim()) return secondary;
+
+  return fallback;
+}
+
+export function resolveLocalizedList(
+  value: string[] | undefined,
+  valueEn: string[] | undefined,
+  valueBn: string[] | undefined,
+  locale: Locale,
+): string[] {
+  if (Array.isArray(value) && value.length > 0) {
+    return value;
+  }
+
+  const preferred = locale === "bn" ? valueBn : valueEn;
+  if (Array.isArray(preferred) && preferred.length > 0) {
+    return preferred;
+  }
+
+  const secondary = locale === "bn" ? valueEn : valueBn;
+  if (Array.isArray(secondary) && secondary.length > 0) {
+    return secondary;
+  }
+
+  return [];
+}
+
+export function plainText(value: string | undefined): string {
   if (!value) return "";
   return value.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
 }
 
-function excerpt(value: string | undefined, maxLength = 160): string {
+export function excerpt(value: string | undefined, maxLength = 160): string {
   const text = plainText(value);
   if (text.length <= maxLength) return text;
   return `${text.slice(0, maxLength).trimEnd()}...`;
 }
 
 function normalizeLanguage(value: string | undefined): string {
-  if (value === "bn") return "Bangla";
-  if (value === "en") return "English";
-  return value || "Bangla";
+  if (value === "bn" || value === "en") return value;
+  return value || "";
 }
 
 function normalizeLevel(value: string | undefined): string {
-  if (!value) return "Beginner";
-  if (value === "all_levels") return "All Levels";
-  return value.charAt(0).toUpperCase() + value.slice(1);
+  if (!value) return "";
+  return value;
+}
+
+export function getLocalizedCourseCategoryText(
+  category: PublicCourseCategoryRecord,
+  locale: Locale,
+) {
+  return {
+    title: resolveLocalizedText(
+      category.title,
+      category.title_en,
+      category.title_bn,
+      locale,
+      category.slug || category.id,
+    ),
+    description: resolveLocalizedText(
+      category.description,
+      category.description_en,
+      category.description_bn,
+      locale,
+    ),
+  };
+}
+
+export function getLocalizedBlogText(post: PublicBlogRecord, locale: Locale) {
+  return {
+    title: resolveLocalizedText(post.title, post.title_en, post.title_bn, locale),
+    content: resolveLocalizedText(post.content, post.content_en, post.content_bn, locale),
+  };
+}
+
+export function getLocalizedEventText(event: PublicEventRecord, locale: Locale) {
+  return {
+    title: resolveLocalizedText(event.title, event.title_en, event.title_bn, locale),
+    description: resolveLocalizedText(
+      event.description,
+      event.description_en,
+      event.description_bn,
+      locale,
+    ),
+  };
+}
+
+export function getLocalizedInstructorText(
+  instructor: PublicInstructorRecord,
+  locale: Locale,
+) {
+  return {
+    name: resolveLocalizedText(
+      instructor.name,
+      instructor.name_en,
+      instructor.name_bn,
+      locale,
+      instructor.name,
+    ),
+    bio: resolveLocalizedText(
+      instructor.bio,
+      instructor.bio_en,
+      instructor.bio_bn,
+      locale,
+    ),
+    specialization: resolveLocalizedText(
+      instructor.specialization,
+      instructor.specialization_en,
+      instructor.specialization_bn,
+      locale,
+    ),
+  };
+}
+
+export function getLocalizedTestimonialText(
+  testimonial: PublicTestimonialRecord,
+  locale: Locale,
+) {
+  return {
+    role: resolveLocalizedText(
+      testimonial.role,
+      testimonial.role_en,
+      testimonial.role_bn,
+      locale,
+    ),
+    content: resolveLocalizedText(
+      testimonial.content,
+      testimonial.content_en,
+      testimonial.content_bn,
+      locale,
+    ),
+  };
 }
 
 export async function listPublicCourses(options?: {
   page?: number;
   pageSize?: number;
-  lang?: "en" | "bn";
+  lang?: Locale;
   categoryId?: string;
   priceType?: "free" | "paid";
 }): Promise<PublicCourseRecord[]> {
@@ -227,7 +377,7 @@ export async function listPublicCourses(options?: {
 }
 
 export async function listPublicCourseCategories(
-  lang: "en" | "bn" = "en",
+  lang: Locale = "en",
 ): Promise<PublicCourseCategoryRecord[]> {
   const data = await fetchPublicApi<PublicCourseCategoryRecord[]>(
     "/course-categories",
@@ -238,7 +388,7 @@ export async function listPublicCourseCategories(
 
 export async function getPublicCourseBySlug(
   slug: string,
-  lang: "en" | "bn" = "en",
+  lang: Locale = "en",
 ): Promise<PublicCourseRecord | null> {
   return fetchPublicApi<PublicCourseRecord>(`/courses/${slug}`, { lang });
 }
@@ -248,20 +398,38 @@ export async function getCourseCards(
   options?: {
     categoryId?: string;
     priceType?: "free" | "paid";
+    lang?: Locale;
   },
 ): Promise<Course[]> {
+  const locale = options?.lang ?? "en";
   const courses = await listPublicCourses({
     pageSize: limit ?? 100,
-    lang: "en",
+    lang: locale,
     categoryId: options?.categoryId,
     priceType: options?.priceType,
   });
+
   return courses.map((course) => ({
     id: course.id,
-    title: toHeadline(course.title ?? course.title_en, "Untitled Course"),
+    title: resolveLocalizedText(
+      course.title,
+      course.title_en,
+      course.title_bn,
+      locale,
+    ),
     slug: course.slug,
-    shortDescription: toHeadline(course.subtitle ?? course.subtitle_en, ""),
-    description: toHeadline(course.description ?? course.description_en, ""),
+    shortDescription: resolveLocalizedText(
+      course.subtitle,
+      course.subtitle_en,
+      course.subtitle_bn,
+      locale,
+    ),
+    description: resolveLocalizedText(
+      course.description,
+      course.description_en,
+      course.description_bn,
+      locale,
+    ),
     thumbnailUrl:
       course.thumbnail ||
       "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&q=80&w=800",
@@ -274,13 +442,19 @@ export async function getCourseCards(
       course.discount_price < course.price
         ? course.price
         : null,
-    category: course.category_title || course.category_id || "Astronomy",
-    grade: course.grade || "All",
-    mode: "Recorded",
+    category: resolveLocalizedText(
+      course.category_title,
+      course.category_title_en,
+      course.category_title_bn,
+      locale,
+      course.category_id || "",
+    ),
+    grade: course.grade || "",
+    mode: "recorded",
     level: normalizeLevel(course.level),
     language: normalizeLanguage(course.language),
     totalLessons: typeof course.total_lessons === "number" ? course.total_lessons : 0,
-    duration: course.duration || "Self-paced",
+    duration: course.duration || "",
     syllabus: [],
   }));
 }
@@ -288,7 +462,7 @@ export async function getCourseCards(
 export async function listPublicBlogs(options?: {
   page?: number;
   pageSize?: number;
-  lang?: "en" | "bn";
+  lang?: Locale;
 }): Promise<PublicBlogRecord[]> {
   const data = await fetchPublicApi<PaginatedResponse<PublicBlogRecord>>("/blogs", {
     page: options?.page ?? 1,
@@ -300,32 +474,36 @@ export async function listPublicBlogs(options?: {
 
 export async function getPublicBlogBySlug(
   slug: string,
-  lang: "en" | "bn" = "en",
+  lang: Locale = "en",
 ): Promise<PublicBlogRecord | null> {
   return fetchPublicApi<PublicBlogRecord>(`/blogs/${slug}`, { lang });
 }
 
-export async function getBlogCards(): Promise<BlogPost[]> {
-  const posts = await listPublicBlogs({ lang: "en" });
-  return posts.map((post) => ({
-    id: post.id,
-    title: toHeadline(post.title ?? post.title_en, "Untitled Post"),
-    slug: post.slug,
-    excerpt: excerpt(post.content ?? post.content_en),
-    content: plainText(post.content ?? post.content_en),
-    authorName: post.author || "Editorial Team",
-    publishedAt: post.updated_at || post.created_at || new Date().toISOString(),
-    imageUrl:
-      post.featured_image ||
-      "https://images.unsplash.com/photo-1499750310159-5b5f09692c6a?auto=format&fit=crop&q=80&w=1200",
-    category: post.category || "Insights",
-  }));
+export async function getBlogCards(lang: Locale = "en"): Promise<BlogPost[]> {
+  const posts = await listPublicBlogs({ lang });
+  return posts.map((post) => {
+    const localized = getLocalizedBlogText(post, lang);
+
+    return {
+      id: post.id,
+      title: localized.title,
+      slug: post.slug,
+      excerpt: excerpt(localized.content),
+      content: plainText(localized.content),
+      authorName: post.author || "",
+      publishedAt: post.updated_at || post.created_at || new Date().toISOString(),
+      imageUrl:
+        post.featured_image ||
+        "https://images.unsplash.com/photo-1499750310159-5b5f09692c6a?auto=format&fit=crop&q=80&w=1200",
+      category: post.category || "",
+    };
+  });
 }
 
 export async function listPublicEvents(options?: {
   page?: number;
   pageSize?: number;
-  lang?: "en" | "bn";
+  lang?: Locale;
 }): Promise<PublicEventRecord[]> {
   const data = await fetchPublicApi<PaginatedResponse<PublicEventRecord>>("/events", {
     page: options?.page ?? 1,
@@ -337,26 +515,30 @@ export async function listPublicEvents(options?: {
 
 export async function getPublicEventBySlug(
   slug: string,
-  lang: "en" | "bn" = "en",
+  lang: Locale = "en",
 ): Promise<PublicEventRecord | null> {
   return fetchPublicApi<PublicEventRecord>(`/events/${slug}`, { lang });
 }
 
-export async function getEventCards(): Promise<Event[]> {
-  const events = await listPublicEvents({ lang: "en" });
-  return events.map((event) => ({
-    id: event.id,
-    slug: event.slug,
-    title: toHeadline(event.title ?? event.title_en, "Untitled Event"),
-    date: event.event_date || new Date().toISOString(),
-    location: "Online / TBA",
-    description: toHeadline(event.description ?? event.description_en, ""),
-    imageUrl:
-      event.banner ||
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200",
-    type: "Event",
-    registrationLink: `/events/${event.slug}`,
-  }));
+export async function getEventCards(lang: Locale = "en"): Promise<Event[]> {
+  const events = await listPublicEvents({ lang });
+  return events.map((event) => {
+    const localized = getLocalizedEventText(event, lang);
+
+    return {
+      id: event.id,
+      slug: event.slug,
+      title: localized.title,
+      date: event.event_date || new Date().toISOString(),
+      location: "",
+      description: localized.description,
+      imageUrl:
+        event.banner ||
+        "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200",
+      type: "event",
+      registrationLink: `/events/${event.slug}`,
+    };
+  });
 }
 
 export async function listPublicInstructors(options?: {
@@ -376,49 +558,117 @@ export async function listPublicInstructors(options?: {
 export async function listPublicTestimonials(options?: {
   page?: number;
   pageSize?: number;
+  lang?: Locale;
 }): Promise<PublicTestimonialRecord[]> {
   const data = await fetchPublicApi<PaginatedResponse<PublicTestimonialRecord>>(
     "/testimonials",
     {
       page: options?.page ?? 1,
       page_size: options?.pageSize ?? 100,
+      lang: options?.lang ?? "en",
     },
   );
+
   return data?.items ?? [];
 }
 
-export async function getTeamMembers(limit?: number): Promise<TeamMember[]> {
+export async function getTeamMembers(
+  limit?: number,
+  locale: Locale = "en",
+): Promise<TeamMember[]> {
   const instructors = await listPublicInstructors({
     pageSize: limit ?? 100,
   });
 
-  return instructors.map((item, index) => ({
-    id: item.id,
-    name: item.name,
-    role: item.specialization || "Instructor",
-    bio:
-      item.bio ||
-      "Astronomy instructor dedicated to helping students build real understanding.",
-    photoUrl:
-      item.avatar ||
-      `https://i.pravatar.cc/400?img=${(index % 60) + 1}`,
-    category: "Instructor",
-    socialLinks: {},
-  }));
+  return instructors.map((item, index) => {
+    const localized = getLocalizedInstructorText(item, locale);
+
+    return {
+      id: item.id,
+      name: localized.name,
+      role: localized.specialization,
+      bio: localized.bio,
+      photoUrl: item.avatar || `https://i.pravatar.cc/400?img=${(index % 60) + 1}`,
+      category: "",
+      socialLinks: {},
+    };
+  });
 }
 
-export async function getTestimonials(limit?: number): Promise<Testimonial[]> {
+export async function getTestimonials(
+  limit?: number,
+  locale: Locale = "en",
+): Promise<Testimonial[]> {
   const testimonials = await listPublicTestimonials({
     pageSize: limit ?? 100,
+    lang: locale,
   });
 
-  return testimonials.map((item, index) => ({
-    id: item.id,
-    name: item.student_name || "Student",
-    role: item.role || "Learner",
-    content:
-      item.content ||
-      "Astronomy Pathshala helped me stay consistent and complete my course.",
-    photoUrl: `https://i.pravatar.cc/200?img=${(index % 60) + 1}`,
-  }));
+  return testimonials.map((item, index) => {
+    const localized = getLocalizedTestimonialText(item, locale);
+
+    return {
+      id: item.id,
+      name: item.student_name || "",
+      role: localized.role,
+      content: localized.content,
+      photoUrl: `https://i.pravatar.cc/200?img=${(index % 60) + 1}`,
+    };
+  });
+}
+
+export function getLocalizedCourseText(
+  course: PublicCourseRecord,
+  locale: Locale,
+) {
+  return {
+    title: resolveLocalizedText(course.title, course.title_en, course.title_bn, locale),
+    subtitle: resolveLocalizedText(
+      course.subtitle,
+      course.subtitle_en,
+      course.subtitle_bn,
+      locale,
+    ),
+    description: resolveLocalizedText(
+      course.description,
+      course.description_en,
+      course.description_bn,
+      locale,
+    ),
+    categoryTitle: resolveLocalizedText(
+      course.category_title,
+      course.category_title_en,
+      course.category_title_bn,
+      locale,
+    ),
+    requirements: resolveLocalizedList(
+      course.requirements,
+      course.requirements_en,
+      course.requirements_bn,
+      locale,
+    ),
+    learningObjectives: resolveLocalizedList(
+      course.learning_objectives,
+      course.learning_objectives_en,
+      course.learning_objectives_bn,
+      locale,
+    ),
+    targetedAudience: resolveLocalizedList(
+      course.targeted_audience,
+      course.targeted_audience_en,
+      course.targeted_audience_bn,
+      locale,
+    ),
+    faqs:
+      course.faqs?.map((faq) => ({
+        question:
+          locale === "bn"
+            ? faq.question_bn || faq.question_en
+            : faq.question_en || faq.question_bn || "",
+        answer:
+          locale === "bn"
+            ? faq.answer_bn || faq.answer_en
+            : faq.answer_en || faq.answer_bn || "",
+      })) ?? [],
+  };
 }

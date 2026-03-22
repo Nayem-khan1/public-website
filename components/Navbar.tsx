@@ -2,38 +2,34 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import { Menu, Globe, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useAppTranslation } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/courses", label: "Courses" },
-  { href: "/events", label: "Events" },
-  { href: "/blog", label: "Blog" },
-  { href: "/team", label: "Team" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
+  { href: "/", labelKey: "nav.home" },
+  { href: "/courses", labelKey: "nav.courses" },
+  { href: "/events", labelKey: "nav.events" },
+  { href: "/blog", labelKey: "nav.blog" },
+  { href: "/team", labelKey: "nav.team" },
+  { href: "/about", labelKey: "nav.about" },
+  { href: "/contact", labelKey: "nav.contact" },
 ];
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  const { language, toggleLanguage } = useLanguage();
+  const { t } = useAppTranslation();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -47,11 +43,10 @@ export function Navbar() {
           "fixed top-0 w-full z-50 transition-all duration-300 border-b",
           isScrolled
             ? "bg-white/90 backdrop-blur-md border-gray-100 py-3 shadow-sm"
-            : "bg-transparent border-transparent py-5"
+            : "bg-transparent border-transparent py-5",
         )}
       >
         <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary via-purple-600 to-secondary flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-primary/20 group-hover:scale-105 transition-all duration-300">
               AP
@@ -60,18 +55,17 @@ export function Navbar() {
               <span
                 className={cn(
                   "text-sm font-bold font-display transition-colors",
-                  isScrolled ? "text-slate-900" : "text-white"
+                  isScrolled ? "text-slate-900" : "text-white",
                 )}
               >
-                Astronomy
+                {t("brand.line1")}
               </span>
               <span className="text-sm font-bold font-display text-primary">
-                Pathshala
+                {t("brand.line2")}
               </span>
             </div>
           </Link>
 
-          {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
               <Link
@@ -83,26 +77,28 @@ export function Navbar() {
                     ? "text-primary"
                     : isScrolled
                       ? "text-slate-600"
-                      : "text-slate-200"
+                      : "text-slate-200",
                 )}
               >
-                {link.label}
+                {t(link.labelKey)}
               </Link>
             ))}
           </div>
 
-          {/* Actions */}
           <div className="hidden lg:flex items-center gap-4">
-            <button
-              onClick={toggleLanguage}
+            <LanguageSwitcher
               className={cn(
-                "flex items-center gap-1.5 text-sm font-medium transition-colors cursor-pointer hover:text-primary",
-                isScrolled ? "text-slate-600" : "text-slate-200"
+                isScrolled
+                  ? "border-slate-200 bg-slate-100 text-slate-700"
+                  : "border-white/15 bg-white/10 text-white",
               )}
-            >
-              <Globe className="w-4 h-4" />
-              {language}
-            </button>
+              activeClassName={
+                isScrolled ? "bg-white text-slate-900" : "bg-white text-slate-900"
+              }
+              inactiveClassName={
+                isScrolled ? "text-slate-600 hover:text-slate-900" : "text-white/80 hover:text-white"
+              }
+            />
 
             <Button
               asChild
@@ -111,17 +107,19 @@ export function Navbar() {
                 "font-semibold transition-colors",
                 isScrolled
                   ? "text-slate-700 hover:bg-slate-100"
-                  : "text-white hover:bg-white/10 hover:text-white"
+                  : "text-white hover:bg-white/10 hover:text-white",
               )}
             >
-              <Link href="/login">Log In</Link>
+              <Link href="/login">{t("nav.logIn")}</Link>
             </Button>
-            <Button asChild className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 rounded-full px-6">
-              <Link href="/dashboard">Get Started</Link>
+            <Button
+              asChild
+              className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 rounded-full px-6"
+            >
+              <Link href="/dashboard">{t("nav.getStarted")}</Link>
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
           <Button
             variant="ghost"
             size="icon"
@@ -129,7 +127,7 @@ export function Navbar() {
               "lg:hidden transition-colors",
               isScrolled
                 ? "text-slate-700 hover:bg-slate-100"
-                : "text-white hover:bg-white/10 hover:text-white"
+                : "text-white hover:bg-white/10 hover:text-white",
             )}
             onClick={() => setMobileOpen(true)}
           >
@@ -138,7 +136,6 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 z-[60] lg:hidden">
           <div
@@ -153,7 +150,8 @@ export function Navbar() {
                     AP
                   </div>
                   <span className="font-display font-bold text-lg text-slate-900">
-                    Astronomy<span className="text-primary">Pathshala</span>
+                    {t("brand.line1")}
+                    <span className="text-primary">{t("brand.line2")}</span>
                   </span>
                 </Link>
                 <Button
@@ -171,14 +169,15 @@ export function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
+                    onClick={() => setMobileOpen(false)}
                     className={cn(
                       "text-lg font-semibold py-3 px-4 rounded-xl transition-colors",
                       isActive(link.href)
                         ? "text-primary bg-primary/5"
-                        : "text-slate-600 hover:bg-slate-50"
+                        : "text-slate-600 hover:bg-slate-50",
                     )}
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 ))}
               </div>
@@ -186,18 +185,22 @@ export function Navbar() {
               <div className="h-px bg-slate-100 my-6" />
 
               <div className="flex flex-col gap-3">
-                <button
-                  onClick={toggleLanguage}
-                  className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-primary py-2 px-4"
+                <LanguageSwitcher
+                  className="w-fit border-slate-200 bg-slate-100 text-slate-700"
+                  inactiveClassName="text-slate-600 hover:text-slate-900"
+                />
+                <Button
+                  asChild
+                  className="w-full bg-primary hover:bg-primary/90 text-white rounded-full"
                 >
-                  <Globe className="w-4 h-4" />
-                  {language === "EN" ? "Switch to Bangla" : "Switch to English"}
-                </button>
-                <Button asChild className="w-full bg-primary hover:bg-primary/90 text-white rounded-full">
-                  <Link href="/dashboard">Get Started</Link>
+                  <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
+                    {t("nav.getStarted")}
+                  </Link>
                 </Button>
                 <Button asChild variant="outline" className="w-full rounded-full">
-                  <Link href="/login">Log In</Link>
+                  <Link href="/login" onClick={() => setMobileOpen(false)}>
+                    {t("nav.logIn")}
+                  </Link>
                 </Button>
               </div>
             </div>

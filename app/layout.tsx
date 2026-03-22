@@ -1,41 +1,68 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import {
+  getLocaleAndTranslations,
+  getLocalizedMetadataLocale,
+  getRequestLocale,
+} from "@/lib/i18n/server";
+import {
+  buildMetadataAlternates,
+  getLocalizedAbsoluteUrl,
+  getSiteUrl,
+} from "@/lib/i18n/seo";
 
-export const metadata: Metadata = {
-  title: {
-    default: "Astronomy Pathshala — Bangladesh's #1 Astronomy Education Platform",
-    template: "%s | Astronomy Pathshala",
-  },
-  description:
-    "Explore the universe with Bangladesh's leading astronomy & space science education platform. Online courses, Olympiad prep, live classes, and more.",
-  keywords: [
-    "astronomy",
-    "astrophysics",
-    "Bangladesh",
-    "education",
-    "olympiad",
-    "space science",
-    "online courses",
-  ],
-  openGraph: {
-    title: "Astronomy Pathshala — Bangladesh's #1 Astronomy Education Platform",
-    description:
-      "Explore the universe with Bangladesh's leading astronomy & space science education platform.",
-    type: "website",
-    locale: "en_US",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale, t } = await getLocaleAndTranslations();
+  const siteName = `${t("brand.line1")} ${t("brand.line2")}`;
+  const title = t("meta.siteTitle");
+  const description = t("meta.siteDescription");
 
-export default function RootLayout({
+  return {
+    metadataBase: new URL(getSiteUrl()),
+    title: {
+      default: title,
+      template: `%s | ${siteName}`,
+    },
+    description,
+    keywords: [
+      "astronomy",
+      "astrophysics",
+      "Bangladesh",
+      "education",
+      "olympiad",
+      "space science",
+      "online courses",
+      "জ্যোতির্বিজ্ঞান",
+      "মহাকাশ বিজ্ঞান",
+      "বাংলাদেশ",
+    ],
+    alternates: buildMetadataAlternates("/", locale),
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      locale: getLocalizedMetadataLocale(locale),
+      siteName,
+      url: getLocalizedAbsoluteUrl("/", locale),
+    },
+    other: {
+      "content-language": locale,
+    },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getRequestLocale();
+
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang={locale} className="scroll-smooth">
       <body className="font-sans antialiased">
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider initialLocale={locale}>{children}</LanguageProvider>
       </body>
     </html>
   );

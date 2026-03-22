@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/i18n/config";
+
 const DEFAULT_API_BASE_URL = "http://localhost:5000/api/v1";
 const TOKEN_STORAGE_KEY = "ap_student_token";
 const TOKEN_COOKIE_KEY = "ap_student_token";
@@ -123,8 +125,17 @@ function getApiBaseUrl(): string {
   return normalizeApiBaseUrl(DEFAULT_API_BASE_URL);
 }
 
-function buildUrl(pathname: string): string {
-  return new URL(pathname.replace(/^\/+/, ""), `${getApiBaseUrl()}/`).toString();
+function buildUrl(pathname: string, query?: Record<string, string | undefined>): string {
+  const url = new URL(pathname.replace(/^\/+/, ""), `${getApiBaseUrl()}/`);
+
+  if (query) {
+    for (const [key, value] of Object.entries(query)) {
+      if (!value) continue;
+      url.searchParams.set(key, value);
+    }
+  }
+
+  return url.toString();
 }
 
 export function getStudentAccessToken(): string | null {
@@ -150,7 +161,11 @@ export function clearStudentSession(): void {
 async function requestApi<T>(
   path: string,
   init: RequestInit = {},
-  options: { auth?: boolean; token?: string } = {},
+  options: {
+    auth?: boolean;
+    token?: string;
+    query?: Record<string, string | undefined>;
+  } = {},
 ): Promise<T> {
   const requireAuth = options.auth ?? false;
   const token = options.token ?? getStudentAccessToken();
@@ -168,7 +183,7 @@ async function requestApi<T>(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const response = await fetch(buildUrl(path), {
+  const response = await fetch(buildUrl(path, options.query), {
     ...init,
     headers,
     credentials: "include",
@@ -278,12 +293,26 @@ export async function updateStudentProfile(
   );
 }
 
-export async function getStudentDashboard(token?: string): Promise<StudentDashboardData> {
-  return requestApi<StudentDashboardData>("/student/dashboard", {}, { auth: true, token });
+export async function getStudentDashboard(
+  token?: string,
+  lang: Locale = "en",
+): Promise<StudentDashboardData> {
+  return requestApi<StudentDashboardData>("/student/dashboard", {}, {
+    auth: true,
+    token,
+    query: { lang },
+  });
 }
 
-export async function getStudentCourses(token?: string): Promise<StudentCourse[]> {
-  return requestApi<StudentCourse[]>("/student/courses", {}, { auth: true, token });
+export async function getStudentCourses(
+  token?: string,
+  lang: Locale = "en",
+): Promise<StudentCourse[]> {
+  return requestApi<StudentCourse[]>("/student/courses", {}, {
+    auth: true,
+    token,
+    query: { lang },
+  });
 }
 
 export async function enrollInCourse(

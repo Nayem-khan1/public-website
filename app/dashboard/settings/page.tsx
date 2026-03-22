@@ -1,15 +1,17 @@
-"use client";
+﻿"use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   getStudentAccessToken,
   getStudentProfile,
   updateStudentProfile,
 } from "@/lib/student-api";
+import { useAppTranslation } from "@/contexts/LanguageContext";
 
 export default function SettingsPage() {
+  const { t } = useAppTranslation();
   const [profile, setProfile] = useState({
     name: "",
     email: "",
@@ -24,7 +26,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const token = getStudentAccessToken();
     if (!token) {
-      setError("Please log in to edit your settings.");
+      setError(t("dashboard.settingsAuthRequired"));
       setLoading(false);
       return;
     }
@@ -38,19 +40,19 @@ export default function SettingsPage() {
           phone: data.phone || "",
         });
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load profile");
+        setError(err instanceof Error ? err.message : t("dashboard.loadProfileFailed"));
       } finally {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [t]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const token = getStudentAccessToken();
     if (!token) {
-      setError("Please log in to save profile changes.");
+      setError(t("dashboard.settingsSaveAuthRequired"));
       return;
     }
 
@@ -75,7 +77,7 @@ export default function SettingsPage() {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save profile");
+      setError(err instanceof Error ? err.message : t("dashboard.saveProfileFailed"));
     } finally {
       setSaving(false);
     }
@@ -83,7 +85,7 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl space-y-8">
-      <h2 className="text-2xl font-display font-bold text-slate-900">Profile Settings</h2>
+      <h2 className="text-2xl font-bold text-slate-900">{t("dashboard.profileSettings")}</h2>
 
       {error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
@@ -91,27 +93,31 @@ export default function SettingsPage() {
         </div>
       ) : null}
 
-      <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
-        <div className="flex items-center gap-6 mb-8">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-2xl font-bold text-primary">
+      <div className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+        <div className="mb-8 flex items-center gap-6">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 text-2xl font-bold text-primary">
             {(profile.name || "S").charAt(0).toUpperCase()}
           </div>
           <div>
-            <h3 className="font-bold text-slate-900 text-lg">{profile.name || "Student"}</h3>
-            <p className="text-sm text-slate-500">{profile.email || "student@example.com"}</p>
+            <h3 className="text-lg font-bold text-slate-900">
+              {profile.name || t("common.student")}
+            </h3>
+            <p className="text-sm text-slate-500">{profile.email || t("common.notAvailable")}</p>
           </div>
         </div>
 
         {saved ? (
-          <div className="mb-6 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700 font-medium">
-            Profile updated successfully.
+          <div className="mb-6 rounded-xl border border-green-200 bg-green-50 p-4 font-medium text-green-700">
+            {t("dashboard.profileUpdated")}
           </div>
         ) : null}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                {t("login.fullName")}
+              </label>
               <input
                 required
                 disabled={loading}
@@ -119,66 +125,74 @@ export default function SettingsPage() {
                 onChange={(event) =>
                   setProfile((current) => ({ ...current, name: event.target.value }))
                 }
-                className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm"
+                className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                {t("login.email")}
+              </label>
               <input
                 type="email"
                 disabled
                 value={profile.email}
-                className="w-full h-12 px-4 rounded-xl bg-slate-100 border border-slate-200 outline-none text-sm text-slate-500"
+                className="h-12 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 text-sm text-slate-500 outline-none"
               />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Phone</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              {t("login.phoneOptional")}
+            </label>
             <input
               disabled={loading}
               value={profile.phone}
               onChange={(event) =>
                 setProfile((current) => ({ ...current, phone: event.target.value }))
               }
-              className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm"
+              className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Bio</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              {t("dashboard.bio")}
+            </label>
             <textarea
               value={bio}
               onChange={(event) => setBio(event.target.value)}
               rows={3}
-              placeholder="Optional personal note (saved locally in this browser)."
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm resize-none"
+              placeholder={t("dashboard.bioPlaceholder")}
+              className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10"
             />
           </div>
           <Button
             type="submit"
             disabled={saving || loading}
-            className="bg-primary hover:bg-primary/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-primary/25"
+            className="h-12 rounded-xl bg-primary px-8 text-white shadow-lg shadow-primary/25 hover:bg-primary/90"
           >
-            <Save className="w-4 h-4 mr-2" />
-            {saving ? "Saving..." : "Save Changes"}
+            <Save className="mr-2 h-4 w-4" />
+            {saving ? t("dashboard.saving") : t("dashboard.saveChanges")}
           </Button>
         </form>
       </div>
 
-      <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
-        <h3 className="font-bold text-slate-900 text-lg mb-6">Notification Preferences</h3>
+      <div className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+        <h3 className="mb-6 text-lg font-bold text-slate-900">
+          {t("dashboard.notificationPreferences")}
+        </h3>
         <div className="space-y-4">
           {[
-            { label: "Email notifications for new courses", checked: true },
-            { label: "SMS reminders for live classes", checked: false },
-            { label: "Weekly newsletter", checked: true },
-          ].map((pref) => (
-            <label key={pref.label} className="flex items-center gap-3 cursor-pointer">
+            { label: t("dashboard.emailNotifications"), checked: true },
+            { label: t("dashboard.smsReminders"), checked: false },
+            { label: t("dashboard.weeklyNewsletter"), checked: true },
+          ].map((preference) => (
+            <label key={preference.label} className="flex cursor-pointer items-center gap-3">
               <input
                 type="checkbox"
-                defaultChecked={pref.checked}
-                className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary/20"
+                defaultChecked={preference.checked}
+                className="h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary/20"
               />
-              <span className="text-sm text-slate-700">{pref.label}</span>
+              <span className="text-sm text-slate-700">{preference.label}</span>
             </label>
           ))}
         </div>
