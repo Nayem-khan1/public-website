@@ -145,3 +145,76 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+@keyframes course-highlight-pulse {
+  0%,
+  100% {
+    box-shadow: 0 24px 60px -42px rgba(15, 23, 42, 0.42);
+    transform: translateY(0);
+  }
+  50% {
+    box-shadow: 0 30px 80px -34px rgba(241, 2, 76, 0.28);
+    transform: translateY(-4px);
+  }
+}
+
+.course-card-highlight-pulse {
+  animation: course-highlight-pulse 3.4s ease-in-out infinite;
+}
+
+@keyframes course-highlight-blink {
+  0%,
+  100% {
+    box-shadow: 0 24px 60px -42px rgba(15, 23, 42, 0.42);
+    border-color: rgba(252, 211, 77, 0.45);
+  }
+  50% {
+    box-shadow: 0 32px 90px -32px rgba(245, 158, 11, 0.36);
+    border-color: rgba(245, 158, 11, 0.88);
+  }
+}
+
+.course-card-highlight-blink {
+  animation: course-highlight-blink 2.2s ease-in-out infinite;
+}
+
+@keyframes course-spotlight-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.08);
+  }
+}
+
+.course-spotlight-pulse {
+  animation: course-spotlight-pulse 4s ease-in-out infinite;
+}
+
+@keyframes course-spotlight-blink {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+.course-spotlight-blink {
+  animation: course-spotlight-blink 2.1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-card-highlight-pulse,
+  .course-card-highlight-blink,
+  .course-spotlight-pulse,
+  .course-spotlight-blink {
+    animation: none;
+  }
+}

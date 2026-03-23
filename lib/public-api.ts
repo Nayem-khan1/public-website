@@ -1,6 +1,7 @@
-import type {
+﻿import type {
   BlogPost,
   Course,
+  CourseHighlightAnimation,
   Event,
   TeamMember,
   Testimonial,
@@ -48,6 +49,8 @@ export interface PublicCourseRecord {
   language?: string;
   total_lessons?: number;
   duration?: string;
+  is_popular?: boolean;
+  highlight_animation?: string;
   is_free?: boolean;
   price?: number;
   discount_price?: number;
@@ -272,6 +275,15 @@ function normalizeLevel(value: string | undefined): string {
   return value;
 }
 
+function normalizeHighlightAnimation(
+  value: string | undefined,
+): CourseHighlightAnimation {
+  if (value === "pulse" || value === "blink") {
+    return value;
+  }
+  return "none";
+}
+
 export function getLocalizedCourseCategoryText(
   category: PublicCourseCategoryRecord,
   locale: Locale,
@@ -365,6 +377,7 @@ export async function listPublicCourses(options?: {
   lang?: Locale;
   categoryId?: string;
   priceType?: "free" | "paid";
+  popularOnly?: boolean;
 }): Promise<PublicCourseRecord[]> {
   const data = await fetchPublicApi<PaginatedResponse<PublicCourseRecord>>("/courses", {
     page: options?.page ?? 1,
@@ -372,6 +385,7 @@ export async function listPublicCourses(options?: {
     lang: options?.lang ?? "en",
     category_id: options?.categoryId,
     price_type: options?.priceType,
+    popular_only: options?.popularOnly ? "true" : undefined,
   });
   return data?.items ?? [];
 }
@@ -399,6 +413,7 @@ export async function getCourseCards(
     categoryId?: string;
     priceType?: "free" | "paid";
     lang?: Locale;
+    popularOnly?: boolean;
   },
 ): Promise<Course[]> {
   const locale = options?.lang ?? "en";
@@ -407,6 +422,7 @@ export async function getCourseCards(
     lang: locale,
     categoryId: options?.categoryId,
     priceType: options?.priceType,
+    popularOnly: options?.popularOnly,
   });
 
   return courses.map((course) => ({
@@ -456,6 +472,8 @@ export async function getCourseCards(
     totalLessons: typeof course.total_lessons === "number" ? course.total_lessons : 0,
     duration: course.duration || "",
     syllabus: [],
+    isPopular: Boolean(course.is_popular),
+    highlightAnimation: normalizeHighlightAnimation(course.highlight_animation),
   }));
 }
 
@@ -672,3 +690,13 @@ export function getLocalizedCourseText(
       })) ?? [],
   };
 }
+
+
+
+
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/Navbar";
+﻿import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
 import { WhySection } from "@/components/home/WhySection";
@@ -43,8 +43,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const locale = await getRequestLocale();
-  const [featuredCourses, teamMembers, testimonials] = await Promise.all([
-    getCourseCards(3, { lang: locale }),
+  const [popularCourses, teamMembers, testimonials] = await Promise.all([
+    getCourseCards(4, { lang: locale, popularOnly: true }),
     getTeamMembers(6, locale),
     getTestimonials(6, locale),
   ]);
@@ -62,7 +62,7 @@ export default async function HomePage() {
       <main className="overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50">
         <HeroSection />
         <WhySection />
-        <CoursesSection featuredCourses={featuredCourses} />
+        <CoursesSection featuredCourses={popularCourses} />
         <LiveClassesSection />
         <ImpactSection />
         <InstructorsSection instructors={instructors} />

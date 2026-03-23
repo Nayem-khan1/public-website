@@ -1,9 +1,11 @@
-export type CourseSyllabusItem = {
+﻿export type CourseSyllabusItem = {
   title: string;
   lessons: number;
   duration: string;
   topics: string[];
 };
+
+export type CourseHighlightAnimation = "none" | "pulse" | "blink";
 
 export interface Course {
   id: string | number;
@@ -24,6 +26,8 @@ export interface Course {
   totalLessons: number;
   duration: string;
   syllabus: CourseSyllabusItem[];
+  isPopular: boolean;
+  highlightAnimation: CourseHighlightAnimation;
 }
 
 export type TeamMember = {
