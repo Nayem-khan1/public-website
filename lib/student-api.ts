@@ -52,6 +52,45 @@ export interface StudentCourse {
   last_activity_at: string;
 }
 
+export interface StudentRoadmapLesson {
+  id: string;
+  title: string;
+  order_no: number;
+  module_id: string;
+  status: "completed" | "current" | "upcoming" | "available" | "locked";
+}
+
+export interface StudentRoadmapModule {
+  id: string;
+  title: string;
+  order_no: number;
+  total_lessons: number;
+  completed_lessons_count: number;
+  progress_percent: number;
+  status: "completed" | "current" | "upcoming" | "locked";
+  lessons: StudentRoadmapLesson[];
+}
+
+export interface StudentCourseRoadmapData {
+  course: StudentCourse & {
+    subtitle: string;
+  };
+  summary: {
+    total_modules: number;
+    completed_modules: number;
+    total_lessons: number;
+    completed_lessons: number;
+    next_lesson: {
+      id: string;
+      title: string;
+      order_no: number;
+      module_id: string;
+      module_title: string;
+    } | null;
+  };
+  modules: StudentRoadmapModule[];
+}
+
 export interface StudentDashboardData {
   student: {
     id: string;
@@ -309,6 +348,18 @@ export async function getStudentCourses(
   lang: Locale = "en",
 ): Promise<StudentCourse[]> {
   return requestApi<StudentCourse[]>("/student/courses", {}, {
+    auth: true,
+    token,
+    query: { lang },
+  });
+}
+
+export async function getStudentCourseRoadmap(
+  courseId: string,
+  token?: string,
+  lang: Locale = "en",
+): Promise<StudentCourseRoadmapData> {
+  return requestApi<StudentCourseRoadmapData>(`/student/courses/${courseId}/roadmap`, {}, {
     auth: true,
     token,
     query: { lang },
