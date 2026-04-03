@@ -1,12 +1,15 @@
-﻿import { Navbar } from "@/components/Navbar";
+import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
 import { WhySection } from "@/components/home/WhySection";
 import { CoursesSection } from "@/components/home/CoursesSection";
+import { HowItWorksSection } from "@/components/home/HowItWorksSection";
 import { LiveClassesSection } from "@/components/home/LiveClassesSection";
 import { ImpactSection } from "@/components/home/ImpactSection";
 import { InstructorsSection } from "@/components/home/InstructorsSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
+import { NewsSection } from "@/components/home/NewsSection";
+import { GallerySection } from "@/components/home/GallerySection";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { CTASection } from "@/components/home/CTASection";
 import {
@@ -53,6 +56,7 @@ export default async function HomePage() {
     id: member.id,
     name: member.name,
     role: member.role,
+    photoUrl: member.photoUrl,
     credential: member.category,
   }));
 
@@ -61,14 +65,17 @@ export default async function HomePage() {
       <Navbar />
       <main className="overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50">
         <HeroSection />
-        <WhySection />
         <CoursesSection featuredCourses={popularCourses} />
+        <HowItWorksSection />
+        <WhySection />
         <LiveClassesSection />
         <ImpactSection />
         <InstructorsSection instructors={instructors} />
         <TestimonialsSection testimonials={testimonials} />
+        <GallerySection />
         <NewsletterSection />
         <CTASection />
+        <NewsSection />
       </main>
       <Footer />
     </>

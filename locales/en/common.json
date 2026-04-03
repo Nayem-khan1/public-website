@@ -96,7 +96,8 @@
       "eyebrow": "Our Courses",
       "title": "Explore Astronomy Courses",
       "subtitle": "From beginner stargazing to advanced astrophysics, find the perfect course for your journey",
-      "viewAllCourses": "View All Courses"
+      "viewAllCourses": "View All Courses",
+      "categoriesLabel": "Browse by Category"
     },
     "live": {
       "eyebrow": "Live Learning",
@@ -111,6 +112,7 @@
       "imageAlt": "Live Classes"
     },
     "impact": {
+      "sectionEyebrow": "Our Impact",
       "title": "Our Impact in Numbers",
       "subtitle": "Building Bangladesh's largest astronomy education community",
       "studentsTaught": "Students Taught",
@@ -131,6 +133,7 @@
       "imageAlt": "Our Instructors"
     },
     "testimonials": {
+      "eyebrow": "Reviews",
       "title": "What Students Say",
       "subtitle": "Stories of success from our amazing community"
     },
@@ -147,7 +150,26 @@
       "titleHighlight": "Into Space",
       "subtitle": "Join thousands of students exploring the cosmos. Your adventure begins today.",
       "exploreAllCourses": "Explore All Courses",
-      "contactUs": "Contact Us"
+      "contactUs": "Contact Us",
+      "appDownload": "Download our App"
+    },
+    "howItWorks": {
+      "eyebrow": "How It Works",
+      "title": "Your Learning Journey",
+      "subtitle": "A simple path from curiosity to mastery in astronomy",
+      "step1Title": "Choose a Course",
+      "step1Desc": "Browse our catalog of astronomy and olympiad courses",
+      "step2Title": "Watch Lessons",
+      "step2Desc": "Learn from expert astronomers via recorded or live classes",
+      "step3Title": "Practice & Test",
+      "step3Desc": "Solve mathematical problems and take quizzes",
+      "step4Title": "Get Certified",
+      "step4Desc": "Earn your certificate and join the alumni community"
+    },
+    "trust": {
+      "eyebrow": "Our Partners",
+      "title": "Supported By",
+      "subtitle": "Collaborating with renowned organizations globally"
     }
   },
   "courseCard": {

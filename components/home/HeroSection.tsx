@@ -17,7 +17,7 @@ export function HeroSection() {
   const { t } = useAppTranslation();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950 bg-gradient-to-b from-slate-900 via-[#0B0F19] to-black">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0B0F19] to-black">
       <StarBackground />
 
       <div className="container relative z-10 mx-auto px-4 md:px-6 py-32">
@@ -112,7 +112,7 @@ export function HeroSection() {
                   className="w-full h-full object-contain drop-shadow-2xl animate-pulse-slow"
                 />
               </div>
-              <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(241,2,76,0.3)_0%,transparent_70%)] blur-3xl animate-pulse-slow" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(241,2,76,0.3)_0%,transparent_70%)] blur-3xl animate-glow-pulse" />
             </div>
           </motion.div>
         </div>
@@ -123,11 +123,11 @@ export function HeroSection() {
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
       >
-        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex items-start justify-center p-2">
+        <div className="w-8 h-14 border-2 border-white/20 rounded-full flex items-start justify-center p-2 shadow-[0_0_15px_rgba(255,255,255,0.1)] glass-effect-dark">
           <motion.div
-            className="w-1.5 h-1.5 bg-white rounded-full"
-            animate={{ y: [0, 16, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            className="w-1.5 h-3 bg-white/80 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+            animate={{ y: [0, 20, 0], opacity: [1, 0, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           />
         </div>
       </motion.div>

@@ -52,12 +52,12 @@ export function LiveClassesSection() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="flex items-center gap-3"
+                  className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl p-4 glass-effect-dark"
                 >
-                  <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 animate-glow-pulse">
+                    <CheckCircle2 className="w-5 h-5 text-primary" />
                   </div>
-                  <span className="text-slate-200">{item}</span>
+                  <span className="text-slate-200 font-medium">{item}</span>
                 </motion.div>
               ))}
             </div>
@@ -80,21 +80,46 @@ export function LiveClassesSection() {
             viewport={{ once: true }}
             className="relative"
           >
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10 group">
+              <div className="absolute inset-0 bg-primary/20 mix-blend-overlay group-hover:bg-transparent transition-colors duration-500 z-10" />
               <img
                 src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1000&auto=format&fit=crop"
                 alt={t("home.live.imageAlt")}
-                className="w-full h-auto"
+                className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
               />
 
               <motion.div
-                className="absolute top-6 right-6 bg-white/95 backdrop-blur-md px-6 py-3 rounded-full shadow-xl"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
+                className="absolute top-6 right-6 bg-white/20 backdrop-blur-md border border-white/30 px-6 py-3 rounded-full shadow-xl z-20"
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               >
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                  <span className="font-bold text-slate-900">{t("home.live.liveNow")}</span>
+                <div className="flex items-center gap-3">
+                  <div className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                  </div>
+                  <span className="font-bold text-white tracking-wide">{t("home.live.liveNow")}</span>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="absolute bottom-6 left-6 bg-slate-900/80 backdrop-blur-md border border-white/10 p-4 rounded-2xl shadow-2xl flex items-center gap-4 z-20 w-max"
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              >
+                <div className="flex -space-x-3">
+                  {[1, 2, 3].map((v) => (
+                    <div key={v} className="w-10 h-10 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center text-xs text-white">
+                      User
+                    </div>
+                  ))}
+                  <div className="w-10 h-10 rounded-full border-2 border-slate-900 bg-primary flex items-center justify-center text-xs font-bold text-white z-10">
+                    +1.2k
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-white">Students Online</div>
+                  <div className="text-xs text-slate-400">Joining live session</div>
                 </div>
               </motion.div>
             </div>
