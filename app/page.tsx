@@ -68,7 +68,7 @@ export default async function HomePage() {
         <CoursesSection featuredCourses={popularCourses} />
         <HowItWorksSection />
         <WhySection />
-        <LiveClassesSection />
+        {/* <LiveClassesSection /> */}
         <ImpactSection />
         <InstructorsSection instructors={instructors} />
         <TestimonialsSection testimonials={testimonials} />

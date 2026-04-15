@@ -61,7 +61,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className="scroll-smooth">
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <LanguageProvider initialLocale={locale}>{children}</LanguageProvider>
       </body>
     </html>

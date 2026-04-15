@@ -199,7 +199,12 @@
     "processing": "Processing...",
     "alreadyEnrolled": "You are already enrolled in this course.",
     "enrollmentSuccessful": "Enrollment successful. Continue from your dashboard.",
-    "enrollmentFailed": "Enrollment failed"
+    "enrollmentFailed": "Enrollment failed",
+    "instructor": "Your Instructor",
+    "reviews": "Student Reviews",
+    "curriculum": "Course Curriculum",
+    "moneyBackGuarantee": "30-Day Money-Back Guarantee",
+    "previewCourse": "Preview this Course"
   },
   "blog": {
     "title": "Astronomy Insights",
