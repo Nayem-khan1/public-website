@@ -42,8 +42,9 @@ export function NewsSection() {
   ];
 
   return (
-    <section className="py-24 relative overflow-hidden bg-white">
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+    <section className="py-24 relative overflow-hidden bg-slate-950 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#101423] to-slate-950">
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <motion.div
@@ -56,10 +57,10 @@ export function NewsSection() {
             <Newspaper className="w-4 h-4" />
             {eyebrow}
           </div>
-          <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4 drop-shadow-md">
             {title}
           </h2>
-          <p className="text-lg text-slate-600">
+          <p className="text-lg text-slate-300">
             {subtitle}
           </p>
         </motion.div>
@@ -74,28 +75,28 @@ export function NewsSection() {
               transition={{ delay: i * 0.15 }}
             >
               <Link href={item.link} target="_blank" rel="noopener noreferrer" className="block group h-full">
-                <div className="h-full relative overflow-hidden rounded-3xl bg-slate-50 border border-slate-100 p-8 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2 flex flex-col pt-16">
+                <div className="h-full relative overflow-hidden rounded-3xl bg-white/5 border border-white/10 p-8 hover:shadow-[0_0_40px_rgba(241,2,76,0.15)] hover:border-primary/30 backdrop-blur-md transition-all duration-500 hover:-translate-y-2 flex flex-col pt-16">
                   {/* Decorative background circle */}
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-[100px] -z-0 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
                   {/* Media Logo / Source */}
                   <div className="absolute top-8 left-8">
                     {/* Just using the source name as a styled tag since logo urls might break or look inconsistent */}
-                    <span className="inline-flex h-8 items-center px-4 rounded-full bg-white border border-slate-200 text-xs font-bold text-slate-700 shadow-sm uppercase tracking-widest">
+                    <span className="inline-flex h-8 items-center px-4 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-xs font-bold text-white shadow-sm uppercase tracking-widest">
                       {item.source}
                     </span>
                   </div>
 
                   {/* Icon link */}
-                  <div className="absolute top-8 right-8 w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-colors duration-300 shadow-sm">
+                  <div className="absolute top-8 right-8 w-10 h-10 rounded-full bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-colors duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                     <ArrowUpRight className="w-5 h-5" />
                   </div>
                   
                   <div className="relative z-10 flex flex-col flex-grow mt-4">
-                    <h3 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-primary transition-colors duration-300 leading-snug">
+                    <h3 className="text-xl font-bold text-white mb-4 group-hover:text-primary transition-colors duration-300 leading-snug">
                       {item.title}
                     </h3>
-                    <p className="text-slate-600 text-base leading-relaxed font-medium">
+                    <p className="text-slate-400 text-base leading-relaxed font-medium">
                       {item.description}
                     </p>
                   </div>

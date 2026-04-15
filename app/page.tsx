@@ -63,7 +63,7 @@ export default async function HomePage() {
   return (
     <>
       <Navbar />
-      <main className="overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50">
+      <main className="overflow-hidden bg-slate-950">
         <HeroSection />
         <CoursesSection featuredCourses={popularCourses} />
         <HowItWorksSection />

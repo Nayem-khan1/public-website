@@ -21,8 +21,8 @@ export function NewsletterSection() {
   };
 
   return (
-    <section className="py-24 relative overflow-hidden bg-white">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(241,2,76,0.05)_0%,_transparent_50%)]"></div>
+    <section className="py-24 relative overflow-hidden bg-slate-950">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(241,2,76,0.1)_0%,_transparent_50%)]"></div>
       
       <div className="container relative mx-auto px-4 md:px-6">
         <motion.div

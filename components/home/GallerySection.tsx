@@ -30,8 +30,8 @@ export function GallerySection() {
   ];
 
   return (
-    <section className="py-24 bg-white relative overflow-hidden flex flex-col items-center">
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+    <section className="py-24 bg-slate-950 relative overflow-hidden flex flex-col items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-slate-900 via-[#100D1C] to-slate-950">
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
       
       <div className="container px-4 md:px-6 relative z-10 mb-12">
         <motion.div
@@ -43,10 +43,10 @@ export function GallerySection() {
           <span className="text-secondary font-semibold tracking-wider text-sm uppercase mb-3 block">
             {eyebrow}
           </span>
-          <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4 drop-shadow-md">
             {title}
           </h2>
-          <p className="text-lg text-slate-600">
+          <p className="text-lg text-slate-300">
             {subtitle}
           </p>
         </motion.div>
@@ -57,7 +57,7 @@ export function GallerySection() {
         <div className="flex w-max animate-scroll-left hover:[animation-play-state:paused]">
           {[...topImages, ...topImages].map((image, index) => (
             <div key={`top-${index}`} className="w-[280px] sm:w-[320px] md:w-[400px] flex-shrink-0 mx-3">
-              <div className="relative w-full h-[200px] md:h-[260px] rounded-2xl overflow-hidden shadow-lg border border-slate-100 group/card">
+              <div className="relative w-full h-[200px] md:h-[260px] rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.05)] border border-white/10 group/card hover:border-primary/50 transition-colors duration-500">
                 <img 
                   src={image} 
                   alt={`Gallery Image ${index + 1}`} 
@@ -76,7 +76,7 @@ export function GallerySection() {
         <div className="flex w-max animate-scroll-right hover:[animation-play-state:paused]">
           {[...bottomImages, ...bottomImages].map((image, index) => (
             <div key={`bottom-${index}`} className="w-[280px] sm:w-[320px] md:w-[400px] flex-shrink-0 mx-3">
-              <div className="relative w-full h-[200px] md:h-[260px] rounded-2xl overflow-hidden shadow-lg border border-slate-100 group/card">
+              <div className="relative w-full h-[200px] md:h-[260px] rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.05)] border border-white/10 group/card hover:border-primary/50 transition-colors duration-500">
                 <img 
                   src={image} 
                   alt={`Gallery Image ${index + 1}`} 

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { BookOpen, Clock, Sparkles, Star } from "lucide-react";
@@ -39,8 +39,8 @@ export function CourseCard({ course }: CourseProps) {
   return (
     <div
       className={cn(
-        "group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_24px_60px_-42px_rgba(15,23,42,0.42)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_-38px_rgba(15,23,42,0.42)]",
-        course.isPopular && "border-amber-200/90 bg-[linear-gradient(180deg,rgba(255,251,235,0.9),rgba(255,255,255,1))]",
+        "group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(241,2,76,0.15)] hover:border-primary/30",
+        course.isPopular && "border-amber-400/50 bg-[linear-gradient(180deg,rgba(251,191,36,0.1),rgba(255,255,255,0.05))]",
         animationClass,
       )}
     >
@@ -92,28 +92,28 @@ export function CourseCard({ course }: CourseProps) {
       </div>
 
       <div className="flex flex-1 flex-col p-6">
-        <div className="mb-4 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-500">
-          <span className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1">
+        <div className="mb-4 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-400">
+          <span className="flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1">
             <BookOpen className="h-3.5 w-3.5 text-primary" />
             {getCourseLevelLabel(course.level, t)}
           </span>
-          <span className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1">
+          <span className="flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1">
             <Clock className="h-3.5 w-3.5 text-slate-400" />
             {course.duration || t("common.selfPaced")}
           </span>
-          <span className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1">
+          <span className="flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1">
             <BookOpen className="h-3.5 w-3.5 text-slate-400" />
             {course.totalLessons} {t("common.lessons")}
           </span>
         </div>
 
         <Link href={`/courses/${course.slug}`}>
-          <h3 className="mb-3 line-clamp-2 cursor-pointer text-xl font-bold text-slate-900 transition-colors group-hover:text-primary">
+          <h3 className="mb-3 line-clamp-2 cursor-pointer text-xl font-bold text-white transition-colors group-hover:text-primary">
             {course.title || t("courseCard.untitled")}
           </h3>
         </Link>
 
-        <p className="mb-3 line-clamp-3 text-sm leading-6 text-slate-600">
+        <p className="mb-3 line-clamp-3 text-sm leading-6 text-slate-400">
           {course.shortDescription || course.description}
         </p>
 
@@ -128,12 +128,12 @@ export function CourseCard({ course }: CourseProps) {
           <span className="ml-1 text-xs text-slate-500">(4.8)</span>
         </div>
 
-        <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
+        <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-4">
           <div className="flex flex-col">
             <span className="text-xs text-slate-500 line-through">
               {course.originalPrice ? formatCurrency(course.originalPrice, locale) : ""}
             </span>
-            <span className="text-xl font-bold text-primary">
+            <span className="text-xl font-bold text-primary drop-shadow-[0_0_8px_rgba(241,2,76,0.3)]">
               {course.price === 0
                 ? t("courseCard.free")
                 : formatCurrency(course.price, locale)}
@@ -141,7 +141,7 @@ export function CourseCard({ course }: CourseProps) {
           </div>
           <Link
             href={`/courses/${course.slug}`}
-            className="text-sm font-semibold text-slate-900 underline decoration-2 decoration-primary/30 underline-offset-4 transition-all hover:text-primary hover:decoration-primary"
+            className="text-sm font-semibold text-white underline decoration-2 decoration-primary/30 underline-offset-4 transition-all hover:text-primary hover:decoration-primary drop-shadow-sm"
           >
             {t("courseCard.viewDetails")}
           </Link>

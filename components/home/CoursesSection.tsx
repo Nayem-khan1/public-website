@@ -31,8 +31,9 @@ export function CoursesSection({ featuredCourses }: CoursesSectionProps) {
   const categories = Array.from(new Set(featuredCourses.map(c => c.category))).filter(Boolean);
 
   return (
-    <section className="relative overflow-hidden py-24 bg-white">
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+    <section className="relative overflow-hidden py-24 bg-slate-950 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-[#0e0c1f] to-slate-950">
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+      <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 hover:bg-primary/30 transition-colors blur-[100px] rounded-full"></div>
 
       <div className="container relative mx-auto px-4 md:px-6">
         <motion.div
@@ -44,10 +45,10 @@ export function CoursesSection({ featuredCourses }: CoursesSectionProps) {
           <span className="text-secondary font-semibold tracking-wider text-sm uppercase mb-3 block">
             {eyebrow}
           </span>
-          <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
             {title}
           </h2>
-          <p className="text-lg text-slate-600 mb-8">
+          <p className="text-lg text-slate-300 mb-8">
             {subtitle}
           </p>
         </motion.div>
@@ -67,13 +68,13 @@ export function CoursesSection({ featuredCourses }: CoursesSectionProps) {
             ))}
           </div>
         ) : (
-          <div className="flex min-h-[300px] items-center justify-center rounded-[2rem] border border-dashed border-slate-300 bg-slate-50/50 p-8 text-center mb-16">
+          <div className="flex min-h-[300px] items-center justify-center rounded-[2rem] border border-dashed border-white/20 bg-white/5 backdrop-blur-md p-8 text-center mb-16 shadow-[0_0_50px_rgba(255,255,255,0.05)]">
             <div className="max-w-md space-y-3">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/10 text-white/50">
                 <Telescope className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-semibold text-slate-900">{emptyTitle}</h3>
-              <p className="text-sm leading-6 text-slate-500">{emptyBody}</p>
+              <h3 className="text-xl font-semibold text-white">{emptyTitle}</h3>
+              <p className="text-sm leading-6 text-slate-400">{emptyBody}</p>
             </div>
           </div>
         )}
@@ -82,7 +83,7 @@ export function CoursesSection({ featuredCourses }: CoursesSectionProps) {
           <Button
             asChild
             size="lg"
-            className="rounded-full bg-slate-900 px-8 text-white hover:bg-primary transition-colors duration-300 shadow-lg"
+            className="rounded-full bg-primary/90 px-8 text-white hover:bg-primary transition-all duration-300 shadow-[0_0_20px_rgba(241,2,76,0.5)] hover:shadow-[0_0_30px_rgba(241,2,76,0.7)] border border-primary/50 hover:scale-105"
           >
             <Link href="/courses">
               {t("home.courses.viewAllCourses")}
