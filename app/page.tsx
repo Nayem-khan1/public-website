@@ -63,7 +63,12 @@ export default async function HomePage() {
   return (
     <>
       <Navbar />
-      <main className="overflow-hidden bg-slate-950">
+      <main className="relative overflow-hidden bg-[#000000]">
+        {/* Global Top Red Glow Curve */}
+        <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[1400px] h-[600px] bg-gradient-to-b from-red-600/40 via-red-800/10 to-transparent blur-[120px] rounded-[100%] pointer-events-none mix-blend-screen" />
+        {/* Ambient Subtle Stars/Glows */}
+        <div className="absolute top-[40%] left-[-10%] w-[500px] h-[500px] blur-[150px] bg-red-900/20 rounded-full pointer-events-none mix-blend-screen" />
+        <div className="absolute bottom-[20%] right-[-10%] w-[600px] h-[600px] blur-[150px] bg-green-900/10 rounded-full pointer-events-none mix-blend-screen" />
         <HeroSection />
         <CoursesSection featuredCourses={popularCourses} />
         <HowItWorksSection />

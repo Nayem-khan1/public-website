@@ -31,12 +31,11 @@ export function CoursesSection({ featuredCourses }: CoursesSectionProps) {
   const categories = Array.from(new Set(featuredCourses.map(c => c.category))).filter(Boolean);
 
   return (
-    <section className="relative overflow-hidden py-24 bg-slate-950 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-[#0e0c1f] to-slate-950">
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
-      <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 hover:bg-primary/30 transition-colors blur-[100px] rounded-full"></div>
-
-      <div className="container relative mx-auto px-4 md:px-6">
-        <motion.div
+    <section className="py-12 relative overflow-hidden z-10">
+      <div className="container relative mx-auto px-4 md:px-6 mb-12">
+        <div className="relative rounded-[2.5rem] bg-white/[0.02] backdrop-blur-3xl border border-white/10 border-t-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] bg-gradient-to-br from-blue-500/10 via-transparent to-cyan-500/5 p-8 md:p-14 overflow-hidden group hover:border-cyan-500/30 transition-all duration-500">
+          
+          <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -48,7 +47,7 @@ export function CoursesSection({ featuredCourses }: CoursesSectionProps) {
           <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
             {title}
           </h2>
-          <p className="text-lg text-slate-300 mb-8">
+          <p className="text-lg text-white/70 mb-8">
             {subtitle}
           </p>
         </motion.div>
@@ -68,13 +67,14 @@ export function CoursesSection({ featuredCourses }: CoursesSectionProps) {
             ))}
           </div>
         ) : (
-          <div className="flex min-h-[300px] items-center justify-center rounded-[2rem] border border-dashed border-white/20 bg-white/5 backdrop-blur-md p-8 text-center mb-16 shadow-[0_0_50px_rgba(255,255,255,0.05)]">
-            <div className="max-w-md space-y-3">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/10 text-white/50">
+          <div className="flex min-h-[300px] items-center justify-center rounded-[2rem] border border-blue-500/30 bg-[#050505] shadow-[0_0_40px_rgba(59,130,246,0.15)] p-8 text-center mb-16 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none" />
+            <div className="max-w-md space-y-3 relative z-10">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
                 <Telescope className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-semibold text-white">{emptyTitle}</h3>
-              <p className="text-sm leading-6 text-slate-400">{emptyBody}</p>
+              <p className="text-sm leading-6 text-white/70">{emptyBody}</p>
             </div>
           </div>
         )}
@@ -83,13 +83,14 @@ export function CoursesSection({ featuredCourses }: CoursesSectionProps) {
           <Button
             asChild
             size="lg"
-            className="rounded-full bg-primary/90 px-8 text-white hover:bg-primary transition-all duration-300 shadow-[0_0_20px_rgba(241,2,76,0.5)] hover:shadow-[0_0_30px_rgba(241,2,76,0.7)] border border-primary/50 hover:scale-105"
+            className="rounded-full bg-primary px-8 text-white hover:bg-primary/90 transition-all duration-500 shadow-[0_0_40px_rgba(241,2,76,0.25)] hover:shadow-[0_0_60px_rgba(241,2,76,0.35)] hover:scale-[1.03]"
           >
             <Link href="/courses">
               {t("home.courses.viewAllCourses")}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
+        </div>
         </div>
       </div>
     </section>

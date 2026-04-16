@@ -17,7 +17,7 @@ export function HeroSection() {
   const { t } = useAppTranslation();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0B0F19] to-black">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden z-10">
       <StarBackground />
 
       <div className="container relative z-10 mx-auto px-4 md:px-6 py-32">
@@ -44,7 +44,7 @@ export function HeroSection() {
               </span>
             </h1>
 
-            <p className="text-lg md:text-xl text-slate-300 mb-8 max-w-xl leading-relaxed">
+            <p className="text-lg md:text-xl text-white/70 mb-8 max-w-xl leading-relaxed">
               {t("home.hero.description")}
             </p>
 
@@ -52,7 +52,7 @@ export function HeroSection() {
               <Button
                 asChild
                 size="lg"
-                className="rounded-full text-base px-8 h-14 bg-primary hover:bg-primary/90 text-white shadow-2xl shadow-primary/50 hover:shadow-primary/70 transition-all duration-300 hover:scale-105"
+                className="rounded-full text-base px-8 h-14 bg-primary hover:bg-primary/90 text-white shadow-[0_0_40px_rgba(241,2,76,0.25)] hover:shadow-[0_0_60px_rgba(241,2,76,0.35)] transition-all duration-500 hover:scale-[1.03]"
               >
                 <Link href="/courses">
                   <Rocket className="w-5 h-5 mr-2" />
@@ -79,7 +79,7 @@ export function HeroSection() {
                 </div>
                 <div>
                   <h4 className="text-2xl font-bold text-white">5000+</h4>
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-white/70">
                     {t("home.hero.studentsTaught")}
                   </p>
                 </div>
@@ -90,7 +90,7 @@ export function HeroSection() {
                 </div>
                 <div>
                   <h4 className="text-2xl font-bold text-white">50+</h4>
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-white/70">
                     {t("home.hero.olympiadWinners")}
                   </p>
                 </div>

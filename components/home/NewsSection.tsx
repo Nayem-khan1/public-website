@@ -42,12 +42,10 @@ export function NewsSection() {
   ];
 
   return (
-    <section className="py-24 relative overflow-hidden bg-slate-950 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#101423] to-slate-950">
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
-      
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <motion.div
+    <section className="py-12 relative overflow-hidden z-10 w-full mb-12">
+      <div className="container relative mx-auto px-4 md:px-6 mb-12">
+        <div className="relative rounded-[2.5rem] bg-white/[0.02] backdrop-blur-3xl border border-white/10 border-t-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] bg-gradient-to-br from-rose-500/10 via-transparent to-orange-500/5 p-8 md:p-14 overflow-hidden group hover:border-rose-500/30 transition-all duration-500">
+          <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -57,10 +55,10 @@ export function NewsSection() {
             <Newspaper className="w-4 h-4" />
             {eyebrow}
           </div>
-          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4 drop-shadow-md">
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
             {title}
           </h2>
-          <p className="text-lg text-slate-300">
+          <p className="text-lg text-white/70">
             {subtitle}
           </p>
         </motion.div>
@@ -75,28 +73,28 @@ export function NewsSection() {
               transition={{ delay: i * 0.15 }}
             >
               <Link href={item.link} target="_blank" rel="noopener noreferrer" className="block group h-full">
-                <div className="h-full relative overflow-hidden rounded-3xl bg-white/5 border border-white/10 p-8 hover:shadow-[0_0_40px_rgba(241,2,76,0.15)] hover:border-primary/30 backdrop-blur-md transition-all duration-500 hover:-translate-y-2 flex flex-col pt-16">
+                <div className="h-full relative overflow-hidden rounded-[2rem] bg-[#050505] border border-orange-500/30 p-8 shadow-[0_0_30px_rgba(249,115,22,0.1)] transition-all duration-500 hover:scale-[1.03] hover:-translate-y-2 hover:shadow-[0_0_50px_rgba(249,115,22,0.4)] hover:border-orange-400/60 flex flex-col pt-16">
                   {/* Decorative background circle */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-[100px] -z-0 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute inset-0 bg-gradient-to-b from-orange-500/5 to-transparent pointer-events-none" />
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-orange-500/20 to-transparent rounded-bl-[100px] -z-0 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
                   {/* Media Logo / Source */}
                   <div className="absolute top-8 left-8">
-                    {/* Just using the source name as a styled tag since logo urls might break or look inconsistent */}
                     <span className="inline-flex h-8 items-center px-4 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-xs font-bold text-white shadow-sm uppercase tracking-widest">
                       {item.source}
                     </span>
                   </div>
 
                   {/* Icon link */}
-                  <div className="absolute top-8 right-8 w-10 h-10 rounded-full bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-colors duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                  <div className="absolute top-8 right-8 w-10 h-10 rounded-full bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center text-white/60 group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300 shadow-[0_0_15px_rgba(0,0,0,0.3)]">
                     <ArrowUpRight className="w-5 h-5" />
                   </div>
                   
                   <div className="relative z-10 flex flex-col flex-grow mt-4">
-                    <h3 className="text-xl font-bold text-white mb-4 group-hover:text-primary transition-colors duration-300 leading-snug">
+                    <h3 className="text-xl font-bold text-white mb-4 transition-all duration-300 group-hover:text-orange-400 group-hover:drop-shadow-[0_0_8px_rgba(249,115,22,0.5)] leading-snug">
                       {item.title}
                     </h3>
-                    <p className="text-slate-400 text-base leading-relaxed font-medium">
+                    <p className="text-white/70 text-base leading-relaxed font-medium">
                       {item.description}
                     </p>
                   </div>
@@ -104,6 +102,7 @@ export function NewsSection() {
               </Link>
             </motion.div>
           ))}
+        </div>
         </div>
       </div>
     </section>

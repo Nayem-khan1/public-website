@@ -38,10 +38,11 @@ export function WhySection() {
   ];
 
   return (
-    <section className="py-24 bg-slate-950 relative overflow-hidden bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-[#0A0514] via-slate-900 to-slate-950">
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
-      <div className="container relative mx-auto px-4 md:px-6">
-        <motion.div
+    <section className="py-12 relative overflow-hidden z-10">
+      <div className="container relative mx-auto px-4 md:px-6 mb-12">
+        <div className="relative rounded-[2.5rem] bg-white/[0.02] backdrop-blur-3xl border border-white/10 border-t-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] bg-gradient-to-br from-primary/10 via-transparent to-primary/5 p-8 md:p-14 overflow-hidden group hover:border-primary/30 transition-all duration-500">
+          
+          <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -50,10 +51,10 @@ export function WhySection() {
           <span className="text-primary font-semibold tracking-wider text-sm uppercase mb-3 block">
             {t("home.why.eyebrow")}
           </span>
-          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4 drop-shadow-md">
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
             {t("home.why.title")}
           </h2>
-          <p className="text-lg text-slate-300">{t("home.why.subtitle")}</p>
+          <p className="text-lg text-white/70">{t("home.why.subtitle")}</p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 relative">
@@ -64,25 +65,26 @@ export function WhySection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="relative group p-8 rounded-3xl bg-white/5 border border-white/10 shadow-sm hover:shadow-[0_0_40px_rgba(241,2,76,0.15)] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 overflow-hidden"
+              className="relative group p-8 bg-[#050505] border border-red-500/30 rounded-[2rem] shadow-[0_0_30px_rgba(241,2,76,0.15)] hover:shadow-[0_0_50px_rgba(241,2,76,0.4)] transition-all duration-500 hover:scale-[1.03] hover:-translate-y-2 overflow-hidden"
             >
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-transparent to-transparent group-hover:from-primary group-hover:to-secondary transition-all duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-b from-red-500/5 to-transparent pointer-events-none" />
               
               <div className="absolute -right-4 -top-6 text-[100px] font-black text-white/5 group-hover:text-primary/10 transition-colors duration-500 select-none">
                 0{i + 1}
               </div>
 
               <div
-                className={`relative w-20 h-20 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 glass-effect border border-white/10 shadow-inner`}
+                className={`relative w-16 h-16 rounded-full bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 shadow-[0_0_40px_rgba(241,2,76,0.25)] border border-white/20`}
               >
-                <feature.icon className={`w-10 h-10 ${feature.iconColor}`} />
+                <feature.icon className={`w-8 h-8 ${feature.iconColor}`} />
               </div>
-              <h3 className="text-xl font-bold text-white mb-4 group-hover:text-primary transition-colors">
+              <h3 className="text-xl font-bold text-white mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-secondary transition-all">
                 {feature.title}
               </h3>
-              <p className="text-slate-400 leading-relaxed text-base">{feature.desc}</p>
+              <p className="text-white/70 leading-relaxed text-base">{feature.desc}</p>
             </motion.div>
           ))}
+        </div>
         </div>
       </div>
     </section>

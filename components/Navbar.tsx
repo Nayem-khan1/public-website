@@ -42,7 +42,7 @@ export function Navbar() {
         className={cn(
           "fixed top-0 w-full z-50 transition-all duration-300 border-b",
           isScrolled
-            ? "bg-white/90 backdrop-blur-md border-gray-100 py-3 shadow-sm"
+            ? "bg-slate-950/80 backdrop-blur-xl border-white/10 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
             : "bg-transparent border-transparent py-5",
         )}
       >
@@ -75,9 +75,7 @@ export function Navbar() {
                   "text-sm font-semibold transition-colors hover:text-primary",
                   isActive(link.href)
                     ? "text-primary"
-                    : isScrolled
-                      ? "text-slate-600"
-                      : "text-slate-200",
+                    : "text-white/80"
                 )}
               >
                 {t(link.labelKey)}
@@ -87,27 +85,16 @@ export function Navbar() {
 
           <div className="hidden lg:flex items-center gap-4">
             <LanguageSwitcher
-              className={cn(
-                isScrolled
-                  ? "border-slate-200 bg-slate-100 text-slate-700"
-                  : "border-white/15 bg-white/10 text-white",
-              )}
-              activeClassName={
-                isScrolled ? "bg-white text-slate-900" : "bg-white text-slate-900"
-              }
-              inactiveClassName={
-                isScrolled ? "text-slate-600 hover:text-slate-900" : "text-white/80 hover:text-white"
-              }
+              className="border-white/15 bg-white/10 text-white/90 hover:bg-white/20 transition-all"
+              activeClassName="bg-primary text-white font-semibold"
+              inactiveClassName="text-white/70 hover:text-white"
             />
 
             <Button
               asChild
               variant="ghost"
               className={cn(
-                "font-semibold transition-colors",
-                isScrolled
-                  ? "text-slate-700 hover:bg-slate-100"
-                  : "text-white hover:bg-white/10 hover:text-white",
+                "font-semibold transition-colors text-white/90 hover:bg-white/10 hover:text-white"
               )}
             >
               <Link href="/login">{t("nav.logIn")}</Link>
@@ -124,10 +111,7 @@ export function Navbar() {
             variant="ghost"
             size="icon"
             className={cn(
-              "lg:hidden transition-colors",
-              isScrolled
-                ? "text-slate-700 hover:bg-slate-100"
-                : "text-white hover:bg-white/10 hover:text-white",
+              "lg:hidden transition-colors text-white/90 hover:bg-white/10 hover:text-white"
             )}
             onClick={() => setMobileOpen(true)}
           >

@@ -51,10 +51,11 @@ export function ImpactSection() {
   ];
 
   return (
-    <section className="py-24 relative overflow-hidden bg-slate-950 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 via-[#101423] to-black">
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
-      
-      <div className="container relative mx-auto px-4 md:px-6">
+    <section className="py-12 relative overflow-hidden bg-black">
+      <div className="container relative mx-auto px-4 md:px-6 mb-12">
+        <div className="relative rounded-[2.5rem] bg-white/[0.02] backdrop-blur-3xl border border-white/10 border-t-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] bg-gradient-to-br from-primary/10 via-transparent to-orange-500/5 p-8 md:p-14 overflow-hidden group hover:border-primary/30 transition-all duration-500">
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none"></div>
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -78,12 +79,13 @@ export function ImpactSection() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, type: "spring" }}
-              className="text-center p-8 rounded-3xl glass-effect-dark hover:border-primary/50 hover:shadow-[0_0_30px_rgba(241,2,76,0.15)] transition-all duration-500 group"
+              className="relative text-center p-8 rounded-[2rem] bg-[#050505] border border-orange-500/30 hover:border-orange-500/60 hover:shadow-[0_0_40px_rgba(249,115,22,0.2)] transition-all duration-500 group overflow-hidden"
             >
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                <stat.icon className="w-8 h-8 text-primary group-hover:text-white transition-colors" />
+              <div className="absolute inset-0 bg-gradient-to-b from-orange-500/5 to-transparent pointer-events-none" />
+              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <stat.icon className="w-8 h-8 text-orange-400 group-hover:text-white transition-colors" />
               </div>
-              <h3 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+              <h3 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-orange-200 mb-3 drop-shadow-[0_0_15px_rgba(249,115,22,0.5)] relative z-10">
                 <AnimatedCounter end={stat.end} suffix={stat.suffix} />
               </h3>
               <p className="text-slate-400 font-medium tracking-wide uppercase text-sm">{stat.label}</p>
@@ -113,6 +115,8 @@ export function ImpactSection() {
             ))}
           </div>
         </motion.div>
+        
+        </div>
       </div>
     </section>
   );

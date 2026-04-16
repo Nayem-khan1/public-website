@@ -18,24 +18,23 @@ export function CTASection() {
     : "Download the official Astronomy Pathshala app today. Get unlimited access to interactive space modules, live sessions, and offline downloads directly from your smartphone.";
 
   return (
-    <section className="py-24 bg-slate-950 relative overflow-hidden bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-slate-900 via-[#130E26] to-[#0A0514]">
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30"></div>
+    <section className="py-24 relative overflow-hidden z-10">
       
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute top-[10%] left-[20%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px]"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3], x: [0, 50, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-[-10%] right-[10%] w-[600px] h-[600px] bg-secondary/30 rounded-full blur-[150px]"
-          animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.6, 0.3], y: [0, -50, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
-
-      <div className="container relative mx-auto px-4 md:px-6">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <div className="container relative mx-auto px-4 md:px-6 mb-12">
+        <div className="relative rounded-[2.5rem] bg-white/[0.02] backdrop-blur-3xl border border-white/10 border-t-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] bg-gradient-to-br from-primary/20 via-transparent to-secondary/10 p-10 md:p-16 hover:border-primary/30 transition-all duration-500 overflow-hidden group">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <motion.div
+              className="absolute top-[10%] left-[20%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px]"
+              animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3], x: [0, 50, 0] }}
+              transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute bottom-[-10%] right-[10%] w-[600px] h-[600px] bg-secondary/30 rounded-full blur-[150px]"
+              animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.6, 0.3], y: [0, -50, 0] }}
+              transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </div>
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center relative z-10">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -51,13 +50,12 @@ export function CTASection() {
 
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-6 leading-[1.15]">
               {titleStart} <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-pink-400 to-secondary relative inline-block mt-2 pb-2">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary relative inline-block mt-2 pb-2">
                 {titleHighlight}
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary rounded-full opacity-50 blur-sm"></div>
               </span>
             </h2>
 
-            <p className="text-lg md:text-xl text-slate-300 mb-10 max-w-lg leading-relaxed">
+            <p className="text-lg md:text-xl text-white/70 mb-10 max-w-lg leading-relaxed">
               {subtitleText}
             </p>
 
@@ -90,18 +88,19 @@ export function CTASection() {
               <img 
                 src="/header-img.svg" 
                 alt="Space illustration" 
-                className="w-full h-full object-contain relative z-10 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+                className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_30px_rgba(241,2,76,0.3)]"
               />
               {/* Floating decorative elements */}
               <motion.div 
-                className="absolute top-[10%] right-[10%] w-16 h-16 bg-white/5 border border-white/20 rounded-2xl backdrop-blur-md glass-effect-dark z-20 flex items-center justify-center p-3"
+                className="absolute top-[10%] right-[10%] w-16 h-16 bg-white/5 border border-white/20 rounded-2xl backdrop-blur-xl z-20 flex items-center justify-center p-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
                 animate={{ y: [0, -15, 0], rotate: [0, 10, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               >
-                <Rocket className="w-full h-full text-white/50" />
+                <Rocket className="w-full h-full text-white/80" />
               </motion.div>
             </div>
           </motion.div>
+        </div>
         </div>
       </div>
     </section>

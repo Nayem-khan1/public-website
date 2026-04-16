@@ -22,9 +22,11 @@ export function InstructorsSection({ instructors }: InstructorsSectionProps) {
   const visibleInstructors = instructors.slice(0, 3);
 
   return (
-    <section className="py-24 bg-slate-950 relative bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-[#130E26] to-black">
-      <div className="container relative z-10 mx-auto px-4 md:px-6">
-        <motion.div
+    <section className="py-12 relative z-10">
+      <div className="container relative z-10 mx-auto px-4 md:px-6 mb-12">
+        <div className="relative rounded-[2.5rem] bg-white/[0.02] backdrop-blur-3xl border border-white/10 border-t-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] bg-gradient-to-br from-orange-500/10 via-transparent to-amber-500/5 p-8 md:p-14 overflow-hidden group hover:border-orange-500/30 transition-all duration-500">
+          
+          <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -33,10 +35,10 @@ export function InstructorsSection({ instructors }: InstructorsSectionProps) {
           <span className="text-primary font-semibold tracking-wider text-sm uppercase mb-3 block">
             {t("home.instructors.eyebrow")}
           </span>
-          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4 drop-shadow-md">
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
             {t("home.instructors.title")}
           </h2>
-          <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+          <p className="text-lg text-white/70 max-w-2xl mx-auto">
             {t("home.instructors.subtitle")}
           </p>
         </motion.div>
@@ -52,10 +54,10 @@ export function InstructorsSection({ instructors }: InstructorsSectionProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="group text-center p-8 rounded-3xl bg-white/5 border border-white/10 hover:shadow-[0_0_40px_rgba(241,2,76,0.15)] hover:border-primary/30 backdrop-blur-md transition-all duration-500 hover:-translate-y-2 relative overflow-hidden"
+                className="group text-center p-8 rounded-[2rem] bg-[#050505] border border-purple-500/30 shadow-[0_0_30px_rgba(168,85,247,0.1)] hover:shadow-[0_0_50px_rgba(168,85,247,0.4)] transition-all duration-500 hover:scale-[1.03] hover:-translate-y-2 relative overflow-hidden hover:border-purple-400/50"
               >
-                <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div className="relative w-32 h-32 mx-auto mb-6">
+                <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="relative w-32 h-32 mx-auto mb-6 z-10">
                   {instructor.photoUrl ? (
                     <img 
                       src={instructor.photoUrl} 
@@ -67,16 +69,16 @@ export function InstructorsSection({ instructors }: InstructorsSectionProps) {
                       {initials}
                     </div>
                   )}
-                  <div className="absolute inset-0 rounded-full border-4 border-white/10 group-hover:border-primary/50 transition-colors duration-500 shadow-[0_0_30px_rgba(241,2,76,0.2)]"></div>
+                  <div className="absolute inset-0 rounded-full border-4 border-[#050505] group-hover:border-purple-400/50 transition-colors duration-500 shadow-[0_0_30px_rgba(168,85,247,0.2)]"></div>
                 </div>
 
-                <h4 className="text-xl font-bold text-white mb-1 group-hover:text-primary transition-colors relative z-10">
+                <h4 className="text-xl font-bold text-white mb-1 transition-all duration-300 relative z-10 group-hover:text-purple-300 group-hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
                   {instructor.name}
                 </h4>
                 <p className="text-primary font-medium text-sm mb-3 relative z-10">
                   {instructor.role || t("common.instructor")}
                 </p>
-                <p className="text-slate-400 text-sm leading-relaxed px-2 relative z-10">
+                <p className="text-white/70 text-sm leading-relaxed px-2 relative z-10">
                   {instructor.credential || t("common.instructor")}
                 </p>
               </motion.div>
@@ -93,6 +95,7 @@ export function InstructorsSection({ instructors }: InstructorsSectionProps) {
           >
             <Link href="/team">{t("home.instructors.viewFullTeam")}</Link>
           </Button>
+        </div>
         </div>
       </div>
     </section>
