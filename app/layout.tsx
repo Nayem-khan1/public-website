@@ -46,6 +46,10 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName,
       url: getLocalizedAbsoluteUrl("/", locale),
     },
+    icons: {
+      icon: "/favicon.png",
+      apple: "/favicon.png",
+    },
     other: {
       "content-language": locale,
     },
