@@ -30,63 +30,70 @@ export function GallerySection() {
   ];
 
   return (
-    <section className="py-12 relative overflow-hidden flex flex-col items-center z-10">
+    <section className="py-16 md:py-24 relative overflow-hidden flex flex-col items-center z-10 w-full pt-20">
+      {/* Title Text Area */}
       <div className="container px-4 md:px-6 relative z-10 mb-12 w-full">
-        <div className="relative rounded-[2.5rem] bg-white/[0.02] backdrop-blur-3xl border border-white/10 border-t-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] bg-gradient-to-br from-fuchsia-500/10 via-transparent to-pink-500/5 py-14 overflow-hidden group w-full hover:border-fuchsia-500/30 transition-all duration-500">
-          
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center max-w-2xl mx-auto mb-10"
-          >
-            <span className="text-secondary font-semibold tracking-wider text-sm uppercase mb-3 block">
-              {eyebrow}
-            </span>
-            <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
-              {title}
-            </h2>
-            <p className="text-lg text-white/70">
-              {subtitle}
-            </p>
-          </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center max-w-2xl mx-auto"
+        >
+          <span className="text-secondary font-semibold tracking-wider text-sm uppercase mb-3 block">
+            {eyebrow}
+          </span>
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
+            {title}
+          </h2>
+          <p className="text-lg text-white/70">
+            {subtitle}
+          </p>
+        </motion.div>
+      </div>
 
-          {/* Top Row - Scrolls Left */}
-          <div className="w-full overflow-hidden whitespace-nowrap py-4 relative group">
-            <div className="flex w-max animate-scroll-left hover:[animation-play-state:paused]">
-              {[...topImages, ...topImages].map((image, index) => (
-                <div key={`top-${index}`} className="w-[280px] sm:w-[320px] md:w-[400px] flex-shrink-0 mx-3">
-                  <div className="relative w-full h-[200px] md:h-[260px] rounded-[2rem] overflow-hidden shadow-[0_0_20px_rgba(6,182,212,0.1)] border border-cyan-500/30 group/card hover:border-cyan-400/60 hover:shadow-[0_0_40px_rgba(6,182,212,0.4)] bg-[#050505] transition-all duration-500">
-                    <img 
-                      src={image} 
-                      alt={`Gallery Image ${index + 1}`} 
-                      className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700 ease-in-out" 
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
-                  </div>
+      {/* Gallery Scrolling Row Container */}
+      <div className="w-full flex flex-col gap-6 overflow-hidden relative z-10 group">
+        {/* Left Edge Shadow Overlay */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-40 bg-gradient-to-r from-black via-black/80 to-transparent z-20 pointer-events-none transition-opacity duration-300" />
+        
+        {/* Right Edge Shadow Overlay */}
+        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-40 bg-gradient-to-l from-black via-black/80 to-transparent z-20 pointer-events-none transition-opacity duration-300" />
+
+        {/* Top Row - Scrolls Left */}
+        <div className="w-full overflow-hidden whitespace-nowrap py-2 relative">
+          <div className="flex w-max animate-scroll-left hover:[animation-play-state:paused]">
+            {[...topImages, ...topImages].map((image, index) => (
+              <div key={`top-${index}`} className="w-[280px] sm:w-[320px] md:w-[400px] flex-shrink-0 mx-3">
+                <div className="relative w-full h-[200px] md:h-[260px] rounded-[2rem] overflow-hidden shadow-[0_0_20px_rgba(6,182,212,0.1)] border border-cyan-500/30 group/card hover:border-cyan-400/60 hover:shadow-[0_0_40px_rgba(6,182,212,0.4)] bg-[#050505] transition-all duration-500">
+                  <img 
+                    src={image} 
+                    alt={`Gallery Image ${index + 1}`} 
+                    className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700 ease-in-out select-none pointer-events-none" 
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
+        </div>
 
-          {/* Bottom Row - Scrolls Right */}
-          <div className="w-full overflow-hidden whitespace-nowrap py-4 relative group cursor-pointer">
-            <div className="flex w-max animate-scroll-right hover:[animation-play-state:paused]">
-              {[...bottomImages, ...bottomImages].map((image, index) => (
-                <div key={`bottom-${index}`} className="w-[280px] sm:w-[320px] md:w-[400px] flex-shrink-0 mx-3">
-                  <div className="relative w-full h-[200px] md:h-[260px] rounded-[2rem] overflow-hidden shadow-[0_0_20px_rgba(6,182,212,0.1)] border border-cyan-500/30 group/card hover:border-cyan-400/60 hover:shadow-[0_0_40px_rgba(6,182,212,0.4)] bg-[#050505] transition-all duration-500">
-                    <img 
-                      src={image} 
-                      alt={`Gallery Image ${index + 1}`} 
-                      className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700 ease-in-out" 
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
-                  </div>
+        {/* Bottom Row - Scrolls Right */}
+        <div className="w-full overflow-hidden whitespace-nowrap py-2 relative">
+          <div className="flex w-max animate-scroll-right hover:[animation-play-state:paused]">
+            {[...bottomImages, ...bottomImages].map((image, index) => (
+              <div key={`bottom-${index}`} className="w-[280px] sm:w-[320px] md:w-[400px] flex-shrink-0 mx-3">
+                <div className="relative w-full h-[200px] md:h-[260px] rounded-[2rem] overflow-hidden shadow-[0_0_20px_rgba(6,182,212,0.1)] border border-cyan-500/30 group/card hover:border-cyan-400/60 hover:shadow-[0_0_40px_rgba(6,182,212,0.4)] bg-[#050505] transition-all duration-500">
+                  <img 
+                    src={image} 
+                    alt={`Gallery Image ${index + 1}`} 
+                    className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700 ease-in-out select-none pointer-events-none" 
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
