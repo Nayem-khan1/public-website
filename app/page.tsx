@@ -11,6 +11,7 @@ import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { NewsSection } from "@/components/home/NewsSection";
 import { GallerySection } from "@/components/home/GallerySection";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
+import { VideoPlaylistSection } from "@/components/home/VideoPlaylistSection";
 import { CTASection } from "@/components/home/CTASection";
 import {
   getCourseCards,
@@ -78,6 +79,7 @@ export default async function HomePage() {
         <InstructorsSection instructors={instructors} />
         <TestimonialsSection testimonials={testimonials} />
         <GallerySection />
+        <VideoPlaylistSection />
         <NewsletterSection />
         <CTASection />
         <NewsSection />
