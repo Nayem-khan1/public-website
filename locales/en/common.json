@@ -30,6 +30,7 @@
     "selfPaced": "Self-paced",
     "recorded": "Recorded",
     "live": "Live",
+    "bilingual": "Bangla & English",
     "bangla": "Bangla",
     "english": "English",
     "loading": "Loading...",
@@ -204,7 +205,11 @@
     "reviews": "Student Reviews",
     "curriculum": "Course Curriculum",
     "moneyBackGuarantee": "30-Day Money-Back Guarantee",
-    "previewCourse": "Preview this Course"
+    "previewCourse": "Preview this Course",
+    "watchIntro": "Watch Intro",
+    "instructors": "Course Instructors",
+    "modules": "Modules",
+    "curriculumPending": "Curriculum details will be added soon."
   },
   "blog": {
     "title": "Astronomy Insights",

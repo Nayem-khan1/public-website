@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CheckCircle, Lock } from "lucide-react";
 
-import { CourseEnrollButton } from "@/components/course-enroll-button";
 import {
   Accordion,
   AccordionContent,
@@ -29,7 +28,6 @@ import { CourseHeader } from "@/components/course-details/course-header";
 import { CourseCurriculum } from "@/components/course-details/course-curriculum";
 import { CourseSidebar } from "@/components/course-details/course-sidebar";
 import { CourseInstructor } from "@/components/course-details/course-instructor";
-import { CourseReviews } from "@/components/course-details/course-reviews";
 
 export async function generateMetadata({
   params,
@@ -92,21 +90,13 @@ export default async function CourseDetailsPage({
   const categoryLabel = localized.categoryTitle || t("common.astronomy");
   const levelLabel = getCourseLevelLabel(course.level, t);
   const languageLabel = getCourseLanguageLabel(course.language, t);
-
-  // We add mock syllabus because API doesn't return syllabus yet
-  const mockSyllabus = [
-    { title: "Introduction to the Course", lessons: 3, duration: "45m", topics: ["Welcome to the program", "How to succeed in this course", "Course materials and resources"] },
-    { title: "Core Fundamentals", lessons: 4, duration: "1h 20m", topics: ["Basic concepts", "Understanding the framework", "Practical examples", "Quiz: Fundamentals"] },
-    { title: "Advanced Techniques", lessons: 5, duration: "2h 15m", topics: ["Deep dive into advanced topics", "Case studies", "Expert strategies", "Common pitfalls", "Project assignment"] }
-  ];
-
-  // We add mock instructor since team member assignment might not be fully linked in API
-  const mockInstructor = {
-    name: "Dr. Mahmud Hasan",
-    bio: "An experienced researcher and educator with over 10 years of experience in space sciences and educational technology. Passionate about making complex subjects simple.",
-    specialization: "Senior Lecturer",
-    avatar: "https://i.pravatar.cc/150?img=12"
-  };
+  const curriculum = course.curriculum ?? [];
+  const instructors = course.instructors ?? [];
+  const curriculumLessonCount = curriculum.reduce(
+    (sum, section) => sum + (section.lessons?.length ?? section.total_lessons ?? 0),
+    0,
+  );
+  const resolvedTotalLessons = curriculumLessonCount || course.total_lessons || 0;
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24 md:pb-20 scroll-smooth">
@@ -116,9 +106,10 @@ export default async function CourseDetailsPage({
         category={categoryLabel}
         level={levelLabel}
         backText={t("courseDetails.backToCourses")}
-        language={locale}
-        isFree={course.is_free}
-        mode="Recorded"
+        mode={t("common.recorded")}
+        lessonsText={resolvedTotalLessons > 0 ? `${resolvedTotalLessons} ${t("common.lessons")}` : undefined}
+        durationText={course.duration || undefined}
+        languageText={languageLabel}
       />
 
       {/* Sticky Tab Navigation (Desktop) — glassmorphism style, avoids slicing sidebar */}
@@ -136,16 +127,13 @@ export default async function CourseDetailsPage({
                   {t("courseDetails.curriculum")}
                 </a>
               </li>
-              <li>
-                <a href="#instructor" className="block px-5 py-4 font-semibold text-sm text-slate-500 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary whitespace-nowrap">
-                  {t("courseDetails.instructor")}
-                </a>
-              </li>
-              <li>
-                <a href="#reviews" className="block px-5 py-4 font-semibold text-sm text-slate-500 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary whitespace-nowrap">
-                  {t("courseDetails.reviews")}
-                </a>
-              </li>
+              {instructors.length > 0 ? (
+                <li>
+                  <a href="#instructors" className="block px-5 py-4 font-semibold text-sm text-slate-500 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary whitespace-nowrap">
+                    {instructors.length > 1 ? t("courseDetails.instructors") : t("courseDetails.instructor")}
+                  </a>
+                </li>
+              ) : null}
               {localized.faqs.length > 0 && (
                 <li>
                   <a href="#faq" className="block px-5 py-4 font-semibold text-sm text-slate-500 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary whitespace-nowrap">
@@ -197,10 +185,10 @@ export default async function CourseDetailsPage({
             </div>
 
             {/* Curriculum */}
-            <CourseCurriculum syllabus={mockSyllabus} t={t} />
+            <CourseCurriculum sections={curriculum} t={t} />
 
             {/* Instructor */}
-            <CourseInstructor instructor={mockInstructor} t={t} />
+            <CourseInstructor instructors={instructors} t={t} />
 
             {/* Requirements & Target Audience */}
             <div className="grid gap-8 sm:grid-cols-2">
@@ -240,9 +228,6 @@ export default async function CourseDetailsPage({
               )}
             </div>
 
-            {/* Reviews */}
-            <CourseReviews t={t} />
-
             {/* FAQs */}
             {localized.faqs.length > 0 ? (
               <div className="rounded-3xl border border-slate-100 bg-white p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)]" id="faq">
@@ -268,19 +253,6 @@ export default async function CourseDetailsPage({
               </div>
             ) : null}
 
-            {/* Bottom CTA */}
-            <div className="rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-10 md:p-12 text-center mt-4 relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-primary/20 blur-[80px] pointer-events-none" />
-               <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-blue-500/15 blur-[60px] pointer-events-none" />
-               <div className="relative z-10">
-                 <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3 tracking-tight">Ready to start learning?</h3>
-                 <p className="text-slate-300 mb-8 text-lg">Join thousands of students and transform your career today.</p>
-                 <div className="max-w-sm mx-auto">
-                   <CourseEnrollButton courseId={course.id} courseSlug={course.slug} />
-                 </div>
-               </div>
-            </div>
-
           </div>
 
           {/* ── RIGHT COLUMN: Sidebar ── */}
@@ -289,12 +261,13 @@ export default async function CourseDetailsPage({
             courseSlug={course.slug}
             title={title}
             thumbnail={thumbnail}
+            introVideoUrl={course.intro_video_url}
             isFree={course.is_free}
             price={course.price}
             discountPrice={course.discount_price}
             locale={locale}
             languageLabel={languageLabel}
-            totalLessons={course.total_lessons}
+            totalLessons={resolvedTotalLessons}
             duration={course.duration}
             t={t}
           />

@@ -27,6 +27,7 @@ export function getCourseLanguageLabel(
 ): string {
   if (language === "bn") return t("common.bangla");
   if (language === "en") return t("common.english");
+  if (language === "bn_en") return t("common.bilingual");
   return language || t("common.bangla");
 }
 

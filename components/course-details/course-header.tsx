@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { ArrowLeft, Star, PlayCircle, Sparkles, Trophy } from "lucide-react";
+import {
+  ArrowLeft,
+  BookOpen,
+  Clock3,
+  Globe2,
+  PlayCircle,
+  Sparkles,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface CourseHeaderProps {
@@ -7,12 +14,11 @@ interface CourseHeaderProps {
   subtitle?: string;
   category: string;
   level: string;
-  rating?: number;
-  totalStudents?: number;
   backText: string;
-  language?: string;
-  isFree?: boolean;
   mode?: string;
+  lessonsText?: string;
+  durationText?: string;
+  languageText?: string;
 }
 
 export function CourseHeader({
@@ -20,10 +26,11 @@ export function CourseHeader({
   subtitle,
   category,
   level,
-  rating = 4.8,
-  totalStudents = 1250,
   backText,
-  mode
+  mode,
+  lessonsText,
+  durationText,
+  languageText,
 }: CourseHeaderProps) {
   return (
     <div className="relative overflow-hidden bg-slate-950 pb-20 pt-28 md:pb-36 md:pt-36 border-b border-indigo-900/40">
@@ -67,24 +74,27 @@ export function CourseHeader({
             <p className="mb-8 mt-2 text-lg md:text-xl text-slate-300/90 leading-relaxed font-light max-w-2xl">{subtitle}</p>
           )}
 
-          <div className="flex flex-wrap items-center gap-4 mt-8">
-            <div className="flex items-center gap-2.5 bg-white/5 backdrop-blur-xl rounded-full px-5 py-3 border border-white/10 shadow-2xl hover:bg-white/10 transition-colors cursor-default">
-              <div className="flex text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">
-                <Star className="h-4 w-4 fill-current" />
-                <Star className="h-4 w-4 fill-current" />
-                <Star className="h-4 w-4 fill-current" />
-                <Star className="h-4 w-4 fill-current" />
-                <Star className="h-4 w-4 fill-current opacity-40" />
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            {lessonsText ? (
+              <div className="flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-slate-200 shadow-2xl backdrop-blur-xl">
+                <BookOpen className="h-4 w-4 text-sky-300" />
+                <span>{lessonsText}</span>
               </div>
-              <span className="text-white font-bold tracking-wide">{rating}</span>
-              <span className="text-slate-400 text-sm font-medium">(124 reviews)</span>
-            </div>
-            
-            <div className="flex items-center gap-2.5 bg-white/5 backdrop-blur-xl rounded-full px-5 py-3 border border-white/10 shadow-2xl hover:bg-white/10 transition-colors cursor-default">
-              <Trophy className="h-4 w-4 text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
-              <span className="font-bold text-white tracking-wide">{totalStudents}</span>
-              <span className="text-sm font-medium text-slate-400 border-l border-white/20 pl-2">Enrolled</span>
-            </div>
+            ) : null}
+
+            {durationText ? (
+              <div className="flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-slate-200 shadow-2xl backdrop-blur-xl">
+                <Clock3 className="h-4 w-4 text-emerald-300" />
+                <span>{durationText}</span>
+              </div>
+            ) : null}
+
+            {languageText ? (
+              <div className="flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-slate-200 shadow-2xl backdrop-blur-xl">
+                <Globe2 className="h-4 w-4 text-amber-300" />
+                <span>{languageText}</span>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

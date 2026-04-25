@@ -44,6 +44,7 @@ export interface PublicCourseRecord {
   category_title_en?: string;
   category_title_bn?: string;
   category_slug?: string;
+  intro_video_url?: string;
   grade?: string;
   level?: string;
   language?: string;
@@ -68,6 +69,29 @@ export interface PublicCourseRecord {
     answer_en: string;
     question_bn?: string;
     answer_bn?: string;
+  }>;
+  instructors?: Array<{
+    id: string;
+    name: string;
+    bio?: string;
+    avatar?: string;
+    specialization?: string;
+  }>;
+  curriculum?: Array<{
+    id: string;
+    title?: string;
+    title_en?: string;
+    title_bn?: string;
+    order_no?: number;
+    total_lessons?: number;
+    lessons?: Array<{
+      id: string;
+      title?: string;
+      title_en?: string;
+      title_bn?: string;
+      order_no?: number;
+      is_preview?: boolean;
+    }>;
   }>;
 }
 
@@ -690,7 +714,6 @@ export function getLocalizedCourseText(
       })) ?? [],
   };
 }
-
 
 
 

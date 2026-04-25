@@ -6,7 +6,15 @@ import { Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppTranslation, useLanguage } from "@/contexts/LanguageContext";
 
-export function LanguageSwitcher({ className }: { className?: string }) {
+export function LanguageSwitcher({
+  className,
+  activeClassName,
+  inactiveClassName,
+}: {
+  className?: string;
+  activeClassName?: string;
+  inactiveClassName?: string;
+}) {
   const { locale, setLocale, isPending } = useLanguage();
   const { t } = useAppTranslation();
   const id = useId();
@@ -31,7 +39,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
               disabled={isPending}
               className={cn(
                 "relative z-10 rounded-full px-4 py-1.5 text-xs font-bold tracking-wider transition-colors duration-300 focus:outline-none",
-                isActive ? "text-black" : "text-white/60 hover:text-white"
+                isActive ? cn("text-black", activeClassName) : cn("text-white/60 hover:text-white", inactiveClassName)
               )}
             >
               {isActive && (
