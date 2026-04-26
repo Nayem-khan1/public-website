@@ -2,14 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  BookOpen,
-  CheckCircle2,
-  Clock,
-  History,
-  PlayCircle,
-} from "lucide-react";
+import { ArrowUpRight, BookOpen, Clock, History, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAppTranslation } from "@/contexts/LanguageContext";
 import type { Locale } from "@/lib/i18n/config";
@@ -24,20 +17,18 @@ const FALLBACK_IMAGE =
 export function CourseProgressCard({
   course,
   locale,
-  actionLoadingCourseId,
-  onCompleteNext,
   className,
 }: {
   course: StudentCourse;
   locale: Locale;
-  actionLoadingCourseId: string | null;
-  onCompleteNext: (courseId: string) => Promise<void> | void;
   className?: string;
 }) {
   const { t } = useAppTranslation();
-  const isActionLoading = actionLoadingCourseId === course.course_id;
-  const isCompleted = course.remaining_lessons === 0 || course.status === "completed";
-  const isLocked = course.access_status === "locked";
+  const focusLabel = course.current_lesson_title
+    ? t("dashboard.upNext")
+    : t("dashboard.lastCompletedLesson");
+  const focusValue =
+    course.current_lesson_title || course.last_completed_lesson_title || t("dashboard.noUpcomingLessons");
 
   return (
     <article
@@ -63,7 +54,7 @@ export function CourseProgressCard({
                   : "active"
             }
           />
-          {isLocked ? <StatePill variant="locked" /> : null}
+          {course.access_status === "locked" ? <StatePill variant="locked" /> : null}
         </div>
         <div className="absolute bottom-4 left-4 right-4">
           <h3 className="line-clamp-2 text-xl font-bold text-white">{course.title}</h3>
@@ -84,15 +75,29 @@ export function CourseProgressCard({
               <Clock className="h-3.5 w-3.5" />
               {t("dashboard.duration")}
             </div>
-            <p className="font-semibold text-slate-900">{course.duration || t("common.selfPaced")}</p>
+            <p className="font-semibold text-slate-900">
+              {course.duration || t("common.selfPaced")}
+            </p>
           </div>
           <div className="rounded-2xl bg-slate-50 px-4 py-3">
             <div className="mb-1 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-slate-400">
               <History className="h-3.5 w-3.5" />
               {t("dashboard.lastActive")}
             </div>
-            <p className="font-semibold text-slate-900">{formatRelativeDate(course.last_activity_at, locale)}</p>
+            <p className="font-semibold text-slate-900">
+              {formatRelativeDate(course.last_activity_at, locale)}
+            </p>
           </div>
+        </div>
+
+        <div className="rounded-[1.35rem] border border-slate-200 bg-slate-50 px-4 py-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+            {focusLabel}
+          </p>
+          <p className="mt-2 text-sm font-semibold text-slate-950">{focusValue}</p>
+          {course.current_module_title ? (
+            <p className="mt-1 text-xs text-slate-500">{course.current_module_title}</p>
+          ) : null}
         </div>
 
         <div>
@@ -117,31 +122,15 @@ export function CourseProgressCard({
         <div className="flex flex-wrap items-center gap-3">
           <Button asChild className="rounded-full bg-slate-950 text-white hover:bg-slate-800">
             <Link href={`/dashboard/courses/${course.slug}`}>
-              {t("dashboard.viewRoadmap")}
-              <ArrowUpRight className="ml-2 h-4 w-4" />
+              <PlayCircle className="mr-2 h-4 w-4" />
+              {t("dashboard.continueAction")}
             </Link>
           </Button>
           <Button asChild variant="outline" className="rounded-full border-slate-200">
-            <Link href={`/courses/${course.slug}`}>{t("dashboard.openCourse")}</Link>
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            disabled={isActionLoading || isCompleted || isLocked}
-            onClick={() => void onCompleteNext(course.course_id)}
-            className="rounded-full text-primary hover:bg-primary/10 hover:text-primary"
-          >
-            {isCompleted ? (
-              <>
-                <CheckCircle2 className="mr-2 h-4 w-4" />
-                {t("dashboard.completed")}
-              </>
-            ) : (
-              <>
-                <PlayCircle className="mr-2 h-4 w-4" />
-                {isActionLoading ? t("dashboard.updating") : t("dashboard.completeNext")}
-              </>
-            )}
+            <Link href={`/courses/${course.slug}`}>
+              {t("dashboard.openCourse")}
+              <ArrowUpRight className="ml-2 h-4 w-4" />
+            </Link>
           </Button>
         </div>
       </div>

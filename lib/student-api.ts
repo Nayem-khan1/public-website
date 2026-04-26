@@ -31,6 +31,7 @@ export interface StudentProfile {
   name: string;
   email: string;
   phone: string;
+  avatar: string;
   enrolled_courses_count: number;
   role: "student";
   status: "active" | "inactive";
@@ -50,6 +51,10 @@ export interface StudentCourse {
   status: "active" | "paused" | "completed";
   access_status: "active" | "locked";
   last_activity_at: string;
+  current_lesson_id: string | null;
+  current_lesson_title: string | null;
+  current_module_title: string | null;
+  last_completed_lesson_title: string | null;
 }
 
 export interface StudentRoadmapLesson {
@@ -58,6 +63,20 @@ export interface StudentRoadmapLesson {
   order_no: number;
   module_id: string;
   status: "completed" | "current" | "upcoming" | "available" | "locked";
+  is_unlocked: boolean;
+  progress: {
+    lesson_id: string;
+    module_id: string;
+    video_watch_percent: number;
+    video_completed: boolean;
+    quiz_completed: boolean;
+    quiz_score: number;
+    note_completed: boolean;
+    lesson_completed: boolean;
+    current_step: "video" | "quiz" | "note" | "completed";
+    completed_at: string | null;
+  };
+  contents: StudentLessonContent[];
 }
 
 export interface StudentRoadmapModule {
@@ -71,6 +90,40 @@ export interface StudentRoadmapModule {
   lessons: StudentRoadmapLesson[];
 }
 
+export interface StudentLessonContent {
+  id: string;
+  type: "video" | "pdf" | "quiz";
+  order_no: number;
+  unlock_condition: "auto_unlock" | "after_previous_completed" | "after_quiz_pass";
+  is_preview: boolean;
+  status: "completed" | "available" | "locked";
+  is_unlocked: boolean;
+  is_completed: boolean;
+  video: {
+    url: string;
+    duration: string;
+    provider: string;
+    thumbnail: string;
+  } | null;
+  pdf: {
+    title: string;
+    file_url: string;
+    downloadable: boolean;
+  } | null;
+  quiz: {
+    title: string;
+    time_limit: number;
+    pass_mark: number;
+    questions: Array<{
+      id: string;
+      question: string;
+      question_type: "MCQ" | "MULTIPLE_SELECT" | "TRUE_FALSE";
+      options: string[];
+      explanation: string;
+    }>;
+  } | null;
+}
+
 export interface StudentCourseRoadmapData {
   course: StudentCourse & {
     subtitle: string;
@@ -80,6 +133,7 @@ export interface StudentCourseRoadmapData {
     completed_modules: number;
     total_lessons: number;
     completed_lessons: number;
+    current_lesson_id: string | null;
     next_lesson: {
       id: string;
       title: string;
@@ -99,11 +153,14 @@ export interface StudentDashboardData {
   };
   stats: {
     enrolled_courses: number;
+    completed_courses: number;
     total_lessons_completed: number;
     total_lessons: number;
     completion_rate: number;
     issued_certificates: number;
+    current_streak: number;
   };
+  activity_last_7_days: StudentActivityDay[];
   enrolled_courses: StudentCourse[];
   upcoming_lessons: Array<{
     course_id: string;
@@ -124,6 +181,73 @@ export interface StudentEnrollResponse {
     payment_ref: string;
     bkash_url: string;
     invoice: string;
+  };
+}
+
+export interface StudentActivityDay {
+  date: string;
+  login_count: number;
+  lesson_completion_count: number;
+  total_count: number;
+  is_active: boolean;
+}
+
+export interface StudentCertificate {
+  id: string;
+  certificate_no: string;
+  course_id: string;
+  course_title: string;
+  issued_at: string;
+  verification_status: "verified" | "unverified";
+  downloadable: boolean;
+}
+
+export interface StudentCertificateDownload {
+  certificate_no: string;
+  file_name: string;
+  pdf_base64: string;
+}
+
+export interface StudentOrder {
+  id: string;
+  invoice: string;
+  trx_id: string;
+  payment_id: string | null;
+  course_id: string | null;
+  course_name: string;
+  amount: number;
+  gateway: "bKash" | "Nagad" | "Card";
+  status: "pending" | "verified" | "failed";
+  submitted_at: string;
+  manually_verified_by: string | null;
+}
+
+export interface StudentLessonMutationResponse {
+  current_step: "video" | "quiz" | "note" | "completed";
+  progress: {
+    video_watch_percent: number;
+    video_completed: boolean;
+    quiz_completed: boolean;
+    quiz_score: number;
+    note_completed: boolean;
+    lesson_completed: boolean;
+    completed_at: string | null;
+  };
+  course: {
+    progress_percent: number;
+    total_lessons: number;
+    completed_lessons_count: number;
+    is_course_completed: boolean;
+  };
+}
+
+export interface StudentQuizSubmissionResponse extends StudentLessonMutationResponse {
+  quiz: {
+    correct_count: number;
+    total_questions: number;
+    percent: number;
+    pass_mark: number;
+    passed: boolean;
   };
 }
 
@@ -188,6 +312,7 @@ export function setStudentSession(token: string): void {
 
   window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
   document.cookie = `${TOKEN_COOKIE_KEY}=${encodeURIComponent(token)}; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+  window.dispatchEvent(new Event("ap-student-session-change"));
 }
 
 export function clearStudentSession(): void {
@@ -195,6 +320,7 @@ export function clearStudentSession(): void {
 
   window.localStorage.removeItem(TOKEN_STORAGE_KEY);
   document.cookie = `${TOKEN_COOKIE_KEY}=; Path=/; Max-Age=0; SameSite=Lax`;
+  window.dispatchEvent(new Event("ap-student-session-change"));
 }
 
 async function requestApi<T>(
@@ -377,6 +503,81 @@ export async function enrollInCourse(
     },
     { auth: true, token },
   );
+}
+
+export async function updateStudentLessonVideoProgress(
+  courseId: string,
+  lessonId: string,
+  watchPercent: number,
+  token?: string,
+): Promise<StudentLessonMutationResponse> {
+  return requestApi<StudentLessonMutationResponse>(
+    `/student/courses/${courseId}/lessons/${lessonId}/video-progress`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ watch_percent: watchPercent }),
+    },
+    { auth: true, token },
+  );
+}
+
+export async function submitStudentLessonQuiz(
+  courseId: string,
+  lessonId: string,
+  answers: Record<string, string[]>,
+  token?: string,
+): Promise<StudentQuizSubmissionResponse> {
+  return requestApi<StudentQuizSubmissionResponse>(
+    `/student/courses/${courseId}/lessons/${lessonId}/submit-quiz`,
+    {
+      method: "POST",
+      body: JSON.stringify({ answers }),
+    },
+    { auth: true, token },
+  );
+}
+
+export async function completeStudentLessonNote(
+  courseId: string,
+  lessonId: string,
+  token?: string,
+): Promise<StudentLessonMutationResponse> {
+  return requestApi<StudentLessonMutationResponse>(
+    `/student/courses/${courseId}/lessons/${lessonId}/complete-note`,
+    {
+      method: "POST",
+    },
+    { auth: true, token },
+  );
+}
+
+export async function getStudentCertificates(
+  token?: string,
+  lang: Locale = "en",
+): Promise<StudentCertificate[]> {
+  return requestApi<StudentCertificate[]>("/student/certificates", {}, {
+    auth: true,
+    token,
+    query: { lang },
+  });
+}
+
+export async function downloadStudentCertificate(
+  certificateId: string,
+  token?: string,
+): Promise<StudentCertificateDownload> {
+  return requestApi<StudentCertificateDownload>(
+    `/student/certificates/${certificateId}/download`,
+    {},
+    { auth: true, token },
+  );
+}
+
+export async function getStudentOrders(token?: string): Promise<StudentOrder[]> {
+  return requestApi<StudentOrder[]>("/student/orders", {}, {
+    auth: true,
+    token,
+  });
 }
 
 export async function completeNextLesson(

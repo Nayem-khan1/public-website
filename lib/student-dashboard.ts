@@ -1,5 +1,5 @@
 import type { Locale } from "@/lib/i18n/config";
-import type { StudentCourse } from "@/lib/student-api";
+import type { StudentActivityDay, StudentCourse } from "@/lib/student-api";
 
 export type StudentCourseFilter = "all" | "active" | "completed" | "locked";
 export type StudentCourseSort = "recent" | "progress" | "title";
@@ -16,6 +16,17 @@ const UNITS: Array<{ amount: number; unit: Intl.RelativeTimeFormatUnit }> = [
 
 function getLocaleTag(locale: Locale): string {
   return locale === "bn" ? "bn-BD" : "en-US";
+}
+
+export function formatActivityDayLabel(value: string, locale: Locale): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "--";
+  }
+
+  return new Intl.DateTimeFormat(getLocaleTag(locale), {
+    weekday: "short",
+  }).format(date);
 }
 
 export function formatRelativeDate(value: string, locale: Locale): string {
@@ -111,4 +122,19 @@ export function getCourseActivityCounts(courses: StudentCourse[]) {
     locked: courses.filter((course) => course.access_status === "locked").length,
     remainingLessons: courses.reduce((sum, course) => sum + course.remaining_lessons, 0),
   };
+}
+
+export function getActivityTotals(days: StudentActivityDay[]) {
+  return days.reduce(
+    (totals, day) => ({
+      activeDays: totals.activeDays + (day.is_active ? 1 : 0),
+      logins: totals.logins + day.login_count,
+      lessonCompletions: totals.lessonCompletions + day.lesson_completion_count,
+    }),
+    {
+      activeDays: 0,
+      logins: 0,
+      lessonCompletions: 0,
+    },
+  );
 }

@@ -14,7 +14,6 @@ import {
   type StudentCourseSort,
 } from "@/lib/student-dashboard";
 import {
-  completeNextLesson,
   getStudentAccessToken,
   getStudentCourses,
   type StudentCourse,
@@ -26,7 +25,6 @@ export default function MyCoursesPage() {
   const [courses, setCourses] = useState<StudentCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [actionLoadingCourseId, setActionLoadingCourseId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState<StudentCourseFilter>("all");
   const [sort, setSort] = useState<StudentCourseSort>("recent");
@@ -56,30 +54,6 @@ export default function MyCoursesPage() {
   useEffect(() => {
     void loadCourses();
   }, [loadCourses]);
-
-  async function handleCompleteNextLesson(courseId: string) {
-    const token = getStudentAccessToken();
-    if (!token) {
-      setError(t("dashboard.authRequired"));
-      return;
-    }
-
-    setActionLoadingCourseId(courseId);
-    setError(null);
-
-    try {
-      await completeNextLesson(courseId, token);
-      await loadCourses();
-    } catch (actionError) {
-      setError(
-        actionError instanceof Error
-          ? actionError.message
-          : t("dashboard.updateCourseProgressFailed"),
-      );
-    } finally {
-      setActionLoadingCourseId(null);
-    }
-  }
 
   const counts = getCourseActivityCounts(courses);
   const visibleCourses = filterAndSortStudentCourses(courses, {
@@ -183,8 +157,6 @@ export default function MyCoursesPage() {
               key={course.enrollment_id}
               course={course}
               locale={locale}
-              actionLoadingCourseId={actionLoadingCourseId}
-              onCompleteNext={handleCompleteNextLesson}
             />
           ))}
         </div>

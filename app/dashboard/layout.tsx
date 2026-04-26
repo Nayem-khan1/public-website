@@ -4,18 +4,21 @@ import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Award,
+  BarChart3,
   BookOpen,
   Globe,
   LayoutDashboard,
   LogOut,
   Menu,
+  ReceiptText,
   Settings,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useAppTranslation } from "@/contexts/LanguageContext";
-import { clearStudentSession, getStudentAccessToken, getStudentProfile } from "@/lib/student-api";
+import { useStudentSession } from "@/hooks/use-student-session";
 import { cn } from "@/lib/utils";
 
 const NAV_ICON_CLASS = "h-5 w-5 shrink-0";
@@ -33,17 +36,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [loadingProfile, setLoadingProfile] = useState(true);
-  const [profile, setProfile] = useState<{
-    name: string;
-    email: string;
-    enrolled_courses_count: number;
-    status: "active" | "inactive";
-  } | null>(null);
+  const { profile, isLoading, isAuthenticated, logout } = useStudentSession();
 
   const sidebarLinks = [
     { href: "/dashboard", label: t("dashboard.overview"), icon: LayoutDashboard },
     { href: "/dashboard/courses", label: t("dashboard.myCourses"), icon: BookOpen },
+    { href: "/dashboard/certificates", label: t("dashboard.certificates"), icon: Award },
+    { href: "/dashboard/report", label: t("dashboard.learningReport"), icon: BarChart3 },
+    { href: "/dashboard/orders", label: t("dashboard.paymentOrders"), icon: ReceiptText },
     { href: "/dashboard/settings", label: t("dashboard.settings"), icon: Settings },
   ];
 
@@ -51,48 +51,17 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     sidebarLinks.find((link) => isLinkActive(pathname, link.href)) ?? sidebarLinks[0];
 
   useEffect(() => {
-    const token = getStudentAccessToken();
-    if (!token) {
+    if (!isLoading && !isAuthenticated) {
       router.replace(`/login?next=${encodeURIComponent(pathname || "/dashboard")}`);
-      return;
     }
-
-    let mounted = true;
-
-    void (async () => {
-      try {
-        const data = await getStudentProfile(token);
-        if (!mounted) {
-          return;
-        }
-
-        setProfile({
-          name: data.name,
-          email: data.email,
-          enrolled_courses_count: data.enrolled_courses_count,
-          status: data.status,
-        });
-      } catch {
-        clearStudentSession();
-        router.replace(`/login?next=${encodeURIComponent(pathname || "/dashboard")}`);
-      } finally {
-        if (mounted) {
-          setLoadingProfile(false);
-        }
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, [pathname, router]);
+  }, [isAuthenticated, isLoading, pathname, router]);
 
   function handleLogout() {
-    clearStudentSession();
+    logout();
     router.replace("/login");
   }
 
-  if (loadingProfile && !profile) {
+  if (isLoading && !profile) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,rgba(81,74,137,0.22),transparent_45%),linear-gradient(180deg,#0f172a_0%,#111827_100%)] px-6 text-white">
         <div className="w-full max-w-md rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center backdrop-blur-xl">
@@ -246,6 +215,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   <Globe className="mr-3 h-4 w-4" />
                   {t("common.backToWebsite")}
                 </Link>
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  handleLogout();
+                  setSidebarOpen(false);
+                }}
+                className="w-full justify-start rounded-2xl px-4 text-white/70 hover:bg-white/8 hover:text-white"
+              >
+                <LogOut className="mr-3 h-4 w-4" />
+                {t("dashboard.logOut")}
               </Button>
             </div>
           </div>
