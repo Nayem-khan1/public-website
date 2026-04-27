@@ -2,13 +2,12 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, BookOpen, Clock, History, PlayCircle } from "lucide-react";
+import { PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAppTranslation } from "@/contexts/LanguageContext";
-import type { Locale } from "@/lib/i18n/config";
-import { formatRelativeDate } from "@/lib/student-dashboard";
 import type { StudentCourse } from "@/lib/student-api";
 import { cn } from "@/lib/utils";
+import { ProgressBar } from "./progress-bar";
 import { StatePill } from "./state-pill";
 
 const FALLBACK_IMAGE =
@@ -16,11 +15,9 @@ const FALLBACK_IMAGE =
 
 export function CourseProgressCard({
   course,
-  locale,
   className,
 }: {
   course: StudentCourse;
-  locale: Locale;
   className?: string;
 }) {
   const { t } = useAppTranslation();
@@ -33,106 +30,70 @@ export function CourseProgressCard({
   return (
     <article
       className={cn(
-        "overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_22px_55px_-34px_rgba(15,23,42,0.32)]",
+        "overflow-hidden rounded-[1.6rem] border border-slate-200 bg-white shadow-[0_20px_50px_-34px_rgba(15,23,42,0.22)]",
         className,
       )}
     >
-      <div className="relative h-44 overflow-hidden">
-        <img
-          src={course.thumbnail || FALLBACK_IMAGE}
-          alt={course.title}
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/35 to-transparent" />
-        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-          <StatePill
-            variant={
-              course.status === "completed"
-                ? "completed"
-                : course.status === "paused"
-                  ? "paused"
-                  : "active"
-            }
+      <div className="flex items-start gap-4 border-b border-slate-100 p-5">
+        <div className="h-16 w-24 overflow-hidden rounded-[1.1rem] bg-slate-100">
+          <img
+            src={course.thumbnail || FALLBACK_IMAGE}
+            alt={course.title}
+            className="h-full w-full object-cover"
           />
-          {course.access_status === "locked" ? <StatePill variant="locked" /> : null}
         </div>
-        <div className="absolute bottom-4 left-4 right-4">
-          <h3 className="line-clamp-2 text-xl font-bold text-white">{course.title}</h3>
+
+        <div className="min-w-0 flex-1">
+          <div className="mb-3 flex flex-wrap gap-2">
+            <StatePill
+              variant={
+                course.status === "completed"
+                  ? "completed"
+                  : course.status === "paused"
+                    ? "paused"
+                    : "active"
+              }
+            />
+            {course.access_status === "locked" ? <StatePill variant="locked" /> : null}
+          </div>
+
+          <h3 className="line-clamp-2 text-lg font-bold text-slate-950">{course.title}</h3>
+
+          {course.current_module_title ? (
+            <p className="mt-1 line-clamp-1 text-sm text-slate-500">
+              {course.current_module_title}
+            </p>
+          ) : null}
         </div>
       </div>
 
-      <div className="space-y-5 p-6">
-        <div className="grid gap-3 text-sm text-slate-600 sm:grid-cols-3">
-          <div className="rounded-2xl bg-slate-50 px-4 py-3">
-            <div className="mb-1 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-slate-400">
-              <BookOpen className="h-3.5 w-3.5" />
-              {t("common.lessons")}
-            </div>
-            <p className="font-semibold text-slate-900">{course.total_lessons}</p>
-          </div>
-          <div className="rounded-2xl bg-slate-50 px-4 py-3">
-            <div className="mb-1 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-slate-400">
-              <Clock className="h-3.5 w-3.5" />
-              {t("dashboard.duration")}
-            </div>
-            <p className="font-semibold text-slate-900">
-              {course.duration || t("common.selfPaced")}
-            </p>
-          </div>
-          <div className="rounded-2xl bg-slate-50 px-4 py-3">
-            <div className="mb-1 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-slate-400">
-              <History className="h-3.5 w-3.5" />
-              {t("dashboard.lastActive")}
-            </div>
-            <p className="font-semibold text-slate-900">
-              {formatRelativeDate(course.last_activity_at, locale)}
-            </p>
-          </div>
-        </div>
-
-        <div className="rounded-[1.35rem] border border-slate-200 bg-slate-50 px-4 py-4">
+      <div className="space-y-4 p-5">
+        <div className="rounded-[1.2rem] border border-slate-200 bg-slate-50 px-4 py-4">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
             {focusLabel}
           </p>
           <p className="mt-2 text-sm font-semibold text-slate-950">{focusValue}</p>
-          {course.current_module_title ? (
-            <p className="mt-1 text-xs text-slate-500">{course.current_module_title}</p>
-          ) : null}
         </div>
 
-        <div>
-          <div className="mb-2 flex items-center justify-between text-sm">
-            <span className="font-medium text-slate-600">{t("dashboard.progress")}</span>
-            <span className="font-semibold text-slate-900">{course.progress_percent}%</span>
-          </div>
-          <div className="h-3 overflow-hidden rounded-full bg-slate-100">
-            <div
-              className="h-full rounded-full bg-[linear-gradient(90deg,#f1024c_0%,#514a89_100%)] transition-all duration-500"
-              style={{ width: `${course.progress_percent}%` }}
-            />
-          </div>
-          <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
-            <span>
-              {course.completed_lessons_count}/{course.total_lessons} {t("dashboard.lessonsDone")}
-            </span>
-            <span>{t("dashboard.lessonsRemaining", { count: course.remaining_lessons })}</span>
-          </div>
+        <ProgressBar
+          value={course.progress_percent}
+          label={t("dashboard.progress")}
+          valueLabel={`${course.progress_percent}%`}
+        />
+
+        <div className="flex items-center justify-between gap-3 text-sm text-slate-500">
+          <span>
+            {course.completed_lessons_count}/{course.total_lessons} {t("common.lessons")}
+          </span>
+          <span>{t("dashboard.lessonsRemaining", { count: course.remaining_lessons })}</span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <Button asChild className="rounded-full bg-slate-950 text-white hover:bg-slate-800">
-            <Link href={`/dashboard/courses/${course.slug}`}>
-              <PlayCircle className="mr-2 h-4 w-4" />
-              {t("dashboard.continueAction")}
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="rounded-full border-slate-200">
-            <Link href={`/courses/${course.slug}`}>
-              {t("dashboard.openCourse")}
-              <ArrowUpRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
+        <Button asChild className="w-full rounded-full bg-slate-950 text-white hover:bg-slate-800">
+          <Link href={`/dashboard/courses/${course.slug}`}>
+            <PlayCircle className="mr-2 h-4 w-4" />
+            {t("dashboard.continueAction")}
+          </Link>
+        </Button>
       </div>
     </article>
   );
