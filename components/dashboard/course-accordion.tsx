@@ -2,39 +2,72 @@
 
 import { Accordion } from "@/components/ui/accordion";
 import { useAppTranslation } from "@/contexts/LanguageContext";
-import type { StudentRoadmapModule } from "@/lib/student-api";
+import type {
+  StudentLessonContent,
+  StudentQuizSubmissionResponse,
+  StudentRoadmapModule,
+} from "@/lib/student-api";
 import { cn } from "@/lib/utils";
 import { AccordionItem } from "./accordion-item";
+
+type QuizSelections = Record<string, Record<string, string[]>>;
+type QuizResults = Record<string, StudentQuizSubmissionResponse["quiz"]>;
 
 export function CourseAccordion({
   modules,
   activeModuleId,
   activeLessonId,
+  activeContentId,
+  isCourseLocked,
+  actionLoading,
+  quizSelections,
+  quizResults,
   onToggleModule,
   onSelectLesson,
+  onSelectContent,
+  onCompleteVideo,
+  onCompleteNote,
+  onAnswerChange,
+  onSubmitQuiz,
+  onResetQuiz,
   className,
 }: {
   modules: StudentRoadmapModule[];
   activeModuleId: string;
   activeLessonId: string;
+  activeContentId: string;
+  isCourseLocked: boolean;
+  actionLoading: boolean;
+  quizSelections: QuizSelections;
+  quizResults: QuizResults;
   onToggleModule: (moduleId: string) => void;
   onSelectLesson: (moduleId: string, lessonId: string) => void;
+  onSelectContent: (contentId: string) => void;
+  onCompleteVideo: (lessonId: string) => void;
+  onCompleteNote: (lessonId: string) => void;
+  onAnswerChange: (
+    quizId: string,
+    questionId: string,
+    option: string,
+    questionType: "MCQ" | "MULTIPLE_SELECT" | "TRUE_FALSE",
+    checked: boolean,
+  ) => void;
+  onSubmitQuiz: (lessonId: string, contents: StudentLessonContent[]) => void;
+  onResetQuiz: (lessonId: string, quizContentIds: string[]) => void;
   className?: string;
 }) {
   const { t } = useAppTranslation();
 
   return (
-    <aside
+    <section
       className={cn(
-        "rounded-[1.8rem] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.18)]",
+        "flex flex-col gap-3",
         className,
       )}
     >
-      <div className="mb-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-          {t("dashboard.roadmapOverview")}
-        </p>
-        <h3 className="mt-2 text-xl font-bold text-slate-950">{t("dashboard.modulesTitle")}</h3>
+      <div className="sr-only">
+        {/* Screen reader only as the UI doesn't have a specific 'roadmap overview' title above modules anymore */}
+        <h3 className="text-xl font-bold text-slate-950">{t("dashboard.modulesTitle")}</h3>
       </div>
 
       {!modules.length ? (
@@ -54,11 +87,22 @@ export function CourseAccordion({
               key={module.id}
               module={module}
               activeLessonId={activeLessonId}
+              activeContentId={activeContentId}
+              isCourseLocked={isCourseLocked}
+              actionLoading={actionLoading}
+              quizSelections={quizSelections}
+              quizResults={quizResults}
               onSelectLesson={onSelectLesson}
+              onSelectContent={onSelectContent}
+              onCompleteVideo={onCompleteVideo}
+              onCompleteNote={onCompleteNote}
+              onAnswerChange={onAnswerChange}
+              onSubmitQuiz={onSubmitQuiz}
+              onResetQuiz={onResetQuiz}
             />
           ))}
         </Accordion>
       )}
-    </aside>
+    </section>
   );
 }

@@ -248,6 +248,15 @@ export interface StudentQuizSubmissionResponse extends StudentLessonMutationResp
     percent: number;
     pass_mark: number;
     passed: boolean;
+    cards: Array<{
+      content_id: string;
+      title: string;
+      correct_count: number;
+      total_questions: number;
+      percent: number;
+      pass_mark: number;
+      passed: boolean;
+    }>;
   };
 }
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { Clock3, ExternalLink, PlayCircle } from "lucide-react";
+import { useState } from "react";
+import { Clock3, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAppTranslation } from "@/contexts/LanguageContext";
 import { ProgressBar } from "./progress-bar";
@@ -46,7 +47,7 @@ function getVideoEmbedUrl(url: string): string | null {
     return null;
   }
 
-  return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+  return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1&showinfo=0&controls=1&iv_load_policy=3`;
 }
 
 export function VideoPlayer({
@@ -72,30 +73,46 @@ export function VideoPlayer({
   onComplete: () => void;
 }) {
   const { t } = useAppTranslation();
+  const [isPlaying, setIsPlaying] = useState(false);
 
   if (!video) {
-    return (
-      <div className="rounded-[1.6rem] border border-dashed border-slate-200 bg-slate-50 px-5 py-12 text-center text-sm text-slate-500">
-        {t("dashboard.noVideoLesson")}
-      </div>
-    );
+    return null;
   }
 
   const embedUrl = getVideoEmbedUrl(video.url);
 
+  // Use the provided thumbnail or fallback to YouTube's default thumbnail if it's a YouTube video
+  const youtubeId = extractYouTubeVideoId(video.url);
+  const coverImage = video.thumbnail || (youtubeId ? `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg` : "");
+
   return (
     <div className="space-y-5">
-      <div className="overflow-hidden rounded-[1.6rem] border border-slate-200 bg-slate-950">
+      <div className="relative overflow-hidden rounded-[1.6rem] border border-slate-200 bg-slate-950 aspect-video group shadow-md">
         {embedUrl ? (
-          <div className="aspect-video">
+          isPlaying ? (
             <iframe
               src={embedUrl}
               title={title}
-              className="h-full w-full"
+              className="h-full w-full border-0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
-          </div>
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center cursor-pointer" onClick={() => setIsPlaying(true)}>
+              {coverImage && (
+                <img src={coverImage} alt={title} className="absolute inset-0 w-full h-full object-cover opacity-80 transition-opacity group-hover:opacity-70" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+              
+              <div className="relative z-10 flex h-20 w-20 items-center justify-center rounded-full bg-primary/90 text-white shadow-[0_0_30px_rgba(var(--primary),0.5)] transition-transform group-hover:scale-110">
+                <PlayCircle className="h-10 w-10 fill-white text-primary/90" />
+              </div>
+
+              <div className="absolute bottom-6 left-6 right-6 z-10">
+                <h3 className="text-xl font-bold text-white line-clamp-2">{title}</h3>
+              </div>
+            </div>
+          )
         ) : (
           <div className="flex aspect-video items-center justify-center p-8 text-center text-sm text-white/75">
             {t("dashboard.noVideoLesson")}
@@ -105,23 +122,14 @@ export function VideoPlayer({
 
       <div className="flex flex-wrap gap-3">
         {video.duration ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600">
+          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm">
             <Clock3 className="h-4 w-4" />
             {video.duration}
           </div>
         ) : null}
-
-        {video.url ? (
-          <Button asChild variant="outline" className="rounded-full border-slate-200">
-            <a href={video.url} target="_blank" rel="noreferrer">
-              <ExternalLink className="mr-2 h-4 w-4" />
-              {t("dashboard.openVideo")}
-            </a>
-          </Button>
-        ) : null}
       </div>
 
-      <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-5">
+      <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-5 shadow-sm">
         <ProgressBar
           value={progressPercent}
           label={t("dashboard.progress")}
@@ -135,7 +143,7 @@ export function VideoPlayer({
             type="button"
             onClick={onComplete}
             disabled={disabled || isCompleted || isUpdating}
-            className="rounded-full bg-slate-950 text-white hover:bg-slate-800"
+            className="rounded-full bg-slate-950 px-6 text-white hover:bg-slate-800"
           >
             {isCompleted ? (
               t("dashboard.videoCompleted")

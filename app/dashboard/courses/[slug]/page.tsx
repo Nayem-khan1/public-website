@@ -1,18 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import { CourseAccordion } from "@/components/dashboard/course-accordion";
-import {
-  LessonTabs,
-  type LessonTabValue,
-} from "@/components/dashboard/lesson-tabs";
-import { ProgressBar } from "@/components/dashboard/progress-bar";
-import { StatePill } from "@/components/dashboard/state-pill";
-import { VideoPlayer } from "@/components/dashboard/video-player";
-import { Button } from "@/components/ui/button";
+import { CourseContentViewer } from "@/components/dashboard/course-content-viewer";
 import { useAppTranslation, useLanguage } from "@/contexts/LanguageContext";
 import {
   completeStudentLessonNote,
@@ -24,7 +16,6 @@ import {
   type StudentCourseRoadmapData,
   type StudentLessonContent,
   type StudentQuizSubmissionResponse,
-  type StudentRoadmapLesson,
   type StudentRoadmapModule,
   updateStudentLessonVideoProgress,
 } from "@/lib/student-api";
@@ -97,31 +88,6 @@ function getPreferredLessonLocation(
   };
 }
 
-function getPreferredWorkspaceTab(
-  lesson: StudentRoadmapLesson | null,
-): LessonTabValue {
-  if (!lesson) {
-    return "notes";
-  }
-
-  if (
-    lesson.progress.current_step === "quiz" &&
-    lesson.contents.some((content) => content.type === "quiz" && content.quiz)
-  ) {
-    return "quiz";
-  }
-
-  if (lesson.contents.some((content) => content.type === "pdf" && content.pdf)) {
-    return "notes";
-  }
-
-  if (lesson.contents.some((content) => content.type === "quiz" && content.quiz)) {
-    return "quiz";
-  }
-
-  return "notes";
-}
-
 export default function StudentCourseRoadmapPage() {
   const { locale } = useLanguage();
   const { t } = useAppTranslation();
@@ -132,7 +98,7 @@ export default function StudentCourseRoadmapPage() {
   const [roadmap, setRoadmap] = useState<StudentCourseRoadmapData | null>(null);
   const [activeModuleId, setActiveModuleId] = useState("");
   const [activeLessonId, setActiveLessonId] = useState("");
-  const [activeTab, setActiveTab] = useState<LessonTabValue>("notes");
+  const [activeContentId, setActiveContentId] = useState("");
   const [quizSelections, setQuizSelections] = useState<QuizSelections>({});
   const [quizResults, setQuizResults] = useState<QuizResults>({});
   const [loading, setLoading] = useState(true);
@@ -167,6 +133,16 @@ export default function StudentCourseRoadmapPage() {
         token,
         locale,
       );
+      
+      const typeOrder: Record<string, number> = { video: 1, pdf: 2, quiz: 3 };
+      nextRoadmap.modules.forEach(m => {
+        m.lessons.forEach(l => {
+          l.contents.sort((a, b) => {
+            return (typeOrder[a.type] || 99) - (typeOrder[b.type] || 99);
+          });
+        });
+      });
+
       setRoadmap(nextRoadmap);
     } catch (loadError) {
       setError(
@@ -191,41 +167,75 @@ export default function StudentCourseRoadmapPage() {
     const currentLessonLocation = activeLessonId
       ? findLessonLocation(roadmap.modules, activeLessonId)
       : null;
+    const hasActiveModule = activeModuleId
+      ? Boolean(getModuleById(roadmap.modules, activeModuleId))
+      : false;
 
-    if (currentLessonLocation) {
-      if (!getModuleById(roadmap.modules, activeModuleId)) {
-        setActiveModuleId(currentLessonLocation.moduleId);
+    if (!activeModuleId && !activeLessonId && !activeContentId) {
+      const fallbackLessonLocation = getPreferredLessonLocation(roadmap);
+      if (fallbackLessonLocation) {
+        setActiveModuleId(fallbackLessonLocation.moduleId);
+        setActiveLessonId(fallbackLessonLocation.lessonId);
+        
+        const mod = getModuleById(roadmap.modules, fallbackLessonLocation.moduleId);
+        const les = mod?.lessons.find(l => l.id === fallbackLessonLocation.lessonId);
+        if (les?.contents?.[0]) {
+          setActiveContentId(les.contents[0].id);
+        }
       }
       return;
     }
 
-    const fallbackLessonLocation = getPreferredLessonLocation(roadmap);
-    if (fallbackLessonLocation) {
-      setActiveModuleId(fallbackLessonLocation.moduleId);
-      setActiveLessonId(fallbackLessonLocation.lessonId);
+    if (activeLessonId && !currentLessonLocation) {
+      const fallbackLessonLocation = getPreferredLessonLocation(roadmap);
+      if (fallbackLessonLocation) {
+        setActiveModuleId(fallbackLessonLocation.moduleId);
+        setActiveLessonId(fallbackLessonLocation.lessonId);
+
+        const mod = getModuleById(roadmap.modules, fallbackLessonLocation.moduleId);
+        const les = mod?.lessons.find(l => l.id === fallbackLessonLocation.lessonId);
+        if (les?.contents?.[0]) {
+          setActiveContentId(les.contents[0].id);
+        }
+      }
+      return;
+    }
+
+    if (activeModuleId && !hasActiveModule) {
+      const fallbackLessonLocation =
+        currentLessonLocation ?? getPreferredLessonLocation(roadmap);
+
+      if (fallbackLessonLocation) {
+        setActiveModuleId(fallbackLessonLocation.moduleId);
+        if (!activeLessonId) {
+          setActiveLessonId(fallbackLessonLocation.lessonId);
+        }
+      } else {
+        setActiveModuleId("");
+      }
     }
   }, [activeLessonId, activeModuleId, roadmap]);
-
-  const activeLessonLocation =
-    roadmap && activeLessonId ? findLessonLocation(roadmap.modules, activeLessonId) : null;
-  const activeLessonModule =
-    roadmap && activeLessonLocation
-      ? getModuleById(roadmap.modules, activeLessonLocation.moduleId)
-      : null;
-  const activeLesson =
-    activeLessonModule && activeLessonLocation
-      ? activeLessonModule.lessons.find(
-          (lesson) => lesson.id === activeLessonLocation.lessonId,
-        ) ?? null
-      : null;
-
-  useEffect(() => {
-    setActiveTab(getPreferredWorkspaceTab(activeLesson));
-  }, [activeLesson]);
 
   function handleSelectLesson(moduleId: string, lessonId: string) {
     setActiveModuleId(moduleId);
     setActiveLessonId(lessonId);
+    
+    // Automatically select the first content when a lesson is selected
+    if (roadmap) {
+      const mod = getModuleById(roadmap.modules, moduleId);
+      const les = mod?.lessons.find(l => l.id === lessonId);
+      if (les?.contents?.[0]) {
+        setActiveContentId(les.contents[0].id);
+      }
+    }
+  }
+
+  function handleSelectContent(contentId: string) {
+    setActiveContentId(contentId);
+  }
+
+  function handleToggleModule(moduleId: string) {
+    setActiveModuleId(moduleId);
   }
 
   function updateQuizSelection(
@@ -257,8 +267,8 @@ export default function StudentCourseRoadmapPage() {
     });
   }
 
-  async function handleMarkVideoComplete() {
-    if (!roadmap || !activeLesson) {
+  async function handleMarkVideoComplete(lessonId: string) {
+    if (!roadmap) {
       return;
     }
 
@@ -274,7 +284,7 @@ export default function StudentCourseRoadmapPage() {
     try {
       await updateStudentLessonVideoProgress(
         roadmap.course.course_id,
-        activeLesson.id,
+        lessonId,
         100,
         token,
       );
@@ -290,8 +300,8 @@ export default function StudentCourseRoadmapPage() {
     }
   }
 
-  async function handleCompleteNote() {
-    if (!roadmap || !activeLesson) {
+  async function handleCompleteNote(lessonId: string) {
+    if (!roadmap) {
       return;
     }
 
@@ -307,7 +317,7 @@ export default function StudentCourseRoadmapPage() {
     try {
       await completeStudentLessonNote(
         roadmap.course.course_id,
-        activeLesson.id,
+        lessonId,
         token,
       );
       await loadRoadmap();
@@ -322,14 +332,19 @@ export default function StudentCourseRoadmapPage() {
     }
   }
 
-  async function submitQuiz(content: StudentLessonContent) {
-    if (!content.quiz || !roadmap || !activeLesson) {
+  async function submitQuiz(
+    lessonId: string,
+    contents: StudentLessonContent[],
+  ) {
+    if (!contents.length || !roadmap) {
       return;
     }
 
-    const answers = quizSelections[content.id] ?? {};
-    const hasIncompleteAnswers = content.quiz.questions.some(
-      (question) => (answers[question.id] ?? []).length === 0,
+    const hasIncompleteAnswers = contents.some((content) =>
+      (content.quiz?.questions ?? []).some(
+        (question) =>
+          ((quizSelections[content.id] ?? {})[question.id] ?? []).length === 0,
+      ),
     );
 
     if (hasIncompleteAnswers) {
@@ -347,16 +362,22 @@ export default function StudentCourseRoadmapPage() {
     setError(null);
 
     try {
+      const answers = contents.reduce<Record<string, string[]>>((allAnswers, content) => {
+        return {
+          ...allAnswers,
+          ...(quizSelections[content.id] ?? {}),
+        };
+      }, {});
       const response = await submitStudentLessonQuiz(
         roadmap.course.course_id,
-        activeLesson.id,
+        lessonId,
         answers,
         token,
       );
 
       setQuizResults((currentResults) => ({
         ...currentResults,
-        [content.id]: response.quiz,
+        [lessonId]: response.quiz,
       }));
       await loadRoadmap();
     } catch (actionError) {
@@ -370,95 +391,82 @@ export default function StudentCourseRoadmapPage() {
     }
   }
 
-  function resetQuiz(contentId: string) {
+  function resetQuiz(lessonId: string, quizContentIds: string[]) {
     setQuizResults((currentResults) => {
       const nextResults = { ...currentResults };
-      delete nextResults[contentId];
+      delete nextResults[lessonId];
       return nextResults;
     });
 
     setQuizSelections((currentSelections) => {
       const nextSelections = { ...currentSelections };
-      delete nextSelections[contentId];
+      quizContentIds.forEach((contentId) => {
+        delete nextSelections[contentId];
+      });
       return nextSelections;
     });
   }
 
-  const lessonContents = activeLesson?.contents ?? [];
-  const videoContent =
-    lessonContents.find((content) => content.type === "video" && content.video) ?? null;
-  const noteContent =
-    lessonContents.find((content) => content.type === "pdf" && content.pdf) ?? null;
-  const quizContent =
-    lessonContents.find((content) => content.type === "quiz" && content.quiz) ?? null;
-  const lessonVideo = videoContent?.video ?? null;
   const courseProgress = roadmap?.course.progress_percent ?? selectedCourse?.progress_percent ?? 0;
   const completedLessons =
     roadmap?.course.completed_lessons_count ?? selectedCourse?.completed_lessons_count ?? 0;
   const totalLessons = roadmap?.course.total_lessons ?? selectedCourse?.total_lessons ?? 0;
-  const remainingLessons =
-    roadmap?.course.remaining_lessons ?? selectedCourse?.remaining_lessons ?? 0;
   const isLockedCourse = roadmap?.course.access_status === "locked";
-  const notesLocked = isLockedCourse || Boolean(noteContent && !noteContent.is_unlocked);
-  const quizLocked = isLockedCourse || Boolean(quizContent && !quizContent.is_unlocked);
 
   return (
     <div className="space-y-6">
-      <section className="rounded-[2rem] border border-slate-200 bg-white px-6 py-8 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.18)] md:px-8">
-        <Button
-          asChild
-          variant="ghost"
-          className="mb-5 rounded-full px-0 text-slate-500 hover:bg-transparent hover:text-slate-950"
-        >
-          <Link href="/dashboard/courses">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            {t("dashboard.backToMyCourses")}
-          </Link>
-        </Button>
+      {/* Header section matching Mojaru design */}
+      <section className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
+          {loading
+            ? t("dashboard.loadingDashboard")
+            : t("dashboard.classPrefix", "ক্লাস:") + " " + (roadmap?.course.title || selectedCourse?.title || t("dashboard.courseNotFound"))}
+        </h1>
+        
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-6 md:gap-10">
+            {/* Duration Info */}
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-slate-500">{t("course.duration", "Duration")}</p>
+                <p className="text-sm font-semibold text-slate-900">
+                  {roadmap?.course.duration || selectedCourse?.duration || "N/A"}
+                </p>
+              </div>
+            </div>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-              {t("dashboard.learningWorkspace")}
-            </p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-950 md:text-4xl">
-              {loading
-                ? t("dashboard.loadingDashboard")
-                : roadmap?.course.title ||
-                  selectedCourse?.title ||
-                  t("dashboard.courseNotFound")}
-            </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-              {roadmap?.course.subtitle || t("dashboard.workspaceSubtitle")}
-            </p>
-
-            <div className="mt-5 flex flex-wrap items-center gap-2">
-              <StatePill
-                variant={
-                  roadmap?.course.status === "completed"
-                    ? "completed"
-                    : roadmap?.course.status === "paused"
-                      ? "paused"
-                      : "active"
-                }
-              />
-              {isLockedCourse ? <StatePill variant="locked" /> : null}
-              {activeLesson ? <StatePill variant={activeLesson.status} /> : null}
+            {/* Total Lessons Info */}
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-slate-500">{t("course.lessons", "Lessons")}</p>
+                <p className="text-sm font-semibold text-slate-900">
+                  {totalLessons} {t("common.lessons", "Lessons")}
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5">
-            <ProgressBar
-              value={courseProgress}
-              label={t("dashboard.progress")}
-              valueLabel={`${courseProgress}%`}
-            />
-
-            <div className="mt-4 flex items-center justify-between gap-3 text-sm text-slate-500">
-              <span>
-                {completedLessons}/{totalLessons} {t("common.lessons")}
-              </span>
-              <span>{t("dashboard.lessonsRemaining", { count: remainingLessons })}</span>
+          {/* Progress Card */}
+          <div className="flex items-center gap-4 rounded-xl bg-white p-3 shadow-[0_2px_10px_rgba(0,0,0,0.05)] border border-slate-100">
+            <div className="min-w-[140px]">
+              <p className="mb-1.5 text-xs font-bold text-slate-900">
+                {t("dashboard.courseProgress", "Course Progress")} {completedLessons}/{totalLessons}
+              </p>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                <div 
+                  className="h-full rounded-full bg-primary transition-all duration-500"  
+                  style={{ width: `${courseProgress}%` }} 
+                />
+              </div>
+            </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
             </div>
           </div>
         </div>
@@ -470,87 +478,59 @@ export default function StudentCourseRoadmapPage() {
         </div>
       ) : null}
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <article className="rounded-[1.8rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.18)]">
-          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-                {t("dashboard.lessonMaterials")}
-              </p>
-              <h3 className="mt-2 text-2xl font-bold text-slate-950">
-                {activeLesson?.title || t("dashboard.currentLesson")}
-              </h3>
-
-              <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-500">
-                {activeLessonModule ? (
-                  <span>
-                    {t("dashboard.moduleLabel", { number: activeLessonModule.order_no })} .{" "}
-                    {activeLessonModule.title}
-                  </span>
-                ) : null}
-
-                {activeLesson ? (
-                  <span>{t("dashboard.lessonNumber", { number: activeLesson.order_no })}</span>
-                ) : null}
-              </div>
-            </div>
-
-            {activeLesson ? <StatePill variant={activeLesson.status} /> : null}
+      {isLockedCourse ? (
+        <div className="rounded-[1.6rem] border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">
+          <div className="flex items-center gap-3 font-semibold text-rose-800">
+            <Lock className="h-5 w-5" />
+            {t("dashboard.lockedCourseMessage")}
           </div>
+          <p className="mt-3">{t("dashboard.lessonLockedMessage")}</p>
+        </div>
+      ) : null}
 
-          {isLockedCourse ? (
-            <div className="rounded-[1.6rem] border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">
-              <div className="flex items-center gap-3 font-semibold text-rose-800">
-                <Lock className="h-5 w-5" />
-                {t("dashboard.lockedCourseMessage")}
-              </div>
-              <p className="mt-3">{t("dashboard.lessonLockedMessage")}</p>
-            </div>
-          ) : activeLesson ? (
-            <div className="space-y-6">
-              <VideoPlayer
-                title={activeLesson.title || t("dashboard.currentLesson")}
-                video={lessonVideo}
-                progressPercent={activeLesson.progress.video_watch_percent ?? 0}
-                isCompleted={Boolean(videoContent?.is_completed)}
-                isUpdating={actionLoading}
-                disabled={actionLoading || !videoContent?.is_unlocked}
-                onComplete={() => void handleMarkVideoComplete()}
-              />
-
-              <LessonTabs
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                noteContent={noteContent}
-                quizContent={quizContent}
-                notesLocked={notesLocked}
-                quizLocked={quizLocked}
-                quizScore={activeLesson.progress.quiz_score}
-                actionLoading={actionLoading}
-                notesDisabled={actionLoading || !noteContent?.is_unlocked}
-                quizSelections={quizSelections}
-                quizResults={quizResults}
-                onCompleteNote={() => void handleCompleteNote()}
-                onAnswerChange={updateQuizSelection}
-                onSubmitQuiz={(content) => void submitQuiz(content)}
-                onResetQuiz={resetQuiz}
-              />
-            </div>
-          ) : (
-            <div className="rounded-[1.6rem] border border-dashed border-slate-200 bg-slate-50 px-5 py-12 text-center text-sm text-slate-500">
-              {loading ? t("dashboard.loadingDashboard") : t("dashboard.courseNotFound")}
-            </div>
-          )}
-        </article>
-
-        <CourseAccordion
-          modules={roadmap?.modules ?? []}
-          activeModuleId={activeModuleId}
-          activeLessonId={activeLessonId}
-          onToggleModule={setActiveModuleId}
-          onSelectLesson={handleSelectLesson}
-        />
-      </section>
+      {roadmap ? (
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="lg:col-span-2 xl:col-span-3">
+            <CourseContentViewer
+              lesson={roadmap.modules.flatMap(m => m.lessons).find(l => l.contents.some(c => c.id === activeContentId)) || null}
+              activeContentId={activeContentId}
+              isCourseLocked={isLockedCourse}
+              actionLoading={actionLoading}
+              quizSelections={quizSelections}
+              quizResult={roadmap.modules.flatMap(m => m.lessons).find(l => l.contents.some(c => c.id === activeContentId)) ? quizResults[roadmap.modules.flatMap(m => m.lessons).find(l => l.contents.some(c => c.id === activeContentId))!.id] || null : null}
+              onCompleteVideo={(lessonId) => void handleMarkVideoComplete(lessonId)}
+              onCompleteNote={(lessonId) => void handleCompleteNote(lessonId)}
+              onAnswerChange={updateQuizSelection}
+              onSubmitQuiz={(lessonId, contents) => void submitQuiz(lessonId, contents)}
+              onResetQuiz={resetQuiz}
+            />
+          </div>
+          <div className="lg:col-span-1">
+            <CourseAccordion
+              modules={roadmap.modules}
+              activeModuleId={activeModuleId}
+              activeLessonId={activeLessonId}
+              activeContentId={activeContentId}
+              isCourseLocked={isLockedCourse}
+              actionLoading={actionLoading}
+              quizSelections={quizSelections}
+              quizResults={quizResults}
+              onToggleModule={handleToggleModule}
+              onSelectLesson={handleSelectLesson}
+              onSelectContent={handleSelectContent}
+              onCompleteVideo={(lessonId) => void handleMarkVideoComplete(lessonId)}
+              onCompleteNote={(lessonId) => void handleCompleteNote(lessonId)}
+              onAnswerChange={updateQuizSelection}
+              onSubmitQuiz={(lessonId, contents) => void submitQuiz(lessonId, contents)}
+              onResetQuiz={resetQuiz}
+            />
+          </div>
+        </div>
+      ) : loading ? (
+        <div className="rounded-[1.6rem] border border-dashed border-slate-200 bg-slate-50 px-5 py-12 text-center text-sm text-slate-500">
+          {t("dashboard.loadingDashboard")}
+        </div>
+      ) : null}
     </div>
   );
 }
