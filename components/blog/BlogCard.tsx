@@ -1,25 +1,29 @@
 import Link from "next/link";
-import { Calendar, Clock3, ArrowRight } from "lucide-react";
+import { Calendar, Clock3, ArrowRight, User } from "lucide-react";
 import { formatDate } from "@/lib/i18n/format";
+import type { Locale } from "@/lib/i18n/config";
 
 export interface BlogPostItem {
-  id: string;
+  id: string | number;
   slug: string;
   title?: string;
   excerpt?: string;
   imageUrl?: string;
   category?: string;
+  authorName?: string;
   publishedAt?: string | null;
   readTime?: string;
 }
 
 interface BlogCardProps {
   post: BlogPostItem;
-  locale: string;
+  locale: Locale;
   t: (key: string) => string;
 }
 
 export function BlogCard({ post, locale, t }: BlogCardProps) {
+  const publishedAt = post.publishedAt ?? new Date().toISOString();
+
   return (
     <Link href={`/blog/${post.slug}`} className="group block h-full">
       <article className="flex flex-col h-full bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-slate-200">
@@ -45,8 +49,14 @@ export function BlogCard({ post, locale, t }: BlogCardProps) {
           <div className="flex items-center gap-4 text-xs font-medium text-slate-500 mb-3">
             <span className="flex items-center gap-1.5">
               <Calendar className="size-3.5" />
-              {formatDate(post.publishedAt, locale, { month: "short", day: "2-digit", year: "numeric" })}
+              {formatDate(publishedAt, locale, { month: "short", day: "2-digit", year: "numeric" })}
             </span>
+            {post.authorName && (
+              <span className="flex items-center gap-1.5">
+                <User className="size-3.5" />
+                {post.authorName}
+              </span>
+            )}
             {post.readTime && (
               <span className="flex items-center gap-1.5">
                 <Clock3 className="size-3.5" />

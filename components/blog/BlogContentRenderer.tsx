@@ -56,6 +56,17 @@ function renderRichNode(node: RichTextNode, key: string): ReactNode {
     );
   }
 
+  if (node.type === "blockquote") {
+    return (
+      <blockquote
+        key={key}
+        className="my-10 rounded-r-2xl border-l-4 border-primary bg-slate-50 px-8 py-4 text-xl font-medium italic leading-[1.8] text-slate-700 shadow-sm"
+      >
+        {renderRichNodes(node.content ?? [], `${key}-blockquote`)}
+      </blockquote>
+    );
+  }
+
   if (node.type === "listItem") {
     return <li key={key} className="pl-2">{renderRichNodes(node.content ?? [], `${key}-item`)}</li>;
   }
@@ -112,6 +123,17 @@ export function renderTextBlock(
           </figcaption>
         ) : null}
       </figure>
+    );
+  }
+
+  if (block.type === "quote") {
+    return (
+      <blockquote
+        key={`${block.type}-${index}`}
+        className="my-12 rounded-r-[2rem] border-l-4 border-primary bg-slate-50 px-8 py-6 text-2xl font-medium italic leading-[1.7] text-slate-700 shadow-sm"
+      >
+        {block.value}
+      </blockquote>
     );
   }
 

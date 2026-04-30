@@ -35,8 +35,9 @@ export async function generateMetadata({
   }
 
   const localized = getLocalizedBlogText(post, locale);
-  const title = localized.title || t("blog.untitled");
-  const description = localized.excerpt || localized.content.slice(0, 160);
+  const title = post.seo?.meta_title || localized.title || t("blog.untitled");
+  const description =
+    post.seo?.meta_description || localized.excerpt || localized.content.slice(0, 160);
 
   return {
     title,
@@ -69,6 +70,7 @@ export default async function BlogDetailPage({
   const localized = getLocalizedBlogText(post, locale);
   const contentBlocks = getLocalizedBlogBlocks(post, locale);
   const postTitle = localized.title || t("blog.untitled");
+  const postSubtitle = localized.subtitle || localized.excerpt;
   const postDate = post.published_at || post.updated_at || post.created_at || new Date().toISOString();
   const postImage = post.thumbnail || post.featured_image || DEFAULT_BLOG_IMAGE_URL;
   const postUrl = getLocalizedAbsoluteUrl(`/blog/${slug}`, locale);
@@ -101,10 +103,10 @@ export default async function BlogDetailPage({
             </Link>
 
             <div className="space-y-8">
-              {post.category && (
+              {post.category?.name && (
                 <div>
                   <span className="inline-flex items-center px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary bg-primary/5 rounded-full">
-                    {post.category}
+                    {post.category.name}
                   </span>
                 </div>
               )}
@@ -113,14 +115,17 @@ export default async function BlogDetailPage({
                 {postTitle}
               </h1>
 
-              <p className="text-xl md:text-2xl text-slate-500 leading-relaxed font-light">
-                {localized.excerpt}
-              </p>
+              {postSubtitle ? (
+                <p className="text-xl md:text-2xl text-slate-500 leading-relaxed font-light">
+                  {postSubtitle}
+                </p>
+              ) : null}
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-8 pb-8 border-y border-slate-100">
                 <AuthorInfo
-                  authorName={post.author}
-                  authorAvatar={post.author_avatar}
+                  authorName={post.author?.name || post.author_name}
+                  authorAvatar={post.author?.avatar || post.author_avatar}
+                  authorBio={post.author?.bio || post.author_bio}
                   publishedAt={postDate}
                   readTime={post.read_time}
                   locale={locale}

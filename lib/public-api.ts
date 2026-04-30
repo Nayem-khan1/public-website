@@ -107,7 +107,7 @@ export interface PublicCourseCategoryRecord {
 }
 
 export interface PublicBlogContentBlock {
-  type: "text" | "heading" | "image";
+  type: "text" | "heading" | "image" | "quote";
   value?: string;
   url?: string;
   caption?: string;
@@ -115,8 +115,27 @@ export interface PublicBlogContentBlock {
   rich_text?: Record<string, unknown>;
 }
 
+export interface PublicBlogCategoryReference {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface PublicBlogAuthorRecord {
+  id: string;
+  name: string;
+  avatar?: string;
+  bio?: string;
+}
+
+export interface PublicBlogSeoRecord {
+  meta_title?: string;
+  meta_description?: string;
+}
+
 export interface PublicBlogCategoryRecord {
   id: string;
+  name?: string;
   title: string;
   slug: string;
   total_posts: number;
@@ -131,13 +150,21 @@ export interface PublicBlogRecord {
   excerpt?: string;
   excerpt_en?: string;
   excerpt_bn?: string;
+  subtitle?: string;
+  subtitle_en?: string;
+  subtitle_bn?: string;
   content?: string;
   content_en?: string;
   content_bn?: string;
   content_blocks?: PublicBlogContentBlock[];
-  category?: string;
+  category?: PublicBlogCategoryReference;
+  category_name?: string;
   category_slug?: string;
-  author?: string;
+  author?: PublicBlogAuthorRecord;
+  author_name?: string;
+  author_avatar?: string;
+  author_bio?: string;
+  seo?: PublicBlogSeoRecord;
   thumbnail?: string;
   featured_image?: string;
   published_at?: string | null;
@@ -359,6 +386,12 @@ export function getLocalizedCourseCategoryText(
 export function getLocalizedBlogText(post: PublicBlogRecord, locale: Locale) {
   return {
     title: resolveLocalizedText(post.title, post.title_en, post.title_bn, locale),
+    subtitle: resolveLocalizedText(
+      post.subtitle,
+      post.subtitle_en,
+      post.subtitle_bn,
+      locale,
+    ),
     content: resolveLocalizedText(post.content, post.content_en, post.content_bn, locale),
     excerpt: resolveLocalizedText(
       post.excerpt,
@@ -597,7 +630,7 @@ export async function listPublicBlogs(options?: {
 }
 
 export async function listPublicBlogCategories(): Promise<PublicBlogCategoryRecord[]> {
-  const data = await fetchPublicApi<PublicBlogCategoryRecord[]>("/blogs/categories");
+  const data = await fetchPublicApi<PublicBlogCategoryRecord[]>("/blog-categories");
   return data ?? [];
 }
 
@@ -620,6 +653,9 @@ export async function getBlogCards(options?: {
 
   return posts.map((post) => {
     const localized = getLocalizedBlogText(post, locale);
+    const category = post.category?.name || post.category_name || "";
+    const categorySlug = post.category?.slug || post.category_slug || "";
+    const authorName = post.author?.name || post.author_name || "";
 
     return {
       id: post.id,
@@ -627,15 +663,15 @@ export async function getBlogCards(options?: {
       slug: post.slug,
       excerpt: localized.excerpt || excerpt(localized.content),
       content: plainText(localized.content),
-      authorName: post.author || "",
+      authorName,
       publishedAt:
         post.published_at || post.updated_at || post.created_at || new Date().toISOString(),
       imageUrl:
         post.thumbnail ||
         post.featured_image ||
         DEFAULT_BLOG_IMAGE_URL,
-      category: post.category || "",
-      categorySlug: post.category_slug || "",
+      category,
+      categorySlug,
       readTime: post.read_time || "",
     };
   });
@@ -813,8 +849,6 @@ export function getLocalizedCourseText(
       })) ?? [],
   };
 }
-
-
 
 
 

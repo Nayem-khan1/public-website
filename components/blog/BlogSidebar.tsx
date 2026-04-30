@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Locale } from "@/lib/i18n/config";
 import { BlogSearch } from "./BlogSearch";
 import { BlogCard } from "./BlogCard";
 
@@ -6,14 +7,15 @@ import { BlogPostItem } from "./BlogCard";
 
 export interface CategoryItem {
   slug: string;
-  title: string;
+  title?: string;
+  name?: string;
 }
 
 interface BlogSidebarProps {
   categories: CategoryItem[];
   selectedCategory: string;
   t: (key: string) => string;
-  locale: string;
+  locale: Locale;
   featuredPost?: BlogPostItem;
 }
 
@@ -55,7 +57,7 @@ export function BlogSidebar({ categories, selectedCategory, t, locale, featuredP
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-transparent"
                 }`}
               >
-                <span>{category.title}</span>
+                <span>{category.name || category.title}</span>
               </Link>
             );
           })}

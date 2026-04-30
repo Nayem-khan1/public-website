@@ -1,16 +1,26 @@
 import { User } from "lucide-react";
 import { formatDate } from "@/lib/i18n/format";
+import type { Locale } from "@/lib/i18n/config";
 
 interface AuthorInfoProps {
   authorName?: string | null;
   authorAvatar?: string | null;
+  authorBio?: string | null;
   publishedAt: string;
   readTime?: string | null;
-  locale: string;
+  locale: Locale;
   t: (key: string) => string;
 }
 
-export function AuthorInfo({ authorName, authorAvatar, publishedAt, readTime, locale, t }: AuthorInfoProps) {
+export function AuthorInfo({
+  authorName,
+  authorAvatar,
+  authorBio,
+  publishedAt,
+  readTime,
+  locale,
+  t,
+}: AuthorInfoProps) {
   return (
     <div className="flex items-center gap-4">
       <div className="w-12 h-12 rounded-full bg-slate-100 overflow-hidden border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 shadow-sm">
@@ -34,6 +44,9 @@ export function AuthorInfo({ authorName, authorAvatar, publishedAt, readTime, lo
             </>
           )}
         </div>
+        {authorBio ? (
+          <p className="mt-1 max-w-md text-sm leading-6 text-slate-500">{authorBio}</p>
+        ) : null}
       </div>
     </div>
   );

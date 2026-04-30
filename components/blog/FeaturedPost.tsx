@@ -1,17 +1,20 @@
 import Link from "next/link";
-import { Calendar, Clock3, ArrowRight } from "lucide-react";
+import { Calendar, Clock3, ArrowRight, User } from "lucide-react";
 import { formatDate } from "@/lib/i18n/format";
+import type { Locale } from "@/lib/i18n/config";
 
 import { BlogPostItem } from "./BlogCard";
 
 interface FeaturedPostProps {
   post: BlogPostItem;
-  locale: string;
+  locale: Locale;
   t: (key: string) => string;
 }
 
 export function FeaturedPost({ post, locale, t }: FeaturedPostProps) {
   if (!post) return null;
+
+  const publishedAt = post.publishedAt ?? new Date().toISOString();
 
   return (
     <Link href={`/blog/${post.slug}`} className="group block mb-16">
@@ -36,8 +39,14 @@ export function FeaturedPost({ post, locale, t }: FeaturedPostProps) {
           <div className="flex items-center gap-4 text-sm font-medium text-slate-500 mb-4">
             <span className="flex items-center gap-1.5">
               <Calendar className="size-4" />
-              {formatDate(post.publishedAt, locale, { month: "long", day: "2-digit", year: "numeric" })}
+              {formatDate(publishedAt, locale, { month: "long", day: "2-digit", year: "numeric" })}
             </span>
+            {post.authorName && (
+              <span className="flex items-center gap-1.5">
+                <User className="size-4" />
+                {post.authorName}
+              </span>
+            )}
             {post.readTime && (
               <span className="flex items-center gap-1.5">
                 <Clock3 className="size-4" />
