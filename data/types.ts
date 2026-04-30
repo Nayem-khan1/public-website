@@ -74,4 +74,6 @@ export type BlogPost = {
   publishedAt: string;
   imageUrl: string;
   category?: string;
+  categorySlug?: string;
+  readTime?: string;
 };

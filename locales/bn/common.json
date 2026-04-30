@@ -217,7 +217,14 @@
     "readMore": "আরও পড়ুন",
     "backToBlog": "ব্লগে ফিরে যান",
     "shareArticle": "এই আর্টিকেল শেয়ার করুন",
-    "untitled": "নামবিহীন পোস্ট"
+    "untitled": "নামবিহীন পোস্ট",
+    "featuredArticle": "ফিচার্ড আর্টিকেল",
+    "latestStories": "সর্বশেষ লেখা",
+    "categories": "ক্যাটাগরি",
+    "allCategories": "সব ক্যাটাগরি",
+    "filterLabel": "ফিল্টার",
+    "noPosts": "এখনও কোনো আর্টিকেল প্রকাশিত হয়নি।",
+    "noPostsFiltered": "এই ক্যাটাগরিতে কোনো আর্টিকেল পাওয়া যায়নি।"
   },
   "events": {
     "title": "কসমিক ইভেন্ট ও অলিম্পিয়াড",

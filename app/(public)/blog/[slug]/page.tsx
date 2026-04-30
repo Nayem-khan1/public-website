@@ -1,18 +1,24 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Calendar, User } from "lucide-react";
+import { ArrowLeft, Facebook, Twitter, Link as LinkIcon, Share2 } from "lucide-react";
 import type { Metadata } from "next";
-import { getLocalizedBlogText, getPublicBlogBySlug } from "@/lib/public-api";
+import {
+  DEFAULT_BLOG_IMAGE_URL,
+  getLocalizedBlogBlocks,
+  getLocalizedBlogText,
+  getPublicBlogBySlug,
+} from "@/lib/public-api";
 import {
   getLocaleAndTranslations,
   getLocalizedMetadataLocale,
   getRequestLocale,
 } from "@/lib/i18n/server";
-import { formatDate } from "@/lib/i18n/format";
 import {
   buildMetadataAlternates,
   getLocalizedAbsoluteUrl,
 } from "@/lib/i18n/seo";
+import { AuthorInfo } from "@/components/blog/AuthorInfo";
+import { BlogContentRenderer } from "@/components/blog/BlogContentRenderer";
 
 export async function generateMetadata({
   params,
@@ -25,25 +31,25 @@ export async function generateMetadata({
   const { t } = await getLocaleAndTranslations(locale);
 
   if (!post) {
-    return {
-      title: t("blog.untitled"),
-    };
+    return { title: t("blog.untitled") };
   }
 
   const localized = getLocalizedBlogText(post, locale);
   const title = localized.title || t("blog.untitled");
-  const content = localized.content;
+  const description = localized.excerpt || localized.content.slice(0, 160);
 
   return {
     title,
-    description: content.replace(/<[^>]+>/g, "").slice(0, 160),
+    description,
     alternates: buildMetadataAlternates(`/blog/${slug}`, locale),
     openGraph: {
       title,
-      description: content.replace(/<[^>]+>/g, "").slice(0, 160),
+      description,
       locale: getLocalizedMetadataLocale(locale),
       url: getLocalizedAbsoluteUrl(`/blog/${slug}`, locale),
-      images: post.featured_image ? [{ url: post.featured_image }] : undefined,
+      images: post.thumbnail || post.featured_image
+        ? [{ url: post.thumbnail || post.featured_image || DEFAULT_BLOG_IMAGE_URL }]
+        : undefined,
     },
   };
 }
@@ -61,81 +67,128 @@ export default async function BlogDetailPage({
   if (!post) notFound();
 
   const localized = getLocalizedBlogText(post, locale);
+  const contentBlocks = getLocalizedBlogBlocks(post, locale);
   const postTitle = localized.title || t("blog.untitled");
-  const postContent = localized.content.trim();
-  const postDate = post.updated_at ?? post.created_at ?? new Date().toISOString();
-  const sharePlatforms = [
-    t("social.twitter"),
-    t("social.facebook"),
-    t("social.linkedin"),
+  const postDate = post.published_at || post.updated_at || post.created_at || new Date().toISOString();
+  const postImage = post.thumbnail || post.featured_image || DEFAULT_BLOG_IMAGE_URL;
+  const postUrl = getLocalizedAbsoluteUrl(`/blog/${slug}`, locale);
+
+  const encodedUrl = encodeURIComponent(postUrl);
+  const encodedTitle = encodeURIComponent(postTitle);
+  const shareLinks = [
+    { label: "Twitter", icon: Twitter, href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}` },
+    { label: "Facebook", icon: Facebook, href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
+    { label: "Copy Link", icon: LinkIcon, href: "#" },
   ];
 
   return (
-    <div className="min-h-screen bg-white pb-20">
-      <div className="relative pt-28 pb-16 md:pt-36 md:pb-24 bg-slate-900">
-        <img
-          src={
-            post.featured_image ||
-            "https://images.unsplash.com/photo-1499750310159-5b5f09692c6a?auto=format&fit=crop&q=80&w=2000"
-          }
-          alt={postTitle}
-          className="absolute inset-0 w-full h-full object-cover opacity-20"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 to-slate-900" />
-        <div className="container relative mx-auto px-4 md:px-6">
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8"
-          >
-            <ArrowLeft className="w-4 h-4" /> {t("blog.backToBlog")}
-          </Link>
-          <div className="max-w-3xl">
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-3 block">
-              {post.category || t("common.insights")}
-            </span>
-            <h1 className="text-3xl md:text-5xl font-display font-bold text-white mb-6 leading-tight">
-              {postTitle}
-            </h1>
-            <div className="flex items-center gap-6 text-sm text-slate-400">
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                {post.author || t("common.editorialTeam")}
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                {formatDate(postDate, locale, {
-                  month: "long",
-                  day: "2-digit",
-                  year: "numeric",
-                })}
+    <div className="min-h-screen bg-white relative font-sans selection:bg-primary/20 pb-32">
+      {/* Dark background block to support the global white-text Navbar */}
+      <div className="w-full h-20 bg-slate-700 shadow-sm relative z-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-secondary/10" />
+      </div>
+
+      <main className="pt-12 md:pt-16 px-4 md:px-6 relative z-10">
+        <article className="max-w-[780px] mx-auto">
+          {/* Header */}
+          <header className="mb-14">
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors mb-10"
+            >
+              <ArrowLeft className="size-4" />
+              {t("blog.backToBlog")}
+            </Link>
+
+            <div className="space-y-8">
+              {post.category && (
+                <div>
+                  <span className="inline-flex items-center px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary bg-primary/5 rounded-full">
+                    {post.category}
+                  </span>
+                </div>
+              )}
+
+              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-display font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+                {postTitle}
+              </h1>
+
+              <p className="text-xl md:text-2xl text-slate-500 leading-relaxed font-light">
+                {localized.excerpt}
+              </p>
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-8 pb-8 border-y border-slate-100">
+                <AuthorInfo
+                  authorName={post.author}
+                  authorAvatar={post.author_avatar}
+                  publishedAt={postDate}
+                  readTime={post.read_time}
+                  locale={locale}
+                  t={t}
+                />
+
+                <div className="flex items-center gap-2">
+                  {shareLinks.map((social) => (
+                    <a
+                      key={social.label}
+                      href={social.href}
+                      target={social.href !== "#" ? "_blank" : undefined}
+                      rel="noreferrer"
+                      className="w-10 h-10 rounded-full border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-50 hover:border-slate-300 shadow-sm transition-all"
+                      aria-label={social.label}
+                    >
+                      <social.icon className="size-4" />
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
+          </header>
+
+          {/* Hero Image */}
+          <div className="mb-20 -mx-4 sm:mx-0">
+            <div className="relative aspect-[16/9] sm:aspect-[2/1] sm:rounded-[2.5rem] overflow-hidden bg-slate-50 shadow-md border border-slate-100">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={postImage}
+                alt={postTitle}
+                loading="eager"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="container mx-auto px-4 md:px-6 py-16">
-        <div className="max-w-3xl mx-auto prose prose-slate prose-lg">
-          {postContent.split("\n\n").filter(Boolean).map((paragraph, index) => (
-            <p key={index} className="text-slate-600 leading-relaxed mb-6">
-              {paragraph}
-            </p>
-          ))}
-          <div className="mt-12 pt-8 border-t border-slate-100 not-prose">
-            <p className="text-sm text-slate-500 font-medium">{t("blog.shareArticle")}</p>
-            <div className="flex gap-3 mt-3">
-              {sharePlatforms.map((social) => (
+
+          {/* Body Content */}
+          <BlogContentRenderer blocks={contentBlocks} postTitle={postTitle} />
+
+          {/* Footer Share */}
+          <footer className="mt-24 pt-12 border-t border-slate-100 flex flex-col items-center justify-center gap-6 text-center">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
+              <Share2 className="size-6" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-display font-bold text-slate-900 mb-2">Enjoyed this post?</h3>
+              <p className="text-lg text-slate-500 max-w-sm mx-auto">Share it with your network and help us spread the knowledge.</p>
+            </div>
+
+            <div className="flex items-center gap-4 mt-4">
+              {shareLinks.map((social) => (
                 <a
-                  key={social}
-                  href="#"
-                  className="px-4 py-2 rounded-full bg-slate-100 text-slate-600 text-sm font-medium hover:bg-primary hover:text-white transition-colors"
+                  key={social.label}
+                  href={social.href}
+                  target={social.href !== "#" ? "_blank" : undefined}
+                  rel="noreferrer"
+                  className="px-6 py-3 rounded-full border border-slate-200 bg-white flex items-center gap-3 text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-50 shadow-sm transition-all hover:shadow"
                 >
-                  {social}
+                  <social.icon className="size-4" />
+                  <span>{social.label}</span>
                 </a>
               ))}
             </div>
-          </div>
-        </div>
-      </div>
+          </footer>
+        </article>
+      </main>
     </div>
   );
 }

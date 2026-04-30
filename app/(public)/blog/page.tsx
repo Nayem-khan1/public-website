@@ -1,18 +1,27 @@
-import Link from "next/link";
-import { PageHeader } from "@/components/PageHeader";
-import { ArrowRight } from "lucide-react";
-import { getBlogCards } from "@/lib/public-api";
+import { getBlogCards, listPublicBlogCategories } from "@/lib/public-api";
 import type { Metadata } from "next";
 import {
   getLocaleAndTranslations,
   getLocalizedMetadataLocale,
   getRequestLocale,
 } from "@/lib/i18n/server";
-import { formatDate } from "@/lib/i18n/format";
 import {
   buildMetadataAlternates,
   getLocalizedAbsoluteUrl,
 } from "@/lib/i18n/seo";
+import { FeaturedPost } from "@/components/blog/FeaturedPost";
+import { BlogSidebar } from "@/components/blog/BlogSidebar";
+import { BlogCard } from "@/components/blog/BlogCard";
+import { PageHeader } from "@/components/PageHeader";
+
+function getSingleQueryValue(
+  value: string | string[] | undefined,
+): string | undefined {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+  return value;
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const { locale, t } = await getLocaleAndTranslations();
@@ -30,64 +39,79 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function BlogPage() {
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const locale = await getRequestLocale();
   const { t } = await getLocaleAndTranslations(locale);
-  const blogPosts = await getBlogCards(locale);
+  const resolvedSearchParams = await searchParams;
+  const selectedCategory = getSingleQueryValue(resolvedSearchParams.category)?.trim() || "";
+
+  const [blogPosts, categories] = await Promise.all([
+    getBlogCards({
+      lang: locale,
+      category: selectedCategory || undefined,
+    }),
+    listPublicBlogCategories(),
+  ]);
+
+  const featuredPost = blogPosts[0];
+  const sidebarFeaturedPost = blogPosts[1]; // Using second post for sidebar if available
+  const remainingPosts = featuredPost ? blogPosts.slice(1) : [];
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-primary/20 pb-24">
       <PageHeader
         title={t("blog.title")}
         subtitle={t("blog.subtitle")}
-        bgImage="https://images.unsplash.com/photo-1499750310159-5b5f09692c6a?auto=format&fit=crop&q=80&w=2000"
+        bgImage="https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&q=80&w=2000"
       />
 
-      <div className="container mx-auto px-4 md:px-6 py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map((post) => (
-            <article
-              key={post.id}
-              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 flex flex-col h-full border border-slate-100 hover:-translate-y-1"
-            >
-              <div className="h-48 overflow-hidden">
-                <img
-                  src={post.imageUrl}
-                  alt={post.title || t("blog.untitled")}
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-1">
-                <div className="flex items-center gap-4 text-xs text-slate-500 mb-3">
-                  <span className="font-semibold text-primary uppercase tracking-wide">
-                    {post.category || t("common.insights")}
-                  </span>
-                  <span className="text-slate-400">-</span>
-                  <span>
-                    {formatDate(post.publishedAt, locale, {
-                      month: "short",
-                      day: "2-digit",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3 leading-tight hover:text-primary transition-colors">
-                  <Link href={`/blog/${post.slug}`}>
-                    {post.title || t("blog.untitled")}
-                  </Link>
-                </h3>
-                <p className="text-slate-600 text-sm mb-6 line-clamp-3 leading-relaxed flex-1">
-                  {post.excerpt}
+      <div className="container mx-auto px-4 md:px-6 pt-12">
+        <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
+          
+          {/* Left Sidebar */}
+          <BlogSidebar 
+            categories={categories} 
+            selectedCategory={selectedCategory} 
+            t={t} 
+            locale={locale}
+            featuredPost={sidebarFeaturedPost}
+          />
+
+          {/* Main Content Area */}
+          <main className="flex-1 w-full min-w-0 space-y-12">
+            {!featuredPost ? (
+              <div className="py-24 text-center border border-dashed border-slate-300 rounded-[2rem] bg-white shadow-sm">
+                <p className="text-xl font-display font-semibold text-slate-900 mb-2">
+                  {selectedCategory ? t("blog.noPostsFiltered") : t("blog.noPosts")}
                 </p>
-                <Link
-                  href={`/blog/${post.slug}`}
-                  className="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:gap-3 transition-all"
-                >
-                  {t("blog.readMore")} <ArrowRight className="w-4 h-4" />
-                </Link>
+                <p className="text-slate-500">{t("blog.subtitle")}</p>
               </div>
-            </article>
-          ))}
+            ) : (
+              <>
+                <FeaturedPost post={featuredPost} locale={locale} t={t} />
+
+                {remainingPosts.length > 0 && (
+                  <div className="space-y-8">
+                    <h2 className="text-2xl font-display font-bold text-slate-900 flex items-center gap-2">
+                      <span className="w-1.5 h-6 bg-secondary rounded-full block"></span>
+                      Latest Articles
+                    </h2>
+                    
+                    <div className="grid gap-8 md:grid-cols-2">
+                      {remainingPosts.map((post) => (
+                        <BlogCard key={post.id} post={post} locale={locale} t={t} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </main>
+
         </div>
       </div>
     </div>

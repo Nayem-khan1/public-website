@@ -106,18 +106,42 @@ export interface PublicCourseCategoryRecord {
   description_bn?: string;
 }
 
+export interface PublicBlogContentBlock {
+  type: "text" | "heading" | "image";
+  value?: string;
+  url?: string;
+  caption?: string;
+  level?: number;
+  rich_text?: Record<string, unknown>;
+}
+
+export interface PublicBlogCategoryRecord {
+  id: string;
+  title: string;
+  slug: string;
+  total_posts: number;
+}
+
 export interface PublicBlogRecord {
   id: string;
   slug: string;
   title?: string;
   title_en?: string;
   title_bn?: string;
+  excerpt?: string;
+  excerpt_en?: string;
+  excerpt_bn?: string;
   content?: string;
   content_en?: string;
   content_bn?: string;
+  content_blocks?: PublicBlogContentBlock[];
   category?: string;
+  category_slug?: string;
   author?: string;
+  thumbnail?: string;
   featured_image?: string;
+  published_at?: string | null;
+  read_time?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -165,6 +189,9 @@ export interface PublicTestimonialRecord {
   issued_at?: string;
   certificate_no?: string;
 }
+
+export const DEFAULT_BLOG_IMAGE_URL =
+  "https://placehold.co/1600x900/0f172a/e2e8f0/png?text=Astronomy+Pathshala+Blog";
 
 const DEFAULT_API_BASE_URL = "http://localhost:5000/api/v1";
 
@@ -333,7 +360,60 @@ export function getLocalizedBlogText(post: PublicBlogRecord, locale: Locale) {
   return {
     title: resolveLocalizedText(post.title, post.title_en, post.title_bn, locale),
     content: resolveLocalizedText(post.content, post.content_en, post.content_bn, locale),
+    excerpt: resolveLocalizedText(
+      post.excerpt,
+      post.excerpt_en,
+      post.excerpt_bn,
+      locale,
+    ),
   };
+}
+
+export function getLocalizedBlogBlocks(
+  post: PublicBlogRecord,
+  locale: Locale,
+): PublicBlogContentBlock[] {
+  if (Array.isArray(post.content_blocks) && post.content_blocks.length > 0) {
+    const localizedBlocks: PublicBlogContentBlock[] = [];
+
+    post.content_blocks.forEach((block) => {
+        if (block.type === "image") {
+          if (!block.url) {
+            return;
+          }
+
+        localizedBlocks.push({
+          type: "image",
+          url: block.url,
+          caption: block.caption || "",
+        });
+        return;
+      }
+
+      if (!block.value) {
+        return;
+      }
+
+      localizedBlocks.push({
+        type: block.type,
+        value: block.value,
+        level: block.level,
+        rich_text: block.rich_text,
+      });
+    });
+
+    return localizedBlocks;
+  }
+
+  const localized = getLocalizedBlogText(post, locale);
+  return localized.content
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+    .map((paragraph) => ({
+      type: "text" as const,
+      value: paragraph,
+    }));
 }
 
 export function getLocalizedEventText(event: PublicEventRecord, locale: Locale) {
@@ -505,13 +585,20 @@ export async function listPublicBlogs(options?: {
   page?: number;
   pageSize?: number;
   lang?: Locale;
+  category?: string;
 }): Promise<PublicBlogRecord[]> {
   const data = await fetchPublicApi<PaginatedResponse<PublicBlogRecord>>("/blogs", {
     page: options?.page ?? 1,
     page_size: options?.pageSize ?? 100,
     lang: options?.lang ?? "en",
+    category: options?.category,
   });
   return data?.items ?? [];
+}
+
+export async function listPublicBlogCategories(): Promise<PublicBlogCategoryRecord[]> {
+  const data = await fetchPublicApi<PublicBlogCategoryRecord[]>("/blogs/categories");
+  return data ?? [];
 }
 
 export async function getPublicBlogBySlug(
@@ -521,23 +608,35 @@ export async function getPublicBlogBySlug(
   return fetchPublicApi<PublicBlogRecord>(`/blogs/${slug}`, { lang });
 }
 
-export async function getBlogCards(lang: Locale = "en"): Promise<BlogPost[]> {
-  const posts = await listPublicBlogs({ lang });
+export async function getBlogCards(options?: {
+  lang?: Locale;
+  category?: string;
+}): Promise<BlogPost[]> {
+  const locale = options?.lang ?? "en";
+  const posts = await listPublicBlogs({
+    lang: locale,
+    category: options?.category,
+  });
+
   return posts.map((post) => {
-    const localized = getLocalizedBlogText(post, lang);
+    const localized = getLocalizedBlogText(post, locale);
 
     return {
       id: post.id,
       title: localized.title,
       slug: post.slug,
-      excerpt: excerpt(localized.content),
+      excerpt: localized.excerpt || excerpt(localized.content),
       content: plainText(localized.content),
       authorName: post.author || "",
-      publishedAt: post.updated_at || post.created_at || new Date().toISOString(),
+      publishedAt:
+        post.published_at || post.updated_at || post.created_at || new Date().toISOString(),
       imageUrl:
+        post.thumbnail ||
         post.featured_image ||
-        "https://images.unsplash.com/photo-1499750310159-5b5f09692c6a?auto=format&fit=crop&q=80&w=1200",
+        DEFAULT_BLOG_IMAGE_URL,
       category: post.category || "",
+      categorySlug: post.category_slug || "",
+      readTime: post.read_time || "",
     };
   });
 }
@@ -714,10 +813,6 @@ export function getLocalizedCourseText(
       })) ?? [],
   };
 }
-
-
-
-
 
 
 

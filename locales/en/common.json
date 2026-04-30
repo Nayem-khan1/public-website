@@ -217,7 +217,14 @@
     "readMore": "Read More",
     "backToBlog": "Back to Blog",
     "shareArticle": "Share this article",
-    "untitled": "Untitled Post"
+    "untitled": "Untitled Post",
+    "featuredArticle": "Featured Article",
+    "latestStories": "Latest Stories",
+    "categories": "Categories",
+    "allCategories": "All Categories",
+    "filterLabel": "Filtered by",
+    "noPosts": "No articles published yet.",
+    "noPostsFiltered": "No articles found for this category."
   },
   "events": {
     "title": "Cosmic Events & Olympiads",
