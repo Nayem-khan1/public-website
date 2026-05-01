@@ -33,12 +33,12 @@ export function CourseHeader({
   languageText,
 }: CourseHeaderProps) {
   return (
-    <div className="relative overflow-hidden bg-slate-950 pb-20 pt-28 md:pb-36 md:pt-36 border-b border-indigo-900/40">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/40 via-slate-950 to-black opacity-100" />
+    <div className="relative overflow-hidden bg-[#0d101b] pb-16 pt-24 md:pb-24 md:pt-28">
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0d101b] via-[#0d101b]/90 to-transparent z-0" />
       
-      {/* Abstract Glowing Orbs */}
-      <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[600px] h-[600px] rounded-full bg-primary/20 blur-[130px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/3 w-[500px] h-[500px] rounded-full bg-blue-500/15 blur-[120px] pointer-events-none" />
+      {/* Brand Glowing Orbs */}
+      <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-primary/10 blur-[120px] pointer-events-none mix-blend-screen" />
+      <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-secondary/10 blur-[120px] pointer-events-none mix-blend-screen" />
 
       <div className="container relative mx-auto px-4 md:px-6 z-10">
         <Link
@@ -49,49 +49,43 @@ export function CourseHeader({
           {backText}
         </Link>
 
-        <div className="max-w-3xl">
+        <div className="max-w-3xl lg:w-[65%]">
           <div className="mb-6 flex flex-wrap items-center gap-3">
-            <Badge className="border-primary/50 bg-primary/20 text-blue-100 px-3 py-1.5 text-sm backdrop-blur-md flex items-center gap-1.5 shadow-[0_0_15px_rgba(37,99,235,0.2)]">
-              <Sparkles className="w-3.5 h-3.5 text-blue-300" />
+            <Badge className="border-white/10 bg-white/5 text-white px-3 py-1 text-[13px] backdrop-blur-md flex items-center gap-1.5 font-medium rounded-md">
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
               {category}
             </Badge>
-            <Badge className="border-purple-500/40 bg-purple-500/20 text-purple-200 px-3 py-1.5 text-sm backdrop-blur-md">
+            <Badge className="border-white/10 bg-white/5 text-white px-3 py-1 text-[13px] backdrop-blur-md font-medium rounded-md">
               {level}
             </Badge>
-            {mode && (
-              <Badge className="border-emerald-500/40 bg-emerald-500/20 text-emerald-300 px-3 py-1.5 text-sm backdrop-blur-md flex gap-1.5 items-center">
-                <PlayCircle className="w-3.5 h-3.5" />
-                {mode}
-              </Badge>
-            )}
           </div>
 
-          <h1 className="text-4xl font-black leading-[1.1] text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-100 to-slate-400 md:text-5xl lg:text-6xl mb-6 tracking-tight drop-shadow-sm">
+          <h1 className="text-3xl font-bold leading-[1.3] text-white md:text-4xl lg:text-[2.5rem] mb-4 drop-shadow-sm font-display tracking-tight">
             {title}
           </h1>
           
           {subtitle && (
-            <p className="mb-8 mt-2 text-lg md:text-xl text-slate-300/90 leading-relaxed font-light max-w-2xl">{subtitle}</p>
+            <p className="mt-2 text-base md:text-lg text-slate-300 leading-relaxed font-light max-w-2xl">{subtitle}</p>
           )}
 
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          <div className="mt-8 flex flex-wrap items-center gap-6">
             {lessonsText ? (
-              <div className="flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-slate-200 shadow-2xl backdrop-blur-xl">
-                <BookOpen className="h-4 w-4 text-sky-300" />
+              <div className="flex items-center gap-2 text-sm font-medium text-slate-300">
+                <BookOpen className="h-4 w-4 text-primary" />
                 <span>{lessonsText}</span>
               </div>
             ) : null}
 
             {durationText ? (
-              <div className="flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-slate-200 shadow-2xl backdrop-blur-xl">
-                <Clock3 className="h-4 w-4 text-emerald-300" />
+              <div className="flex items-center gap-2 text-sm font-medium text-slate-300">
+                <Clock3 className="h-4 w-4 text-primary" />
                 <span>{durationText}</span>
               </div>
             ) : null}
 
             {languageText ? (
-              <div className="flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-slate-200 shadow-2xl backdrop-blur-xl">
-                <Globe2 className="h-4 w-4 text-amber-300" />
+              <div className="flex items-center gap-2 text-sm font-medium text-slate-300">
+                <Globe2 className="h-4 w-4 text-primary" />
                 <span>{languageText}</span>
               </div>
             ) : null}

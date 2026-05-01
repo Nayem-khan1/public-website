@@ -34,8 +34,9 @@
   --color-chart-4: #06b6d4;
   --color-chart-5: #10b981;
   --radius: 0.75rem;
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-sans, "Plus Jakarta Sans"), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display, "Outfit"), ui-sans-serif, system-ui, sans-serif;
+  --font-bengali: var(--font-bengali, "Hind Siliguri"), sans-serif;
 }
 
 @layer base {
@@ -48,6 +49,10 @@
     font-family: var(--font-sans);
   }
 
+  html[lang="bn"] body {
+    font-family: var(--font-bengali);
+  }
+
   h1,
   h2,
   h3,
@@ -56,6 +61,15 @@
   h6 {
     font-family: var(--font-display);
     @apply font-bold tracking-tight;
+  }
+
+  html[lang="bn"] h1,
+  html[lang="bn"] h2,
+  html[lang="bn"] h3,
+  html[lang="bn"] h4,
+  html[lang="bn"] h5,
+  html[lang="bn"] h6 {
+    font-family: var(--font-bengali);
   }
 }
 

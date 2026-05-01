@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans, Outfit, Hind_Siliguri } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import {
@@ -11,6 +12,25 @@ import {
   getLocalizedAbsoluteUrl,
   getSiteUrl,
 } from "@/lib/i18n/seo";
+
+const sans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const display = Outfit({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const bengali = Hind_Siliguri({
+  weight: ["300", "400", "500", "600", "700"],
+  subsets: ["bengali"],
+  variable: "--font-bengali",
+  display: "swap",
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const { locale, t } = await getLocaleAndTranslations();
@@ -64,7 +84,7 @@ export default async function RootLayout({
   const locale = await getRequestLocale();
 
   return (
-    <html lang={locale} className="scroll-smooth">
+    <html lang={locale} className={`scroll-smooth ${sans.variable} ${display.variable} ${bengali.variable}`}>
       <body className="font-sans antialiased" suppressHydrationWarning>
         <LanguageProvider initialLocale={locale}>{children}</LanguageProvider>
       </body>

@@ -154,18 +154,18 @@ export default async function CourseDetailsPage({
 
             {/* What You'll Learn */}
             {localized.learningObjectives.length > 0 ? (
-              <div className="rounded-3xl border border-emerald-100 bg-gradient-to-br from-emerald-50/50 via-white to-white p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+              <div className="rounded-3xl border border-primary/10 bg-white p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                 <h3 className="mb-8 text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-                  <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600">
+                  <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-primary">
                     <CheckCircle className="w-5 h-5" />
                   </span>
                   {t("courseDetails.whatYouWillLearn")}
                 </h3>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {localized.learningObjectives.map((item, index) => (
-                    <div key={`${item}-${index}`} className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-slate-100 hover:border-emerald-200 hover:shadow-md transition-all group">
-                      <div className="mt-0.5 flex items-center justify-center w-7 h-7 rounded-full bg-emerald-100 group-hover:bg-emerald-500 transition-colors shrink-0">
-                        <CheckCircle className="h-4 w-4 text-emerald-600 group-hover:text-white transition-colors" />
+                    <div key={`${item}-${index}`} className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all group">
+                      <div className="mt-0.5 flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 group-hover:bg-primary transition-colors shrink-0">
+                        <CheckCircle className="h-4 w-4 text-primary group-hover:text-white transition-colors" />
                       </div>
                       <span className="text-sm font-medium text-slate-700 leading-relaxed">{item}</span>
                     </div>
@@ -180,7 +180,7 @@ export default async function CourseDetailsPage({
                 {t("courseDetails.aboutCourse")}
               </h2>
               <div className="prose prose-slate max-w-none prose-p:leading-relaxed prose-p:text-slate-600">
-                 <p className="whitespace-pre-line text-[15px] leading-relaxed text-slate-600">{description}</p>
+                <p className="whitespace-pre-line text-[15px] leading-relaxed text-slate-600">{description}</p>
               </div>
             </div>
 
