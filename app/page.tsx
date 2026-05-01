@@ -14,6 +14,7 @@ import { GallerySection } from "@/components/home/GallerySection";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { VideoPlaylistSection } from "@/components/home/VideoPlaylistSection";
 import { CTASection } from "@/components/home/CTASection";
+import { JoinFamilySection } from "@/components/home/JoinFamilySection";
 import { OfflineCenterSection } from "@/components/home/OfflineCenterSection";
 import {
   getCourseCards,
@@ -77,14 +78,16 @@ export default async function HomePage() {
         <HowItWorksSection />
         <OfflineCenterSection />
         <WhySection />
+        {/* <LiveClassesSection /> */}
         <ImpactSection />
         <OnlineResourcesSection />
-        <InstructorsSection instructors={instructors} />
-        <VideoPlaylistSection />
-        <TestimonialsSection testimonials={testimonials} />
         <GallerySection />
+        <VideoPlaylistSection />
+        {/* <InstructorsSection instructors={instructors} /> */}
+        <TestimonialsSection testimonials={testimonials} />
         <NewsletterSection />
         <CTASection />
+        <JoinFamilySection />
         <NewsSection />
       </main>
       <Footer />

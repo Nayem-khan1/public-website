@@ -190,6 +190,22 @@
       "resource3Desc": "Learn the mathematics behind orbital dynamics and planetary motion.",
       "resource4Title": "Telescope Optics Guide",
       "resource4Desc": "A practical guide to choosing, setting up, and using telescopes."
+    },
+    "joinFamily": {
+      "eyebrow": "Stay Connected",
+      "title": "Join Our AP Family Now",
+      "subtitle": "Follow us across all platforms. Stay updated with lessons, live sessions, and community events.",
+      "comingSoon": "Coming Soon",
+      "ytOfficial": "AP Official",
+      "ytOfficialDesc": "Our main channel with astronomy documentaries, lectures, and Olympiad walkthroughs.",
+      "ytAcademics": "AP Academics",
+      "ytAcademicsDesc": "Focused academic content — structured courses, problem solving, and exam prep.",
+      "podcast": "AP Podcast",
+      "podcastDesc": "Conversations with astronomers, space scientists, and Olympiad medalists.",
+      "fbPage": "Facebook Page",
+      "fbPageDesc": "Daily updates, event announcements, and astronomy news on our official page.",
+      "fbGroup": "Community Group",
+      "fbGroupDesc": "Join thousands of learners for discussions, Q&A, and peer study sessions."
     }
   },
   "courseCard": {
