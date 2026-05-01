@@ -101,7 +101,13 @@ export function CourseSidebar({
           </div>
 
           <div className="shadow-lg shadow-primary/20 rounded-xl overflow-hidden mb-1">
-            <CourseEnrollButton courseId={courseId} courseSlug={courseSlug} />
+            <CourseEnrollButton
+              courseId={courseId}
+              courseSlug={courseSlug}
+              isFree={Boolean(isFree)}
+              price={price}
+              discountPrice={discountPrice}
+            />
           </div>
 
           <div className="space-y-5 border-t border-slate-200/60 pt-6">

@@ -175,6 +175,7 @@ export interface StudentEnrollResponse {
   payment_required: boolean;
   already_enrolled: boolean;
   enrollment?: Record<string, unknown>;
+  pricing?: StudentPricingSummary;
   payment?: {
     payment_id: string;
     enrollment_id: string;
@@ -182,6 +183,37 @@ export interface StudentEnrollResponse {
     bkash_url: string;
     invoice: string;
   };
+}
+
+export interface StudentPricingSummary {
+  currency: "BDT";
+  original_amount: number;
+  course_discount_amount: number;
+  subtotal_amount: number;
+  coupon_id?: string;
+  coupon_code?: string;
+  coupon_discount_amount: number;
+  manual_discount_amount: number;
+  final_amount: number;
+  applied_coupon: {
+    id: string;
+    code: string;
+    discount_type: "percentage" | "flat";
+    discount_value: number;
+    minimum_purchase_amount: number;
+  } | null;
+}
+
+export interface StudentCoursePricingPreview {
+  course: {
+    id: string;
+    title_en: string;
+    title_bn: string;
+    is_free: boolean;
+    price: number;
+    discount_price: number;
+  };
+  pricing: StudentPricingSummary;
 }
 
 export interface StudentActivityDay {
@@ -216,7 +248,7 @@ export interface StudentOrder {
   course_id: string | null;
   course_name: string;
   amount: number;
-  gateway: "bKash" | "Nagad" | "Card";
+  gateway: "bKash" | "Nagad" | "Card" | "Manual";
   status: "pending" | "verified" | "failed";
   submitted_at: string;
   manually_verified_by: string | null;
@@ -503,15 +535,31 @@ export async function getStudentCourseRoadmap(
 
 export async function enrollInCourse(
   courseId: string,
+  input: {
+    coupon_code?: string;
+  } = {},
   token?: string,
 ): Promise<StudentEnrollResponse> {
   return requestApi<StudentEnrollResponse>(
     `/student/courses/${courseId}/enroll`,
     {
       method: "POST",
+      body: JSON.stringify(input),
     },
     { auth: true, token },
   );
+}
+
+export async function previewCoursePricing(
+  courseId: string,
+  input: {
+    coupon_code?: string;
+  } = {},
+): Promise<StudentCoursePricingPreview> {
+  return requestApi<StudentCoursePricingPreview>(`/public/courses/${courseId}/pricing`, {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
 }
 
 export async function updateStudentLessonVideoProgress(
