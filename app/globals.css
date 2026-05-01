@@ -241,6 +241,52 @@ html {
 .glass-effect-dark {
   @apply bg-black/20 backdrop-blur-lg border border-white/10;
 }
+/* ── Glass Section Card ── */
+.glass-section {
+  position: relative;
+  border-radius: 2rem;
+  background: rgba(15, 15, 18, 0.4);
+  backdrop-filter: blur(40px) saturate(1.5);
+  -webkit-backdrop-filter: blur(40px) saturate(1.5);
+  padding: 2rem;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  /* Strong inner white glow for glossy feel */
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
+    inset 0 0 40px 0 rgba(255, 255, 255, 0.04),
+    0 20px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.glass-section:hover {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
+    inset 0 0 60px 0 rgba(255, 255, 255, 0.06),
+    0 25px 60px -12px rgba(0, 0, 0, 0.55);
+  transform: translateY(-2px);
+}
+
+@media (min-width: 768px) {
+  .glass-section {
+    padding: 3.5rem;
+    border-radius: 2.5rem;
+  }
+}
+
+/* Smooth Twinkle Animation for Glass Stars */
+@keyframes smooth-twinkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.85);
+  }
+}
+.animate-twinkle {
+  animation: smooth-twinkle linear infinite;
+}
 
 /* Float Slow Animation */
 @keyframes float-slow {

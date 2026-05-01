@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { GlassStars } from "./GlassStars";
 import { Download, FileText, Sparkles, BookOpen } from "lucide-react";
 import { useAppTranslation } from "@/contexts/LanguageContext";
 
@@ -69,9 +70,16 @@ export function OnlineResourcesSection() {
   return (
     <section className="py-12 relative overflow-hidden bg-black z-10">
       <div className="container relative mx-auto px-4 md:px-6 mb-12">
-        <div className="relative rounded-[2.5rem] bg-white/[0.02] backdrop-blur-3xl border border-white/10 border-t-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] bg-gradient-to-br from-cyan-500/10 via-transparent to-violet-500/5 p-8 md:p-14 overflow-hidden group hover:border-cyan-500/30 transition-all duration-500">
-
-          {/* Decorative animated glows */}
+        <div className="relative glass-section border border-white/10 hover:border-white/20 group">
+          {/* Colored glow orbs - Top Right & Bottom Right */}
+          <div className="absolute top-0 right-0 -m-20 w-96 h-96 bg-cyan-500/30 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-0 right-0 -m-20 w-96 h-96 bg-sky-500/25 rounded-full blur-[100px] pointer-events-none" />
+          
+          {/* Glass Stars */}
+          <GlassStars colors={[
+            "bg-cyan-400 shadow-[0_0_12px_2px_rgba(34,211,238,0.8)]",
+            "bg-sky-400 shadow-[0_0_12px_2px_rgba(56,189,248,0.8)]"
+          ]} />
           <div className="absolute top-[-30%] right-[-15%] w-[600px] h-[600px] bg-cyan-500/10 blur-[180px] rounded-full pointer-events-none animate-pulse" />
           <div className="absolute bottom-[-30%] left-[-15%] w-[600px] h-[600px] bg-violet-500/10 blur-[180px] rounded-full pointer-events-none animate-pulse" />
           <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-amber-500/5 blur-[120px] rounded-full pointer-events-none" />

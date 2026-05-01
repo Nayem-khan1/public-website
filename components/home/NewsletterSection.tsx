@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GlassStars } from "./GlassStars";
 import { useState } from "react";
 import { useAppTranslation } from "@/contexts/LanguageContext";
 
@@ -30,8 +31,17 @@ export function NewsletterSection() {
           viewport={{ once: true }}
           className="max-w-4xl mx-auto"
         >
-          <div className="relative p-10 md:p-14 rounded-[2.5rem] bg-white/[0.02] backdrop-blur-3xl border border-white/10 border-t-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] bg-gradient-to-br from-indigo-500/10 via-transparent to-cyan-500/5 overflow-hidden hover:border-indigo-500/30 transition-all duration-500 group">
-            {/* Background elements */}
+          <div className="relative glass-section border border-white/10 hover:border-white/20 group">
+            {/* Colored glow orbs - Top Left, Top Right & Bottom Left */}
+            <div className="absolute top-0 left-0 -m-20 w-96 h-96 bg-indigo-500/30 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-0 right-0 -m-20 w-96 h-96 bg-blue-500/25 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute bottom-0 left-0 -m-20 w-96 h-96 bg-cyan-500/20 rounded-full blur-[100px] pointer-events-none" />
+            
+            {/* Glass Stars */}
+            <GlassStars colors={[
+              "bg-indigo-400 shadow-[0_0_12px_2px_rgba(129,140,248,0.8)]",
+              "bg-blue-400 shadow-[0_0_12px_2px_rgba(96,165,250,0.8)]"
+            ]} />
             <div className="absolute top-0 right-0 -m-16 w-64 h-64 bg-primary/20 rounded-full blur-[80px]"></div>
             <div className="absolute bottom-0 left-0 -m-16 w-64 h-64 bg-secondary/20 rounded-full blur-[80px]"></div>
 

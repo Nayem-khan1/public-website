@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Search, PlayCircle, Edit3, Award } from "lucide-react";
 import { useAppTranslation } from "@/contexts/LanguageContext";
+import { GlassStars } from "./GlassStars";
 
 export function HowItWorksSection() {
   const { t } = useAppTranslation();
@@ -33,11 +34,19 @@ export function HowItWorksSection() {
   return (
     <section className="py-12 relative overflow-hidden z-10">
       <div className="container relative mx-auto px-4 md:px-6 mb-12">
-        <div className="relative rounded-[2.5rem] bg-white/[0.02] backdrop-blur-3xl border border-white/10 border-t-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] bg-gradient-to-br from-emerald-500/10 via-transparent to-teal-500/5 p-8 md:p-14 overflow-hidden group hover:border-emerald-500/30 transition-all duration-500">
+        <div className="relative glass-section border border-white/10 hover:border-white/20 group">
+          {/* Colored glow orbs - Top Right & Bottom Left */}
+          <div className="absolute top-0 right-0 -m-20 w-96 h-96 bg-emerald-500/30 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 -m-20 w-96 h-96 bg-teal-400/25 rounded-full blur-[100px] pointer-events-none" />
           
+          {/* Glass Stars */}
+          <GlassStars colors={[
+            "bg-emerald-400 shadow-[0_0_12px_2px_rgba(52,211,153,0.8)]",
+            "bg-teal-400 shadow-[0_0_12px_2px_rgba(45,212,190,0.8)]"
+          ]} />
           <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-20"
         >

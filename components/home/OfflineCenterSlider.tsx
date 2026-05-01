@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
+import { GlassStars } from "./GlassStars";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Pagination, Autoplay } from 'swiper/modules';
 
@@ -17,7 +18,16 @@ export function OfflineCenterSlider({ images }: { images: string[] }) {
   ];
 
   return (
-    <div className="relative rounded-[2.5rem] bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 p-8 md:p-14 overflow-hidden group hover:border-purple-500/30 transition-all duration-500">
+    <div className="relative glass-section border border-white/10 hover:border-white/20 group">
+      {/* Colored glow orbs - Top Left & Bottom Right */}
+      <div className="absolute top-0 left-0 -m-20 w-96 h-96 bg-violet-500/30 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 -m-20 w-96 h-96 bg-pink-500/25 rounded-full blur-[100px] pointer-events-none" />
+      
+      {/* Glass Stars */}
+      <GlassStars colors={[
+        "bg-violet-400 shadow-[0_0_12px_2px_rgba(167,139,250,0.8)]",
+        "bg-pink-400 shadow-[0_0_12px_2px_rgba(244,114,182,0.8)]"
+      ]} />
       {/* Decorative glows */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 blur-[100px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/20 blur-[100px] rounded-full pointer-events-none" />

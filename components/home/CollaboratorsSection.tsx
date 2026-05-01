@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Handshake } from "lucide-react";
 import { useAppTranslation } from "@/contexts/LanguageContext";
+import { GlassStars } from "./GlassStars";
 
 function DummyLogo({ name, color }: { name: string; color: string }) {
   return (
@@ -32,7 +33,16 @@ export function CollaboratorsSection() {
   return (
     <section className="py-12 relative overflow-hidden bg-black z-10">
       <div className="container relative mx-auto px-4 md:px-6 mb-12">
-        <div className="relative rounded-[2.5rem] bg-white/[0.02] backdrop-blur-3xl border border-white/10 border-t-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] bg-gradient-to-br from-blue-500/10 via-transparent to-indigo-500/5 p-8 md:p-14 overflow-hidden group hover:border-blue-500/30 transition-all duration-500">
+        <div className="relative glass-section border border-white/10 hover:border-white/20 group">
+          {/* Colored glow orbs - Top Left & Bottom Left */}
+          <div className="absolute top-0 left-0 -m-20 w-96 h-96 bg-blue-500/30 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 -m-20 w-96 h-96 bg-indigo-500/25 rounded-full blur-[100px] pointer-events-none" />
+          
+          {/* Glass Stars */}
+          <GlassStars colors={[
+            "bg-blue-400 shadow-[0_0_12px_2px_rgba(96,165,250,0.8)]",
+            "bg-indigo-400 shadow-[0_0_12px_2px_rgba(129,140,248,0.8)]"
+          ]} />
           {/* Glows */}
           <div className="absolute top-[-20%] left-[20%] w-[400px] h-[400px] bg-blue-500/8 blur-[150px] rounded-full pointer-events-none" />
           <div className="absolute bottom-[-20%] right-[20%] w-[400px] h-[400px] bg-indigo-500/8 blur-[150px] rounded-full pointer-events-none" />

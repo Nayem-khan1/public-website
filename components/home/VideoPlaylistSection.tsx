@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Clock, MonitorPlay, X } from "lucide-react";
+import { Play, Clock, MonitorPlay, X, Youtube } from "lucide-react";
+import { GlassStars } from "./GlassStars";
 
 const VIDEOS = [
   { id: "M-RWlFUwAp4", title: "Introduction to Our Programs", duration: "Featured", category: "Overview" },
@@ -46,15 +47,17 @@ export function VideoPlaylistSection() {
         <div className="container px-4 md:px-6 relative z-10 w-full max-w-[1400px] mx-auto">
           
           {/* Glossy Card Wrapper */}
-          <div className="relative rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 lg:p-16 overflow-hidden border border-white/20 shadow-2xl w-full">
+          <div className="relative glass-section border border-white/10 hover:border-white/20 group w-full">
             
-            {/* Multiple Color Gradient Background inside the Glass Card */}
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/30 via-purple-500/20 to-pink-500/30 -z-20 mix-blend-screen" />
-            <div className="absolute -top-[25%] -left-[25%] w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-500/20 via-transparent to-transparent -z-20" />
-            <div className="absolute -bottom-[25%] -right-[25%] w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-orange-500/20 via-transparent to-transparent -z-20" />
+            {/* Colored glow orbs - Top Left & Bottom Right */}
+            <div className="absolute top-0 left-0 -m-20 w-96 h-96 bg-fuchsia-500/30 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute bottom-0 right-0 -m-20 w-96 h-96 bg-purple-500/25 rounded-full blur-[100px] pointer-events-none" />
             
-            {/* Glassmorphism Effect */}
-            <div className="absolute inset-0 bg-[#0A0A0A]/60 backdrop-blur-[40px] -z-10" />
+            {/* Glass Stars */}
+            <GlassStars colors={[
+              "bg-fuchsia-400 shadow-[0_0_12px_2px_rgba(232,121,249,0.8)]",
+              "bg-purple-400 shadow-[0_0_12px_2px_rgba(192,132,252,0.8)]"
+            ]} />
 
             <div className="relative z-10">
               <motion.div
@@ -125,6 +128,24 @@ export function VideoPlaylistSection() {
                   </motion.div>
                 ))}
               </div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="mt-12 flex justify-center"
+              >
+                <a 
+                  href="https://www.youtube.com/@astronomypathshalaofficial" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] backdrop-blur-md group/btn"
+                >
+                  <Youtube className="w-5 h-5 text-red-500 group-hover/btn:scale-110 transition-transform" />
+                  {locale === "bn" ? "ইউটিউবে আরও ভিডিও দেখুন" : "View More Videos on YouTube"}
+                </a>
+              </motion.div>
             </div>
           </div>
         </div>
