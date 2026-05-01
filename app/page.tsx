@@ -6,6 +6,7 @@ import { CoursesSection } from "@/components/home/CoursesSection";
 import { HowItWorksSection } from "@/components/home/HowItWorksSection";
 import { LiveClassesSection } from "@/components/home/LiveClassesSection";
 import { ImpactSection } from "@/components/home/ImpactSection";
+import { OnlineResourcesSection } from "@/components/home/OnlineResourcesSection";
 import { InstructorsSection } from "@/components/home/InstructorsSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { NewsSection } from "@/components/home/NewsSection";
@@ -76,12 +77,12 @@ export default async function HomePage() {
         <HowItWorksSection />
         <OfflineCenterSection />
         <WhySection />
-        {/* <LiveClassesSection /> */}
         <ImpactSection />
+        <OnlineResourcesSection />
         <InstructorsSection instructors={instructors} />
+        <VideoPlaylistSection />
         <TestimonialsSection testimonials={testimonials} />
         <GallerySection />
-        <VideoPlaylistSection />
         <NewsletterSection />
         <CTASection />
         <NewsSection />

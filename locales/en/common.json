@@ -121,6 +121,9 @@
       "coursesConducted": "Courses Conducted",
       "liveClasses": "Live Classes",
       "olympiadWinners": "Olympiad Winners",
+      "videosCount": "Videos",
+      "quizzesCount": "Quizzes",
+      "materialsCount": "Learning Materials",
       "recognizedBy": "Recognized By",
       "org1": "Government of Bangladesh",
       "org2": "STEM Foundation",
@@ -172,6 +175,21 @@
       "eyebrow": "Our Partners",
       "title": "Supported By",
       "subtitle": "Collaborating with renowned organizations globally"
+    },
+    "resources": {
+      "eyebrow": "Free Materials",
+      "title": "Online Resources",
+      "subtitle": "Downloadable free notes and guides to support your astronomy learning journey.",
+      "downloadPdf": "Download PDF",
+      "size": "Size",
+      "resource1Title": "Introduction to Astrophysics",
+      "resource1Desc": "A comprehensive beginner's guide to understanding the physics of the universe.",
+      "resource2Title": "Star Lifecycle & Evolution",
+      "resource2Desc": "Detailed notes on how stars are born, live, and die, including supernovae.",
+      "resource3Title": "Celestial Mechanics Basics",
+      "resource3Desc": "Learn the mathematics behind orbital dynamics and planetary motion.",
+      "resource4Title": "Telescope Optics Guide",
+      "resource4Desc": "A practical guide to choosing, setting up, and using telescopes."
     }
   },
   "courseCard": {

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { Users, BookOpen, Play, Trophy } from "lucide-react";
+import { Video, HelpCircle, Layers } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { useAppTranslation } from "@/contexts/LanguageContext";
 
@@ -44,10 +44,9 @@ function AnimatedCounter({ end, suffix = "+" }: { end: number; suffix?: string }
 export function ImpactSection() {
   const { t } = useAppTranslation();
   const stats = [
-    { end: 5000, label: t("home.impact.studentsTaught"), icon: Users, suffix: "+" },
-    { end: 120, label: t("home.impact.coursesConducted"), icon: BookOpen, suffix: "+" },
-    { end: 500, label: t("home.impact.liveClasses"), icon: Play, suffix: "+" },
-    { end: 50, label: t("home.impact.olympiadWinners"), icon: Trophy, suffix: "+" },
+    { end: 115, label: t("home.impact.videosCount") || "Videos", icon: Video, suffix: "+" },
+    { end: 720, label: t("home.impact.quizzesCount") || "Quizzes", icon: HelpCircle, suffix: "+" },
+    { end: 1500, label: t("home.impact.materialsCount") || "Learning Materials", icon: Layers, suffix: "+" },
   ];
 
   return (
@@ -71,7 +70,7 @@ export function ImpactSection() {
           <p className="text-lg text-slate-300">{t("home.impact.subtitle")}</p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {stats.map((stat, i) => (
             <motion.div
               key={stat.label}
