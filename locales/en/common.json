@@ -71,13 +71,14 @@
   "home": {
     "hero": {
       "badge": "Bangladesh's #1 Astronomy Platform",
-      "titleStart": "Explore the Universe.",
-      "titleHighlight": "Learn Beyond Earth.",
+      "titleStart": "Welcome to Bangladesh's first and largest",
+      "titleHighlight": "space science learning platform",
       "description": "Online astronomy & astrophysics courses for students, Olympiad learners, and space enthusiasts.",
       "exploreCourses": "Explore Courses",
       "joinLiveClasses": "Join Live Classes",
-      "studentsTaught": "Students Taught",
-      "olympiadWinners": "Olympiad Winners",
+      "districtsCovered": "Districts Covered",
+      "studentsReached": "Students Reached",
+      "asteroidsDiscovered": "Asteroids Discovered",
       "spaceIllustration": "Space illustration"
     },
     "why": {
@@ -88,8 +89,8 @@
       "feature1Description": "Bangladesh's pioneering dedicated astronomy education platform",
       "feature2Title": "Trusted Authority",
       "feature2Description": "Trusted by students, parents & educational institutions nationwide",
-      "feature3Title": "Olympiad Focused",
-      "feature3Description": "Specialized training for astronomy Olympiads & research programs",
+      "feature3Title": "Interactive Learning Methods",
+      "feature3Description": "Best Learning Experience in BD, 1-1 Mentor Session, High-Quality Video & 1500+ Learning Materials",
       "feature4Title": "Expert Instructors",
       "feature4Description": "Learn from experienced astronomers and astrophysics researchers"
     },

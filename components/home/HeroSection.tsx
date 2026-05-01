@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   Rocket,
-  Trophy,
+  Globe,
   Users,
   Play,
   Sparkles,
@@ -72,26 +72,37 @@ export function HeroSection() {
               </Button>
             </div>
 
-            <div className="flex flex-wrap gap-8">
+            <div className="flex flex-wrap gap-6 lg:gap-8">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
-                  <Users className="w-6 h-6 text-primary" />
+                  <Globe className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h4 className="text-2xl font-bold text-white">5000+</h4>
+                  <h4 className="text-2xl font-bold text-white">58</h4>
                   <p className="text-sm text-white/70">
-                    {t("home.hero.studentsTaught")}
+                    {t("home.hero.districtsCovered")}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-secondary/20 backdrop-blur-sm flex items-center justify-center">
-                  <Trophy className="w-6 h-6 text-secondary" />
+                  <Users className="w-6 h-6 text-secondary" />
                 </div>
                 <div>
-                  <h4 className="text-2xl font-bold text-white">50+</h4>
+                  <h4 className="text-2xl font-bold text-white">3M</h4>
                   <p className="text-sm text-white/70">
-                    {t("home.hero.olympiadWinners")}
+                    {t("home.hero.studentsReached")}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-purple-500/20 backdrop-blur-sm flex items-center justify-center">
+                  <Rocket className="w-6 h-6 text-purple-400" />
+                </div>
+                <div>
+                  <h4 className="text-2xl font-bold text-white">450+</h4>
+                  <p className="text-sm text-white/70">
+                    {t("home.hero.asteroidsDiscovered")}
                   </p>
                 </div>
               </div>
