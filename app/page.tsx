@@ -13,6 +13,7 @@ import { GallerySection } from "@/components/home/GallerySection";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { VideoPlaylistSection } from "@/components/home/VideoPlaylistSection";
 import { CTASection } from "@/components/home/CTASection";
+import { OfflineCenterSection } from "@/components/home/OfflineCenterSection";
 import {
   getCourseCards,
   getTeamMembers,
@@ -73,6 +74,7 @@ export default async function HomePage() {
         <HeroSection />
         <CoursesSection featuredCourses={popularCourses} />
         <HowItWorksSection />
+        <OfflineCenterSection />
         <WhySection />
         {/* <LiveClassesSection /> */}
         <ImpactSection />
