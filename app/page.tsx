@@ -16,6 +16,9 @@ import { VideoPlaylistSection } from "@/components/home/VideoPlaylistSection";
 import { CTASection } from "@/components/home/CTASection";
 import { JoinFamilySection } from "@/components/home/JoinFamilySection";
 import { OfflineCenterSection } from "@/components/home/OfflineCenterSection";
+import { RecentAchievementsSection } from "@/components/home/RecentAchievementsSection";
+import { CollaboratorsSection } from "@/components/home/CollaboratorsSection";
+import { SupportedBySection } from "@/components/home/SupportedBySection";
 import {
   getCourseCards,
   getTeamMembers,
@@ -89,6 +92,9 @@ export default async function HomePage() {
         <CTASection />
         <JoinFamilySection />
         <NewsSection />
+        <RecentAchievementsSection />
+        <CollaboratorsSection />
+        <SupportedBySection />
       </main>
       <Footer />
     </>

@@ -206,6 +206,36 @@
       "fbPageDesc": "Daily updates, event announcements, and astronomy news on our official page.",
       "fbGroup": "Community Group",
       "fbGroupDesc": "Join thousands of learners for discussions, Q&A, and peer study sessions."
+    },
+    "achievements": {
+      "eyebrow": "Milestones",
+      "title": "Recent Achievements",
+      "subtitle": "Recognition and milestones that reflect our commitment to quality education.",
+      "item1Title": "Top 100 EdTech in South Asia",
+      "item1Desc": "Enlisted among the top 100 EdTech platforms across South Asia for innovative and accessible astronomy education.",
+      "item2Title": "Funded by IDEA, ICT Division",
+      "item2Desc": "Received funding from the Innovation Design & Entrepreneurship Academy (IDEA) under the ICT Division, Government of Bangladesh."
+    },
+    "collaborators": {
+      "eyebrow": "Partners",
+      "title": "Our Collaborators",
+      "subtitle": "Working together with leading organizations to advance astronomy education.",
+      "org1": "NARIT Thailand",
+      "org2": "STEM Foundation",
+      "org3": "BdOSN",
+      "org4": "BARC",
+      "org5": "Space Academy",
+      "org6": "AstroLab BD"
+    },
+    "supportedBy": {
+      "eyebrow": "Backed By",
+      "title": "Supported By",
+      "subtitle": "Grateful for the support of these institutions in our mission.",
+      "org1": "ICT Division",
+      "org2": "Education Ministry",
+      "org3": "UNDP Bangladesh",
+      "org4": "A2I Programme",
+      "org5": "StartUp BD"
     }
   },
   "courseCard": {
