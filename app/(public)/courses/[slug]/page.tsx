@@ -112,45 +112,45 @@ export default async function CourseDetailsPage({
         languageText={languageLabel}
       />
 
-      {/* Sticky Tab Navigation (Desktop) — glassmorphism style, avoids slicing sidebar */}
-      <div className="sticky top-16 md:top-[72px] z-30 hidden md:block">
-        <div className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm">
-          <div className="container mx-auto px-4 md:px-6">
-            <ul className="flex items-center gap-1 overflow-x-auto no-scrollbar">
-              <li>
-                <a href="#description" className="block px-5 py-4 font-semibold text-sm text-slate-500 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary whitespace-nowrap">
-                  {t("courseDetails.aboutCourse")}
-                </a>
-              </li>
-              <li>
-                <a href="#curriculum" className="block px-5 py-4 font-semibold text-sm text-slate-500 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary whitespace-nowrap">
-                  {t("courseDetails.curriculum")}
-                </a>
-              </li>
-              {instructors.length > 0 ? (
-                <li>
-                  <a href="#instructors" className="block px-5 py-4 font-semibold text-sm text-slate-500 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary whitespace-nowrap">
-                    {instructors.length > 1 ? t("courseDetails.instructors") : t("courseDetails.instructor")}
-                  </a>
-                </li>
-              ) : null}
-              {localized.faqs.length > 0 && (
-                <li>
-                  <a href="#faq" className="block px-5 py-4 font-semibold text-sm text-slate-500 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary whitespace-nowrap">
-                    {t("courseDetails.frequentlyAskedQuestions")}
-                  </a>
-                </li>
-              )}
-            </ul>
-          </div>
-        </div>
-      </div>
+
 
       <div className="container relative z-10 mx-auto mt-8 md:mt-12 px-4 md:px-6">
         <div className="grid gap-8 lg:grid-cols-3 lg:gap-12">
 
           {/* ── LEFT COLUMN: Main Content ── */}
-          <div className="space-y-10 lg:col-span-2">
+          <div className="space-y-8 lg:col-span-2">
+          
+            {/* Sticky Tab Navigation (Desktop) */}
+            <div className="sticky top-16 md:top-[72px] z-30 hidden md:block">
+              <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 shadow-sm rounded-2xl px-2">
+                <ul className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+                  <li>
+                    <a href="#description" className="block px-5 py-3.5 font-semibold text-sm text-slate-500 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary whitespace-nowrap">
+                      {t("courseDetails.aboutCourse")}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#curriculum" className="block px-5 py-3.5 font-semibold text-sm text-slate-500 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary whitespace-nowrap">
+                      {t("courseDetails.curriculum")}
+                    </a>
+                  </li>
+                  {instructors.length > 0 ? (
+                    <li>
+                      <a href="#instructors" className="block px-5 py-3.5 font-semibold text-sm text-slate-500 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary whitespace-nowrap">
+                        {instructors.length > 1 ? t("courseDetails.instructors") : t("courseDetails.instructor")}
+                      </a>
+                    </li>
+                  ) : null}
+                  {localized.faqs.length > 0 && (
+                    <li>
+                      <a href="#faq" className="block px-5 py-3.5 font-semibold text-sm text-slate-500 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary whitespace-nowrap">
+                        {t("courseDetails.frequentlyAskedQuestions")}
+                      </a>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
 
             {/* What You'll Learn */}
             {localized.learningObjectives.length > 0 ? (

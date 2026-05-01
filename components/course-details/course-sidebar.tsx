@@ -46,7 +46,7 @@ export function CourseSidebar({
 
   return (
     <div className="lg:col-span-1 z-40">
-      <div className="sticky top-28 rounded-2xl border border-slate-200 bg-white shadow-xl flex flex-col md:-mt-24 xl:-mt-32 lg:-mt-32 overflow-hidden relative z-40">
+      <div className="sticky top-28 rounded-2xl border border-slate-200 bg-white shadow-xl flex flex-col md:-mt-48 xl:-mt-96 lg:-mt-80 overflow-hidden relative z-40">
 
         <div className="relative z-10">
           <CourseVideoModal
