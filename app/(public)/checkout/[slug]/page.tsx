@@ -25,7 +25,7 @@ export default async function CheckoutPage({
   const thumbnail = course.thumbnail || "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&q=80&w=1200";
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12">
+    <div className="min-h-screen bg-slate-50 pt-32 pb-12">
       <div className="container mx-auto px-4 max-w-5xl">
         <Link
           href={`/courses/${slug}`}

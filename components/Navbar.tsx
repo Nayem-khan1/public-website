@@ -39,13 +39,19 @@ export function Navbar() {
     return pathname.startsWith(href);
   };
 
+  const requiresSolidNavbar = ["/checkout", "/payment", "/login", "/dashboard", "/my-courses"].some(
+    (route) => pathname.startsWith(route)
+  );
+
+  const showSolidBackground = isScrolled || requiresSolidNavbar;
+
   return (
     <>
       <nav
         className={cn(
           "fixed top-0 z-50 w-full border-b transition-all duration-300",
-          isScrolled
-            ? "border-white/10 bg-slate-950/80 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl"
+          showSolidBackground
+            ? "border-white/10 bg-slate-950/90 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl"
             : "border-transparent bg-transparent py-5",
         )}
       >
