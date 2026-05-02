@@ -85,46 +85,67 @@ export default function OrdersPage() {
   const pendingOrders = orders.filter((order) => order.status === "pending").length;
   const failedOrders = orders.filter((order) => order.status === "failed").length;
 
+  const totalSpent = orders
+    .filter((o) => o.status === "verified")
+    .reduce((sum, o) => sum + o.amount, 0);
+  const pendingAmount = orders
+    .filter((o) => o.status === "pending")
+    .reduce((sum, o) => sum + o.amount, 0);
+  const successRate = orders.length
+    ? Math.round((verifiedOrders / orders.length) * 100)
+    : 0;
+
   return (
     <div className="space-y-8">
-      <section className="rounded-[2rem] border border-slate-200 bg-white px-6 py-7 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.28)] md:px-8 md:py-8">
-        <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-slate-400">
-              {t("dashboard.paymentOrders")}
-            </p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-950">
-              {t("dashboard.orderHistoryTitle")}
-            </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-              {t("dashboard.orderHistorySubtitle")}
-            </p>
-          </div>
+      <section className="relative overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white px-8 py-10 shadow-sm">
+        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-amber-500/5 blur-[80px]" />
+        
+        <div className="relative">
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600">
+            {t("dashboard.paymentOrders")}
+          </p>
+          <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-slate-950 md:text-5xl">
+            {t("dashboard.orderHistoryTitle")}
+          </h2>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-500">
+            {t("dashboard.orderHistorySubtitle")}
+          </p>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                {t("dashboard.ordersSummary")}
-              </p>
-              <p className="mt-2 text-3xl font-bold text-slate-950">
-                {loading ? "-" : orders.length}
-              </p>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="group rounded-[1.8rem] border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white p-6 shadow-sm transition-all hover:shadow-md">
+              <p className="text-xs font-bold uppercase tracking-wider text-emerald-600">{t("dashboard.totalSpent")}</p>
+              <p className="mt-2 text-3xl font-black text-emerald-950">{loading ? "-" : formatter.format(totalSpent)}</p>
+              <div className="mt-4 flex items-center gap-2">
+                <div className="h-1.5 w-full rounded-full bg-emerald-100">
+                  <div className="h-full rounded-full bg-emerald-500" style={{ width: "100%" }} />
+                </div>
+              </div>
             </div>
-            <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                {t("dashboard.verifiedOrders")}
-              </p>
-              <p className="mt-2 text-3xl font-bold text-slate-950">
-                {loading ? "-" : verifiedOrders}
-              </p>
+
+            <div className="group rounded-[1.8rem] border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-6 shadow-sm transition-all hover:shadow-md">
+              <p className="text-xs font-bold uppercase tracking-wider text-blue-600">{t("dashboard.successRate")}</p>
+              <p className="mt-2 text-3xl font-black text-blue-950">{loading ? "-" : `${successRate}%`}</p>
+              <div className="mt-4 flex items-center gap-2">
+                <div className="h-1.5 w-full rounded-full bg-blue-100">
+                  <div className="h-full rounded-full bg-blue-500" style={{ width: `${successRate}%` }} />
+                </div>
+              </div>
             </div>
-            <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                {t("dashboard.pendingOrders")}
-              </p>
-              <p className="mt-2 text-3xl font-bold text-slate-950">
-                {loading ? "-" : pendingOrders}
-              </p>
+
+            <div className="group rounded-[1.8rem] border border-amber-100 bg-gradient-to-br from-amber-50 to-white p-6 shadow-sm transition-all hover:shadow-md">
+              <p className="text-xs font-bold uppercase tracking-wider text-amber-600">{t("dashboard.pendingAmount")}</p>
+              <p className="mt-2 text-3xl font-black text-amber-950">{loading ? "-" : formatter.format(pendingAmount)}</p>
+              <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-amber-600 uppercase">
+                {pendingOrders} {t("dashboard.pendingOrders")}
+              </div>
+            </div>
+
+            <div className="group rounded-[1.8rem] border border-slate-100 bg-gradient-to-br from-slate-50 to-white p-6 shadow-sm transition-all hover:shadow-md">
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{t("dashboard.totalOrders")}</p>
+              <p className="mt-2 text-3xl font-black text-slate-950">{loading ? "-" : orders.length}</p>
+              <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
+                {verifiedOrders} {t("dashboard.verifiedStatus")}
+              </div>
             </div>
           </div>
         </div>

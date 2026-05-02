@@ -17,8 +17,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { useAppTranslation } from "@/contexts/LanguageContext";
+import { useAppTranslation, useLanguage } from "@/contexts/LanguageContext";
 import { useStudentSession } from "@/hooks/use-student-session";
+import { formatNumber } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 
 const NAV_ICON_CLASS = "h-5 w-5 shrink-0";
@@ -33,6 +34,7 @@ function isLinkActive(pathname: string, href: string): boolean {
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { t } = useAppTranslation();
+  const { locale } = useLanguage();
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -76,78 +78,76 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[296px] overflow-hidden border-r border-white/10 bg-[radial-gradient(circle_at_top,rgba(241,2,76,0.2),transparent_35%),radial-gradient(circle_at_bottom,rgba(81,74,137,0.3),transparent_40%),linear-gradient(180deg,#020617_0%,#0f172a_100%)] text-white lg:flex lg:flex-col">
-        <div className="border-b border-white/10 px-7 py-7">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-lg font-bold shadow-lg shadow-black/20 backdrop-blur-md">
+    <div className="relative min-h-screen bg-slate-50/50 text-slate-900 selection:bg-primary/10 selection:text-primary">
+      {/* Background Decorative Pattern */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-1/4 -right-1/4 w-1/2 h-1/2 bg-primary/5 blur-[120px] rounded-full" />
+        <div className="absolute top-1/2 -left-1/4 w-1/2 h-1/2 bg-indigo-500/5 blur-[120px] rounded-full" />
+      </div>
+
+      <div className="relative z-10">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[280px] overflow-hidden border-r border-slate-800 bg-slate-950 text-slate-300 lg:flex lg:flex-col">
+        <div className="flex h-16 shrink-0 items-center border-b border-slate-800 px-6">
+          <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-80">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-sm font-bold text-white shadow-sm">
               AP
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-white/50">{t("dashboard.dashboardLabel")}</p>
-              <p className="text-lg font-bold text-white">
+              <p className="text-sm font-bold tracking-tight text-white">
                 {t("brand.line1")} <span className="text-primary">{t("brand.line2")}</span>
               </p>
             </div>
           </Link>
         </div>
 
-        <div className="px-6 pt-6">
-          <div className="rounded-[1.75rem] border border-white/10 bg-white/6 p-5 backdrop-blur-xl">
-            <div className="mb-4 flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-xl font-bold uppercase text-white">
-                {profile?.name?.charAt(0) || "S"}
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-base font-semibold text-white">
-                  {profile?.name || t("common.student")}
-                </p>
-                <p className="truncate text-sm text-white/60">{profile?.email || t("common.notAvailable")}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="rounded-2xl bg-white/8 px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.2em] text-white/45">{t("dashboard.enrolledCourses")}</p>
-                <p className="mt-1 text-xl font-semibold text-white">{profile?.enrolled_courses_count ?? 0}</p>
-              </div>
-              <div className="rounded-2xl bg-white/8 px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.2em] text-white/45">{t("dashboard.accountStatus")}</p>
-                <p className="mt-1 text-xl font-semibold text-white">
-                  {profile?.status === "inactive" ? t("dashboard.accountInactive") : t("dashboard.accountActive")}
-                </p>
+        <div className="flex-1 overflow-y-auto py-6">
+          <div className="px-4 pb-6">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-800 text-sm font-bold text-white">
+                  {profile?.name?.charAt(0) || "S"}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-white">
+                    {profile?.name || t("common.student")}
+                  </p>
+                  <p className="truncate text-xs text-slate-400">{profile?.email || t("common.notAvailable")}</p>
+                </div>
               </div>
             </div>
           </div>
+
+          <nav className="space-y-1 px-3">
+            {sidebarLinks.map((link) => {
+              const active = isLinkActive(pathname, link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-slate-800 text-white"
+                      : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200",
+                  )}
+                >
+                  <link.icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "text-slate-400")} />
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        <nav className="flex-1 space-y-2 px-5 py-6">
-          {sidebarLinks.map((link) => {
-            const active = isLinkActive(pathname, link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-all",
-                  active
-                    ? "bg-white text-slate-950 shadow-[0_18px_40px_-24px_rgba(255,255,255,0.65)]"
-                    : "text-white/70 hover:bg-white/8 hover:text-white",
-                )}
-              >
-                <link.icon className={NAV_ICON_CLASS} />
-                {link.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="space-y-3 border-t border-white/10 px-5 py-5">
-          <LanguageSwitcher
-            className="w-fit border-white/10 bg-white/10 text-white"
-            activeClassName="bg-white text-slate-950"
-            inactiveClassName="text-white/70 hover:text-white"
-          />
-          <Button asChild variant="ghost" className="w-full justify-start rounded-2xl px-4 text-white/70 hover:bg-white/8 hover:text-white">
+        <div className="space-y-1 border-t border-slate-800 p-3">
+          <div className="mb-2 px-3">
+            <LanguageSwitcher
+              className="h-8 w-fit border-slate-800 bg-slate-900 text-xs text-slate-400"
+              activeClassName="bg-slate-800 text-white"
+              inactiveClassName="text-slate-500 hover:text-slate-300"
+            />
+          </div>
+          <Button asChild variant="ghost" className="w-full justify-start rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-200">
             <Link href="/">
               <Globe className="mr-3 h-4 w-4" />
               {t("common.backToWebsite")}
@@ -157,7 +157,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             type="button"
             variant="ghost"
             onClick={handleLogout}
-            className="w-full justify-start rounded-2xl px-4 text-white/70 hover:bg-white/8 hover:text-white"
+            className="w-full justify-start rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
           >
             <LogOut className="mr-3 h-4 w-4" />
             {t("dashboard.logOut")}
@@ -172,45 +172,54 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 w-[300px] overflow-hidden bg-[radial-gradient(circle_at_top,rgba(241,2,76,0.2),transparent_35%),radial-gradient(circle_at_bottom,rgba(81,74,137,0.3),transparent_40%),linear-gradient(180deg,#020617_0%,#0f172a_100%)] p-5 text-white shadow-2xl">
-            <div className="mb-6 flex items-center justify-between">
-              <Link href="/dashboard" className="text-lg font-bold" onClick={() => setSidebarOpen(false)}>
+          <div className="absolute inset-y-0 left-0 w-[280px] overflow-hidden bg-slate-950 text-slate-300 shadow-2xl flex flex-col">
+            <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-800 px-6">
+              <Link href="/dashboard" className="text-sm font-bold text-white tracking-tight" onClick={() => setSidebarOpen(false)}>
                 {t("dashboard.dashboardTitle")}
               </Link>
-              <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} className="text-white hover:bg-white/10 hover:text-white">
+              <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:bg-slate-800 hover:text-white">
                 <X className="h-5 w-5" />
               </Button>
             </div>
-            <div className="mb-6 rounded-[1.5rem] border border-white/10 bg-white/8 p-4">
-              <p className="text-base font-semibold text-white">{profile?.name || t("common.student")}</p>
-              <p className="mt-1 text-sm text-white/60">{profile?.email || t("common.notAvailable")}</p>
+            
+            <div className="flex-1 overflow-y-auto py-6">
+              <div className="px-4 pb-6">
+                <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+                  <p className="text-sm font-medium text-white">{profile?.name || t("common.student")}</p>
+                  <p className="mt-0.5 text-xs text-slate-400">{profile?.email || t("common.notAvailable")}</p>
+                </div>
+              </div>
+              
+              <nav className="space-y-1 px-3">
+                {sidebarLinks.map((link) => {
+                  const active = isLinkActive(pathname, link.href);
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setSidebarOpen(false)}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                        active ? "bg-slate-800 text-white" : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200",
+                      )}
+                    >
+                      <link.icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "text-slate-400")} />
+                      {link.label}
+                    </Link>
+                  );
+                })}
+              </nav>
             </div>
-            <nav className="space-y-2">
-              {sidebarLinks.map((link) => {
-                const active = isLinkActive(pathname, link.href);
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setSidebarOpen(false)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-all",
-                      active ? "bg-white text-slate-950" : "text-white/70 hover:bg-white/8 hover:text-white",
-                    )}
-                  >
-                    <link.icon className={NAV_ICON_CLASS} />
-                    {link.label}
-                  </Link>
-                );
-              })}
-            </nav>
-            <div className="mt-6 space-y-3 border-t border-white/10 pt-5">
-              <LanguageSwitcher
-                className="w-fit border-white/10 bg-white/10 text-white"
-                activeClassName="bg-white text-slate-950"
-                inactiveClassName="text-white/70 hover:text-white"
-              />
-              <Button asChild variant="ghost" className="w-full justify-start rounded-2xl px-4 text-white/70 hover:bg-white/8 hover:text-white">
+            
+            <div className="space-y-1 border-t border-slate-800 p-3">
+              <div className="mb-2 px-3">
+                <LanguageSwitcher
+                  className="h-8 w-fit border-slate-800 bg-slate-900 text-xs text-slate-400"
+                  activeClassName="bg-slate-800 text-white"
+                  inactiveClassName="text-slate-500 hover:text-slate-300"
+                />
+              </div>
+              <Button asChild variant="ghost" className="w-full justify-start rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-200">
                 <Link href="/" onClick={() => setSidebarOpen(false)}>
                   <Globe className="mr-3 h-4 w-4" />
                   {t("common.backToWebsite")}
@@ -223,7 +232,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   handleLogout();
                   setSidebarOpen(false);
                 }}
-                className="w-full justify-start rounded-2xl px-4 text-white/70 hover:bg-white/8 hover:text-white"
+                className="w-full justify-start rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
               >
                 <LogOut className="mr-3 h-4 w-4" />
                 {t("dashboard.logOut")}
@@ -233,10 +242,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
       ) : null}
 
-      <div className="lg:pl-[296px]">
-        <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
-          <div className="flex items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-3">
+      <div className="lg:pl-[280px]">
+        <header className="sticky top-0 z-30 flex h-16 items-center border-b border-slate-200 bg-white/80 px-4 backdrop-blur-md sm:px-6 lg:px-8">
+          <div className="flex w-full items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
                 size="icon"
@@ -245,29 +254,24 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               >
                 <Menu className="h-5 w-5" />
               </Button>
-              <div>
-                <p className="text-xs uppercase tracking-[0.24em] text-slate-400">{t("dashboard.dashboardLabel")}</p>
-                <h1 className="text-xl font-bold text-slate-950">{currentLink.label}</h1>
-              </div>
+              <h1 className="text-lg font-semibold text-slate-900">{currentLink.label}</h1>
             </div>
-            <div className="flex items-center gap-3">
-              <Button asChild variant="outline" className="hidden rounded-full border-slate-200 sm:inline-flex">
+            <div className="flex items-center gap-4">
+              <Button asChild variant="outline" size="sm" className="hidden border-slate-200 bg-slate-50 text-slate-600 sm:inline-flex hover:bg-slate-100 hover:text-slate-900">
                 <Link href="/courses">{t("dashboard.browseCatalog")}</Link>
               </Button>
-              <div className="hidden items-center gap-3 rounded-full border border-slate-200 bg-white px-3 py-2 sm:flex">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[linear-gradient(135deg,rgba(241,2,76,0.12),rgba(81,74,137,0.22))] text-sm font-bold uppercase text-primary">
+              <div className="hidden items-center gap-3 sm:flex">
+                <div className="h-8 w-px bg-slate-200" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-xs font-medium text-white">
                   {profile?.name?.charAt(0) || "S"}
-                </div>
-                <div className="max-w-[180px]">
-                  <p className="truncate text-sm font-semibold text-slate-900">{profile?.name || t("common.student")}</p>
-                  <p className="truncate text-xs text-slate-500">{profile?.email || t("common.notAvailable")}</p>
                 </div>
               </div>
             </div>
           </div>
         </header>
 
-        <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
+        <main className="p-4 sm:p-6 lg:p-8">{children}</main>
+      </div>
       </div>
     </div>
   );

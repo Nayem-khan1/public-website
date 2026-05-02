@@ -1,12 +1,13 @@
 "use client";
 
-import { CalendarRange, CheckCircle2, Sparkles } from "lucide-react";
+import { CalendarRange, CheckCircle2, Sparkles, CalendarDays, LogIn, CheckSquare } from "lucide-react";
 import { useAppTranslation, useLanguage } from "@/contexts/LanguageContext";
 import {
   formatActivityDayLabel,
   getActivityTotals,
 } from "@/lib/student-dashboard";
 import type { StudentActivityDay } from "@/lib/student-api";
+import { formatNumber } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 
 export function ActivityTracker({
@@ -50,42 +51,53 @@ export function ActivityTracker({
               const height = Math.max(14, Math.round((day.total_count / maxCount) * 100));
 
               return (
-                <div key={day.date} className="text-center">
-                  <div className="flex h-28 items-end justify-center rounded-[1.25rem] bg-slate-50 px-2 py-3">
+                <div key={day.date} className="group/day text-center">
+                  <div className="flex h-32 items-end justify-center rounded-2xl bg-slate-50/80 px-2 py-4 transition-all hover:bg-slate-100/80">
                     <div
                       className={cn(
-                        "w-full rounded-full transition-all duration-300",
+                        "w-full rounded-full transition-all duration-500 ease-out",
                         day.is_active
-                          ? "bg-[linear-gradient(180deg,#16a34a_0%,#059669_100%)]"
-                          : "bg-slate-200",
+                          ? "bg-gradient-to-t from-emerald-600 to-emerald-400 shadow-sm"
+                          : "bg-slate-200 group-hover/day:bg-slate-300",
                       )}
                       style={{ height: `${height}%` }}
                     />
                   </div>
-                  <p className="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+                  <p className="mt-3 text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover/day:text-slate-600 transition-colors">
                     {formatActivityDayLabel(day.date, locale)}
                   </p>
-                  <p className="mt-1 text-xs text-slate-400">{day.total_count}</p>
+                  <p className="mt-1 text-xs font-black text-slate-900 opacity-0 group-hover/day:opacity-100 transition-opacity">
+                    {formatNumber(day.total_count, locale)}
+                  </p>
                 </div>
               );
             })}
           </div>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl bg-slate-50 px-4 py-4">
-              <p className="text-sm text-slate-500">{t("dashboard.activeDays")}</p>
-              <p className="mt-1 text-2xl font-bold text-slate-950">{totals.activeDays}</p>
+            <div className="relative overflow-hidden rounded-2xl border border-emerald-100 bg-[linear-gradient(135deg,#ecfdf5_0%,#d1fae5_100%)] px-4 py-4 shadow-sm">
+              <div className="flex items-center gap-2">
+                <CalendarDays className="h-4 w-4 text-emerald-600" />
+                <p className="text-sm font-semibold text-emerald-900">{t("dashboard.activeDays")}</p>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-emerald-950">{formatNumber(totals.activeDays, locale)}</p>
             </div>
-            <div className="rounded-2xl bg-slate-50 px-4 py-4">
-              <p className="text-sm text-slate-500">{t("dashboard.logins")}</p>
-              <p className="mt-1 text-2xl font-bold text-slate-950">{totals.logins}</p>
+            <div className="relative overflow-hidden rounded-2xl border border-sky-100 bg-[linear-gradient(135deg,#f0f9ff_0%,#e0f2fe_100%)] px-4 py-4 shadow-sm">
+              <div className="flex items-center gap-2">
+                <LogIn className="h-4 w-4 text-sky-600" />
+                <p className="text-sm font-semibold text-sky-900">{t("dashboard.logins")}</p>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-sky-950">{formatNumber(totals.logins, locale)}</p>
             </div>
-            <div className="rounded-2xl bg-slate-50 px-4 py-4">
-              <p className="text-sm text-slate-500">
-                {t("dashboard.lessonCompletions")}
-              </p>
-              <p className="mt-1 text-2xl font-bold text-slate-950">
-                {totals.lessonCompletions}
+            <div className="relative overflow-hidden rounded-2xl border border-amber-100 bg-[linear-gradient(135deg,#fffbeb_0%,#fef3c7_100%)] px-4 py-4 shadow-sm">
+              <div className="flex items-center gap-2">
+                <CheckSquare className="h-4 w-4 text-amber-600" />
+                <p className="text-sm font-semibold text-amber-900">
+                  {t("dashboard.lessonCompletions")}
+                </p>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-amber-950">
+                {formatNumber(totals.lessonCompletions, locale)}
               </p>
             </div>
           </div>

@@ -10,6 +10,7 @@ import {
   formatRelativeDate,
   getActivityTotals,
 } from "@/lib/student-dashboard";
+import { cn } from "@/lib/utils";
 import {
   getStudentAccessToken,
   getStudentCourses,
@@ -83,20 +84,22 @@ export default function LearningReportPage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[2rem] border border-slate-200 bg-white px-6 py-7 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.28)] md:px-8 md:py-8">
-        <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+      <section className="relative overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white px-8 py-10 shadow-sm">
+        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/5 blur-[80px]" />
+        
+        <div className="relative flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-slate-400">
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary/60">
               {t("dashboard.learningReport")}
             </p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-950">
+            <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-slate-950 md:text-5xl">
               {t("dashboard.learningReportTitle")}
             </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-500">
               {t("dashboard.learningReportSubtitle")}
             </p>
           </div>
-          <Button asChild variant="outline" className="rounded-full border-slate-200">
+          <Button asChild className="rounded-full bg-slate-950 text-white hover:bg-slate-800 px-8">
             <Link href="/dashboard/courses">{t("dashboard.viewRoadmap")}</Link>
           </Button>
         </div>
@@ -108,38 +111,66 @@ export default function LearningReportPage() {
         </div>
       ) : null}
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[
           {
             title: t("dashboard.completionRate"),
             value: loading ? "-" : `${Math.round(dashboard?.stats.completion_rate ?? 0)}%`,
             icon: Sparkles,
+            color: "blue",
+            bg: "from-blue-50 to-white",
+            border: "border-blue-100",
+            iconBg: "bg-blue-500",
           },
           {
             title: t("dashboard.averageProgress"),
             value: loading ? "-" : `${averageProgress}%`,
             icon: BarChart3,
+            color: "emerald",
+            bg: "from-emerald-50 to-white",
+            border: "border-emerald-100",
+            iconBg: "bg-emerald-500",
           },
           {
             title: t("dashboard.currentStreak"),
             value: loading ? "-" : dashboard?.stats.current_streak ?? 0,
             icon: Flame,
+            color: "amber",
+            bg: "from-amber-50 to-white",
+            border: "border-amber-100",
+            iconBg: "bg-amber-500",
           },
           {
             title: t("dashboard.activeDays"),
             value: loading ? "-" : activityTotals.activeDays,
             icon: BookOpen,
+            color: "fuchsia",
+            bg: "from-fuchsia-50 to-white",
+            border: "border-fuchsia-100",
+            iconBg: "bg-fuchsia-500",
           },
         ].map((item) => (
           <article
             key={item.title}
-            className="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.24)]"
+            className={cn(
+              "group relative overflow-hidden rounded-[1.8rem] border bg-gradient-to-br p-6 shadow-sm transition-all hover:shadow-md",
+              item.bg,
+              item.border,
+            )}
           >
-            <div className="mb-4 inline-flex rounded-2xl bg-slate-100 p-3 text-slate-900">
-              <item.icon className="h-5 w-5" />
+            <div className="flex items-center gap-4">
+              <div className={cn(
+                "flex h-12 w-12 items-center justify-center rounded-2xl text-white shadow-lg",
+                item.iconBg,
+                `shadow-${item.color}-200`
+              )}>
+                <item.icon className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{item.title}</p>
+                <p className="text-3xl font-bold text-slate-950">{item.value}</p>
+              </div>
             </div>
-            <p className="text-sm font-medium text-slate-500">{item.title}</p>
-            <p className="mt-2 text-3xl font-bold text-slate-950">{item.value}</p>
           </article>
         ))}
       </section>
@@ -148,15 +179,15 @@ export default function LearningReportPage() {
         <ActivityTracker days={dashboard?.activity_last_7_days ?? []} />
 
         <article className="rounded-[1.8rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.24)]">
-          <div className="mb-5 flex items-center gap-3">
-            <div className="rounded-2xl bg-slate-100 p-3 text-slate-900">
-              <BarChart3 className="h-5 w-5" />
+          <div className="mb-6 flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-lg shadow-slate-200">
+              <BarChart3 className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">
                 {t("dashboard.progress")}
               </p>
-              <h3 className="text-xl font-bold text-slate-950">
+              <h3 className="text-2xl font-bold text-slate-950">
                 {t("dashboard.progressByCourse")}
               </h3>
             </div>

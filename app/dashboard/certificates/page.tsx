@@ -105,42 +105,42 @@ export default function CertificatesPage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[2rem] border border-slate-200 bg-white px-6 py-7 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.28)] md:px-8 md:py-8">
+      <section className="relative overflow-hidden rounded-[2rem] border border-fuchsia-100 bg-[linear-gradient(135deg,#fdf4ff_0%,#fae8ff_100%)] px-6 py-7 shadow-sm md:px-8 md:py-8">
         <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-slate-400">
+            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-fuchsia-600">
               {t("dashboard.certificates")}
             </p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-950">
+            <h2 className="mt-2 text-3xl font-bold text-fuchsia-950">
               {t("dashboard.certificateLibraryTitle")}
             </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-fuchsia-800">
               {t("dashboard.certificateLibrarySubtitle")}
             </p>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+            <div className="rounded-[1.5rem] border border-white/40 bg-white/60 px-5 py-4 backdrop-blur-sm shadow-sm">
+              <p className="text-xs uppercase tracking-[0.2em] text-fuchsia-700">
                 {t("dashboard.earnedCertificates")}
               </p>
-              <p className="mt-2 text-3xl font-bold text-slate-950">
+              <p className="mt-2 text-3xl font-bold text-fuchsia-950">
                 {loading ? "-" : certificates.length}
               </p>
             </div>
-            <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+            <div className="rounded-[1.5rem] border border-white/40 bg-white/60 px-5 py-4 backdrop-blur-sm shadow-sm">
+              <p className="text-xs uppercase tracking-[0.2em] text-fuchsia-700">
                 {t("dashboard.verificationStatus")}
               </p>
-              <p className="mt-2 text-3xl font-bold text-slate-950">
+              <p className="mt-2 text-3xl font-bold text-fuchsia-950">
                 {loading ? "-" : verifiedCount}
               </p>
             </div>
-            <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+            <div className="rounded-[1.5rem] border border-white/40 bg-white/60 px-5 py-4 backdrop-blur-sm shadow-sm">
+              <p className="text-xs uppercase tracking-[0.2em] text-fuchsia-700">
                 {t("dashboard.latestIssueDate")}
               </p>
-              <p className="mt-2 text-lg font-bold text-slate-950">
+              <p className="mt-2 text-lg font-bold text-fuchsia-950">
                 {loading
                   ? "-"
                   : latestIssuedAt

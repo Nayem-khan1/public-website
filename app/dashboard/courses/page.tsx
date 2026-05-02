@@ -45,21 +45,21 @@ export default function MyCoursesPage() {
 
   return (
     <div className="space-y-6">
-      <section className="flex flex-col gap-6 rounded-[2rem] border border-slate-200 bg-white px-6 py-7 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.18)] md:px-8 md:py-8 xl:flex-row xl:items-end xl:justify-between">
+      <section className="relative flex flex-col gap-6 overflow-hidden rounded-[2rem] border border-blue-100 bg-[linear-gradient(135deg,#eff6ff_0%,#dbeafe_100%)] px-6 py-7 shadow-sm md:px-8 md:py-8 xl:flex-row xl:items-center xl:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.26em] text-slate-400">
+          <p className="text-xs font-semibold uppercase tracking-[0.26em] text-blue-600">
             {t("dashboard.myCourses")}
           </p>
-          <h2 className="mt-2 text-3xl font-bold text-slate-950">
+          <h2 className="mt-2 text-3xl font-bold text-blue-950">
             {t("dashboard.myCoursesTitle")}
           </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-blue-800">
             {t("dashboard.myCoursesSubtitle")}
           </p>
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <Button asChild variant="outline" className="rounded-full border-slate-200">
+          <Button asChild className="rounded-full bg-blue-600 text-white shadow-sm hover:bg-blue-700">
             <Link href="/courses">{t("dashboard.browseMoreCourses")}</Link>
           </Button>
         </div>

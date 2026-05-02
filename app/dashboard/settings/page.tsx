@@ -105,10 +105,11 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[2rem] border border-slate-200 bg-white px-6 py-7 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.28)] md:px-8 md:py-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.26em] text-slate-400">{t("dashboard.settings")}</p>
-        <h2 className="mt-2 text-3xl font-bold text-slate-950">{t("dashboard.profileSettings")}</h2>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">{t("dashboard.settingsSubtitle")}</p>
+      <section className="relative overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white px-8 py-10 shadow-sm">
+        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/5 blur-[80px]" />
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary/60">{t("dashboard.settings")}</p>
+        <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-slate-950 md:text-5xl">{t("dashboard.profileSettings")}</h2>
+        <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-500">{t("dashboard.settingsSubtitle")}</p>
       </section>
 
       {error ? (
@@ -119,13 +120,13 @@ export default function SettingsPage() {
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <article className="rounded-[1.85rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.24)] md:p-8">
-          <div className="mb-8 flex items-center gap-5">
-            <div className="flex h-20 w-20 items-center justify-center rounded-[1.5rem] bg-[linear-gradient(135deg,rgba(241,2,76,0.12),rgba(81,74,137,0.22))] text-2xl font-bold uppercase text-primary">
+          <div className="mb-8 flex items-center gap-6">
+            <div className="flex h-24 w-24 items-center justify-center rounded-[2rem] bg-gradient-to-br from-primary/20 to-primary/5 text-3xl font-black uppercase text-primary border border-primary/10 shadow-inner">
               {(profile.name || "S").charAt(0)}
             </div>
             <div>
-              <h3 className="text-xl font-bold text-slate-950">{profile.name || t("common.student")}</h3>
-              <p className="mt-1 text-sm text-slate-500">{profile.email || t("common.notAvailable")}</p>
+              <h3 className="text-2xl font-bold text-slate-950">{profile.name || t("common.student")}</h3>
+              <p className="mt-1 text-base text-slate-500 font-medium">{profile.email || t("common.notAvailable")}</p>
             </div>
           </div>
 
@@ -190,19 +191,19 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="space-y-3 text-sm">
-              <div className="rounded-2xl bg-slate-50 px-4 py-4">
-                <p className="text-slate-500">{t("dashboard.membershipStatus")}</p>
-                <p className="mt-1 font-semibold text-slate-950">
+              <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-5 py-5 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-wider text-emerald-600">{t("dashboard.membershipStatus")}</p>
+                <p className="mt-1 text-lg font-bold text-emerald-950">
                   {profile.status === "inactive" ? t("dashboard.accountInactive") : t("dashboard.accountActive")}
                 </p>
               </div>
-              <div className="rounded-2xl bg-slate-50 px-4 py-4">
-                <p className="text-slate-500">{t("dashboard.roleLabel")}</p>
-                <p className="mt-1 font-semibold text-slate-950">{t("dashboard.roleStudent")}</p>
+              <div className="rounded-2xl border border-blue-100 bg-blue-50 px-5 py-5 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-wider text-blue-600">{t("dashboard.roleLabel")}</p>
+                <p className="mt-1 text-lg font-bold text-blue-950">{t("dashboard.roleStudent")}</p>
               </div>
-              <div className="rounded-2xl bg-slate-50 px-4 py-4">
-                <p className="text-slate-500">{t("dashboard.enrolledCourses")}</p>
-                <p className="mt-1 font-semibold text-slate-950">{profile.enrolled_courses_count}</p>
+              <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-5 py-5 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">{t("dashboard.enrolledCourses")}</p>
+                <p className="mt-1 text-lg font-bold text-indigo-950">{profile.enrolled_courses_count}</p>
               </div>
             </div>
           </article>
