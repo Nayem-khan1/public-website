@@ -605,7 +605,20 @@
     "learningReportSubtitle": "Review your weekly activity, course-by-course progress, and current momentum from one place.",
     "averageProgress": "Average Progress",
     "progressByCourse": "Progress by Course",
-    "noReportCourses": "Enroll in a course to see a detailed learning report here."
+    "noReportCourses": "Enroll in a course to see a detailed learning report here.",
+    "classPrefix": "Class:",
+    "courseProgress": "Course Progress",
+    "learningInsights": "Learning Insights",
+    "learningInsightsSubtitle": "A quick summary of your recent activity and progress.",
+    "loadingInsights": "Loading insights...",
+    "noRecentTransactions": "No recent transactions",
+    "paymentOverview": "Payment Overview",
+    "pendingAmount": "Pending Amount",
+    "recentTransactions": "Recent Transactions",
+    "selectContentHint": "Please select lesson content from the right sidebar to view.",
+    "successRate": "Success Rate",
+    "totalOrders": "Total Orders",
+    "totalSpent": "Total Spent"
   },
   "payment": {
     "completedTitle": "Payment Completed",
