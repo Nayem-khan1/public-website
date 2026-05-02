@@ -71,15 +71,18 @@
   "home": {
     "hero": {
       "badge": "Bangladesh's #1 Astronomy Platform",
-      "titleStart": "Welcome to Bangladesh's first and largest",
-      "titleHighlight": "space science learning platform",
-      "description": "Online astronomy & astrophysics courses for students, Olympiad learners, and space enthusiasts.",
-      "exploreCourses": "Explore Courses",
-      "joinLiveClasses": "Join Live Classes",
-      "districtsCovered": "Districts Covered",
-      "studentsReached": "Students Reached",
-      "asteroidsDiscovered": "Asteroids Discovered",
-      "spaceIllustration": "Space illustration"
+      "titleLine1": "Learn Astronomy.",
+      "titleLine2": "Explore the Universe.",
+      "description": "Bangladesh's first space science education platform — built for curious students who dream of understanding the cosmos.",
+      "cta": "Begin Your Space Journey",
+      "trustLine": "Trusted by 3M+ students across 58 districts",
+      "stat1Value": "58",
+      "stat1Label": "Districts",
+      "stat2Value": "3M+",
+      "stat2Label": "Students",
+      "stat3Value": "450+",
+      "stat3Label": "Asteroids Found",
+      "spaceIllustration": "Student exploring the universe through a telescope"
     },
     "why": {
       "eyebrow": "Why Choose Us",
