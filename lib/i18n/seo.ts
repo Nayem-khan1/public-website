@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
+import { getSiteUrl as getConfiguredSiteUrl } from "@/lib/env";
 import type { Locale } from "./config";
-
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  process.env.NEXT_PUBLIC_APP_URL ??
-  "http://localhost:3000";
 
 function normalizePathname(pathname: string): string {
   return pathname.startsWith("/") ? pathname : `/${pathname}`;
 }
 
 export function getSiteUrl(): string {
-  return siteUrl;
+  return getConfiguredSiteUrl();
 }
 
 export function getLocalizedPath(pathname: string, locale: Locale): string {
@@ -21,7 +17,7 @@ export function getLocalizedPath(pathname: string, locale: Locale): string {
 }
 
 export function getLocalizedAbsoluteUrl(pathname: string, locale: Locale): string {
-  return new URL(getLocalizedPath(pathname, locale), siteUrl).toString();
+  return new URL(getLocalizedPath(pathname, locale), getSiteUrl()).toString();
 }
 
 export function buildMetadataAlternates(

@@ -1,5 +1,22 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment
+
+Create a local env file before running the app:
+
+```bash
+cp .env.example .env.local
+```
+
+Required variables:
+
+- `NEXT_PUBLIC_APP_ENV`: `development`, `staging`, or `production`.
+- `NEXT_PUBLIC_SITE_URL`: canonical public website URL used for SEO metadata.
+- `NEXT_PUBLIC_API_BASE_URL`: browser-visible backend API URL, usually `https://api.example.com/api/v1`.
+- `API_BASE_URL`: optional server-only API URL for SSR/SSG fetches.
+
+Production builds fail fast when `NEXT_PUBLIC_APP_ENV=production` and the public site/API URLs are missing or not HTTPS.
+
 ## Getting Started
 
 First, run the development server:

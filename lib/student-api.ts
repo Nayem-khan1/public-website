@@ -1,6 +1,6 @@
 import type { Locale } from "@/lib/i18n/config";
+import { getApiBaseUrl } from "@/lib/env";
 
-const DEFAULT_API_BASE_URL = "http://localhost:5000/api/v1";
 const TOKEN_STORAGE_KEY = "ap_student_token";
 const TOKEN_COOKIE_KEY = "ap_student_token";
 
@@ -298,35 +298,6 @@ export interface CompleteLessonResponse {
   progress_percent: number;
   is_course_completed: boolean;
   enrollment: Record<string, unknown>;
-}
-
-function normalizeApiBaseUrl(raw: string): string {
-  const base = raw.trim().replace(/\/+$/, "");
-  if (base.endsWith("/api/v1")) return base;
-  if (base.endsWith("/api")) return `${base}/v1`;
-  return `${base}/api/v1`;
-}
-
-function getApiBaseUrl(): string {
-  const envBaseUrl =
-    process.env.NEXT_PUBLIC_API_BASE_URL ??
-    process.env.API_BASE_URL ??
-    DEFAULT_API_BASE_URL;
-
-  const normalized = normalizeApiBaseUrl(envBaseUrl);
-
-  if (/^https?:\/\//i.test(normalized)) {
-    return normalized;
-  }
-
-  if (normalized.startsWith("/")) {
-    if (typeof window !== "undefined") {
-      return `${window.location.origin}${normalized}`;
-    }
-    return `http://localhost:5000${normalized}`;
-  }
-
-  return normalizeApiBaseUrl(DEFAULT_API_BASE_URL);
 }
 
 function buildUrl(pathname: string, query?: Record<string, string | undefined>): string {

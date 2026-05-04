@@ -6,6 +6,7 @@
   TeamMember,
   Testimonial,
 } from "@/data/types";
+import { getApiBaseUrl } from "@/lib/env";
 import type { Locale } from "@/lib/i18n/config";
 
 interface ApiEnvelope<T> {
@@ -219,37 +220,6 @@ export interface PublicTestimonialRecord {
 
 export const DEFAULT_BLOG_IMAGE_URL =
   "https://placehold.co/1600x900/0f172a/e2e8f0/png?text=Astronomy+Pathshala+Blog";
-
-const DEFAULT_API_BASE_URL = "http://localhost:5000/api/v1";
-
-function normalizeApiBaseUrl(raw: string): string {
-  const base = raw.trim().replace(/\/+$/, "");
-  if (base.endsWith("/api/v1")) return base;
-  if (base.endsWith("/api")) return `${base}/v1`;
-  return `${base}/api/v1`;
-}
-
-function getApiBaseUrl(): string {
-  const envBaseUrl =
-    process.env.NEXT_PUBLIC_API_BASE_URL ??
-    process.env.API_BASE_URL ??
-    DEFAULT_API_BASE_URL;
-
-  const normalized = normalizeApiBaseUrl(envBaseUrl);
-
-  if (/^https?:\/\//i.test(normalized)) {
-    return normalized;
-  }
-
-  if (normalized.startsWith("/")) {
-    if (typeof window !== "undefined") {
-      return `${window.location.origin}${normalized}`;
-    }
-    return `http://localhost:5000${normalized}`;
-  }
-
-  return normalizeApiBaseUrl(DEFAULT_API_BASE_URL);
-}
 
 function buildUrl(pathname: string, query?: Record<string, string | number | undefined>): string {
   const url = new URL(pathname.replace(/^\/+/, ""), `${getApiBaseUrl()}/`);
@@ -849,6 +819,5 @@ export function getLocalizedCourseText(
       })) ?? [],
   };
 }
-
 
 
